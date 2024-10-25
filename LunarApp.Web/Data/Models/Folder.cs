@@ -20,12 +20,12 @@ namespace LunarApp.Web.Data.Models
         public Guid NotebookId { get; set; }
         [ForeignKey(nameof(NotebookId))]
         public required Notebook Notebook { get; set; }
-        [Required]
         [Comment("Identifier of a parent folder")]
-        public Guid ParentFolderId { get; set; }
+        public Guid? ParentFolderId { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
-        public required Folder ParentFolder { get; set; }
-        public required ICollection<Folder> Folders { get; set; }
-        public required ICollection<Note> Notes { get; set; }
+        public Folder? ParentFolder { get; set; }
+
+        public ICollection<Folder> ChildrenFolders { get; set; } = new List<Folder>();
+        public ICollection<Note> Notes { get; set; } = new List<Note>();
     }
 }
