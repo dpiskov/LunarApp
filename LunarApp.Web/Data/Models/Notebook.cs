@@ -13,7 +13,7 @@ namespace LunarApp.Web.Data.Models
         [MaxLength(NotebookTitleMaxLength)]
         [Comment("Notebook title")]
         public required string Title { get; set; }
-        public ICollection<Folder> Folders { get; set; }
-        public ICollection<Note> Notes { get; set; }
+        public ICollection<Folder> Folders { get; set; } = new List<Folder>();
+        public ICollection<Note> Notes { get; set; } = new List<Note>();
     }
 }
