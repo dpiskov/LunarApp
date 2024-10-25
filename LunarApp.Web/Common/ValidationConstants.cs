@@ -13,5 +13,8 @@
         // Notebook
         public const int NotebookTitleMinLength = 1;
         public const int NotebookTitleMaxLength = 50;
+
+        // LastSaved date format
+        public const string LastSavedDataFormat = "dd.MM.yyyy";
     }
 }
