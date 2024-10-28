@@ -1,22 +1,65 @@
-html {
-  font-size: 14px;
+/* Hoverable Cards */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+html,
 body {
-  margin-bottom: 60px;
+    height: 100%;
+    overflow: hidden;
+    background-image: url('../images/wallpaperflare.com_wallpaper (2).jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar, footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px; /* Sets equal height for navbar and footer */
+    background-color: rgba(0, 0, 0, 0.8); /* Example background */
+    color: white;
+    width: 100%;
+}
+
+/* When the navbar is expanded, make the height adjust */
+.navbar-collapse.collapse.show {
+    min-height: auto;  
+    transition: height 0.3s ease;
+}
+
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.text {
+    text-align: center;
+}
+
+.text h1 {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.text p {
+    font-size: 1.2rem;
+    color: white;
+}
+
+thead, tbody {
+    text-align: center;
+    vertical-align: central;
+}
+
+/* Sticky Footer */
+footer {
+    position: relative;
 }
