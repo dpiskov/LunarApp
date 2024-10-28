@@ -67,5 +67,23 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(NotebookDeleteViewModel model)
+        {
+            Notebook? notebook = await context.Notebooks
+                .Where(nb => nb.Id == model.Id)
+                .FirstOrDefaultAsync();
+
+            if (notebook != null)
+            {
+                context.Notebooks.Remove(notebook);
+
+                await context.SaveChangesAsync();
+            }
+
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
