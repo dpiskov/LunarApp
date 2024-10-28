@@ -1,0 +1,47 @@
+﻿@model IEnumerable<LunarApp.Web.Data.Models.Notebook>
+
+@* <button type="button" class="btn btn-primary">Add</button> *@
+@* <button type="button" class="btn btn-danger">Remove</button> *@
+
+<h2>All Notebooks</h2>
+
+<div class="container d-flex justify-content-evenly align-items-center">
+    @foreach (var notebook in Model)
+    {
+        <table>
+            <thead>
+            <tr class="d-flex flex-column">
+                <td>
+                    <a asp-action="Open" asp-route-id="@notebook.Id"><img src="/images/notebook.png"/></a>
+                </td>
+                <td class="mb-2">@notebook.Title</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@notebook.Id" class="btn btn-info">Details</a>
+                </td>
+            </tr>
+            </thead>
+        </table>
+    }
+</div>
+
+@* <table class="table table-striped d-inline-flex">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var notebook in Model)
+        {
+            <tr>
+                <td>@notebook.Title</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@notebook.Id" class="btn btn-info">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+
+<a asp-action="Create" class="btn btn-primary mt-5">Add New Notebook</a>
