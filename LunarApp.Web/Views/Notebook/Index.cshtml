@@ -1,47 +1,39 @@
-﻿@model IEnumerable<LunarApp.Web.Data.Models.Notebook>
+﻿@model IEnumerable<NotebookInfoViewModel>
 
-@* <button type="button" class="btn btn-primary">Add</button> *@
-@* <button type="button" class="btn btn-danger">Remove</button> *@
+@{
+    ViewData["Title"] = "All Notebooks";
+}
 
-<h2>All Notebooks</h2>
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
 
-<div class="container d-flex justify-content-evenly align-items-center">
+<hr class="border-bottom" />
+
+<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
     @foreach (var notebook in Model)
     {
-        <table>
-            <thead>
-            <tr class="d-flex flex-column">
-                <td>
-                    <a asp-action="Open" asp-route-id="@notebook.Id"><img src="/images/notebook.png"/></a>
-                </td>
-                <td class="mb-2">@notebook.Title</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@notebook.Id" class="btn btn-info">Details</a>
-                </td>
-            </tr>
-            </thead>
-        </table>
+        <div class="notebook-item d-flex justify-content-center">
+            <table>
+                <thead>
+                <tr class="d-flex flex-column mb-5">
+                    <td>
+                        <a asp-action="Details" asp-route-id="@notebook.Id"><img src="/images/notebook.png" /></a>
+                    </td>
+                    <td class="mb-2">@notebook.Title</td>
+
+                    <td>
+                        <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                </thead>
+            </table>
+        </div>
     }
 </div>
 
-@* <table class="table table-striped d-inline-flex">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var notebook in Model)
-        {
-            <tr>
-                <td>@notebook.Title</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@notebook.Id" class="btn btn-info">Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table> *@
-
-<a asp-action="Create" class="btn btn-primary mt-5">Add New Notebook</a>
+<div class="d-flex justify-content-center">
+    <a asp-action="Create" class="btn btn-primary">Add New Notebook</a>
+</div>
