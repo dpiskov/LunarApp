@@ -33,6 +33,12 @@ body {
     position: relative;
 }
 
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
 .center-content {
     display: flex;
     align-items: center;
@@ -42,10 +48,19 @@ body {
     transform: translate(-50%, -50%);
 }
 
-main {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
+.transparent-container {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+
+/* Center a card */
+.card-center {
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .text {
