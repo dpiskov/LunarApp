@@ -10,26 +10,31 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow">
             <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="d-flex align-items-center justify-content-center">
-                    <p class="m-0 text-center"><a asp-area="" asp-controller="Home" asp-action="Index"><img src="/images/moon-2-64.png" /></a></p>
+                <div class="navbar-collapse collapse d-sm-inline-flex align-items-center justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <div class="center-content">
+                                <p class="m-0"><a asp-area="" asp-controller="Home" asp-action="Index"><img src="/images/moon-2-64.png" /></a></p>
+                            </div>
+                        </li>
+                    </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    @* <div class="container"> *@
     <main role="main">
         @RenderBody()
     </main>
-    </div>
+    @* </div> *@
 
-    <footer class="border-top footer text-muted bg-dark">
+    <footer class="border-top footer text-muted">
         <div class="footer">
             &copy; 2024 - Lunar
         </div>
