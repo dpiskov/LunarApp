@@ -27,5 +27,24 @@ namespace LunarApp.Web.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(NotebookViewModel model)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return View(model);
+            }
+
+            Notebook notebook = new Notebook()
+            {
+                Title = model.Title
+            };
+
+            await context.Notebooks.AddAsync(notebook);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
