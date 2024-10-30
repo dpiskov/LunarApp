@@ -25,5 +25,16 @@ namespace LunarApp.Web.Controllers
 
             return View(folders);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(Guid notebookId)
+        {
+            var model = new FolderViewModel
+            {
+                NotebookId = notebookId
+            };
+
+            return View(model);
+        }
     }
 }
