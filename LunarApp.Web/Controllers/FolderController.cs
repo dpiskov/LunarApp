@@ -8,9 +8,22 @@ namespace LunarApp.Web.Controllers
 {
     public class FolderController(ApplicationDbContext context) : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index(Guid notebookId)
         {
-            return View();
+            var folders = await context.Folders
+                .Where(f => f.NotebookId == notebookId)
+                .Select(f => new FolderInfoViewModel
+                {
+                    Id = f.Id,
+                    Title = f.Title,
+                    NotebookId = f.NotebookId
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            ViewData["NotebookId"] = notebookId;
+
+            return View(folders);
         }
     }
 }
