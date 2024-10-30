@@ -36,5 +36,29 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(FolderViewModel model)
+        {
+            var notebookExists = await context.Notebooks.AnyAsync(n => n.Id == model.NotebookId);
+
+            if (!notebookExists)
+            {
+                ModelState.AddModelError(string.Empty, "The specified notebook does not exist.");
+                return View(model);
+            }
+
+            Folder folder = new Folder
+            {
+                Id = Guid.NewGuid(),
+                Title = model.Title,
+                NotebookId = model.NotebookId
+            };
+
+            await context.Folders.AddAsync(folder);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Notebook");
+        }
     }
 }
