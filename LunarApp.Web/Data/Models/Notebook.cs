@@ -6,7 +6,7 @@ namespace LunarApp.Web.Data.Models
 {
     public class Notebook
     {
-        [Required]
+        [Key]
         [Comment("Notebook Identifier")]
         public Guid Id { get; set; }
         [Required]
