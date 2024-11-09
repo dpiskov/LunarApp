@@ -8,30 +8,57 @@ namespace LunarApp.Web.Controllers
 {
     public class FolderController(ApplicationDbContext context) : Controller
     {
-        public async Task<IActionResult> Index(Guid notebookId)
+        public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId)
         {
-            var folders = await context.Folders
-                .Where(f => f.NotebookId == notebookId)
-                .Select(f => new FolderInfoViewModel
-                {
-                    Id = f.Id,
-                    Title = f.Title,
-                    NotebookId = f.NotebookId
-                })
-                .AsNoTracking()
-                .ToListAsync();
+            IEnumerable<FolderInfoViewModel> folders;
 
-            ViewData["NotebookId"] = notebookId;
+            if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
+            {
+                folders = await context.Folders
+                    .Where(f => f.ParentFolderId == parentFolderId.Value)
+                    .Select(f => new FolderInfoViewModel
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        NotebookId = f.NotebookId,
+                        ParentFolderId = f.ParentFolderId
+                    })
+                    .ToListAsync();
+
+                ViewData["NotebookId"] = notebookId;
+                ViewData["ParentFolderId"] = parentFolderId;
+                ViewData["Title"] = "Folders in Folder";
+            }
+            else if (notebookId != Guid.Empty)
+            {
+                folders = await context.Folders
+                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)
+                    .Select(f => new FolderInfoViewModel
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        NotebookId = f.NotebookId
+                    })
+                    .ToListAsync();
+
+                ViewData["NotebookId"] = notebookId;
+                ViewData["Title"] = "Folders in Notebook";
+            }
+            else
+            {
+                return BadRequest("NotebookId or ParentFolderId must be provided.");
+            }
 
             return View(folders);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(Guid notebookId)
+        public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId)
         {
             var model = new FolderViewModel
             {
-                NotebookId = notebookId
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId
             };
 
             return View(model);
@@ -50,15 +77,20 @@ namespace LunarApp.Web.Controllers
 
             Folder folder = new Folder
             {
-                Id = Guid.NewGuid(),
                 Title = model.Title,
-                NotebookId = model.NotebookId
+                NotebookId = model.NotebookId,
+                ParentFolderId = model.ParentFolderId
             };
 
             await context.Folders.AddAsync(folder);
             await context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Notebook");
+            if (folder.ParentFolderId.HasValue)
+            {
+                return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={model.NotebookId}");
+            }
+
+            return Redirect($"~/Folder?notebookId={model.NotebookId}");
         }
     }
 }
