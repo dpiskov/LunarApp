@@ -23,7 +23,7 @@ namespace LunarApp.Web.Data.Models
         public required Notebook Notebook { get; set; }
         [Required]
         [Comment("Identifier of a folder")]
-        public Guid FolderId { get; set; }
+        public Guid? FolderId { get; set; }
         [ForeignKey(nameof(FolderId))]
         public required Folder Folder { get; set; }
         [Required]
