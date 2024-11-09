@@ -124,6 +124,30 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(NotebookViewModel model, Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var notebook = await context.Notebooks.FindAsync(id);
+
+            if (notebook == null)
+            {
+                //return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+
+            notebook.Title = model.Title;
+
+            await context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
         // The Details action is commented out for now, but it's designed to show notebook details
         // The method would include related folders and notes as part of the notebook details
         //[HttpGet]
