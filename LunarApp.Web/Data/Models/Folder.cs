@@ -19,7 +19,7 @@ namespace LunarApp.Web.Data.Models
         [Comment("Identifier of a notebook")]
         public Guid NotebookId { get; set; }
         [ForeignKey(nameof(NotebookId))]
-        public required Notebook Notebook { get; set; }
+        public Notebook Notebook { get; set; }
         [Comment("Identifier of a parent folder")]
         public Guid? ParentFolderId { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
