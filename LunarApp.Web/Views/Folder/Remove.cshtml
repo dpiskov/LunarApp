@@ -1,0 +1,47 @@
+﻿@model FolderDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Folder";
+}
+
+@{
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr class="border-bottom" />
+
+<div class="row d-flex align-content-center justify-content-center card-center">
+    <div class="col-md-6">
+        <div class="transparent-container card">
+            <div class="card-body">
+                <h3 class="card-title text-center">@Model.Title</h3>
+                <p class="text-danger mt-3 text-center">Are you sure you want to delete @(Model.Title)?</p>
+            </div>
+            <div class="card-footer d-flex align-content-center justify-content-center">
+                <form asp-action="Remove" method="post">
+                    @* <input type="hidden" asp-for="Id" /> *@
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="Title" />
+                    <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
+                    
+                    @if (parentFolderId != null)
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-warning">Cancel</a>
+                    }
+                    else @* if (notebookId.HasValue) *@
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-outline-warning">Cancel</a>
+                    }
+
+                    @* <a asp-controller="Folder" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-outline-warning">Cancel</a> *@
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
