@@ -1,0 +1,109 @@
+﻿@* @model IEnumerable<FolderInfoViewModel>
+
+@{
+    ViewData["Title"] = "Folders in Notebook";
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr class="border-bottom" />
+
+<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
+    @foreach (var folder in Model)
+    {
+        <div class="folder-item d-flex justify-content-center">
+            <table>
+                <thead>
+                <tr class="d-flex flex-column mb-5">
+                    <td>
+                        <a asp-action="Details" asp-route-id="@folder.Id">
+                            <img src="/images/folder.png" alt="Folder" />
+                        </a>
+                    </td>
+                    <td class="mb-2">@folder.Title</td>
+
+                    <!-- Link to add subfolder within this folder -->
+                    <td>
+                        <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-primary">
+                            Add Subfolder
+                        </a>
+                    </td>
+
+                    <td>
+                        <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a>
+                    </td>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="d-flex justify-content-center">
+    <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@ViewData["NotebookId"]" class="btn btn-primary">Add New Folder</a>
+</div>
+ *@
+
+ @model IEnumerable<FolderInfoViewModel>
+
+@{
+    var title = ViewData["Title"]?.ToString() ?? "Folders";
+    var notebookId = (Guid)ViewData["NotebookId"];
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@title</h2>
+</div>
+
+<hr class="border-bottom" />
+
+<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
+    @foreach (var folder in Model)
+    {
+        <div class="folder-item d-flex justify-content-center">
+            <table>
+                <thead>
+                    <tr class="d-flex flex-column mb-5">
+                        <td>
+                            <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId">
+                                <img src="/images/folder.png" alt="Folder" />
+                            </a>
+                        </td>
+                        <td class="mb-2">@folder.Title</td>
+
+                        <!-- Link to add subfolder within this folder -->
+                        <td>
+                            <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-primary">
+                                Add Subfolder
+                            </a>
+                        </td>
+
+                        <td>
+                            <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="d-flex justify-content-center">
+    <!-- Add folder link, dependent on the current context -->
+    @if (parentFolderId != null)
+    {
+        <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-primary">
+            Add New Subfolder
+        </a>
+    }
+    else @* if (notebookId.HasValue) *@
+    {
+        <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebookId" class="btn btn-primary">
+            Add New Folder
+        </a>
+    }
+</div>
+
