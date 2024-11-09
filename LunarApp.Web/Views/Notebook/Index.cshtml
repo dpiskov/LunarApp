@@ -16,18 +16,24 @@
         <div class="notebook-item d-flex justify-content-center">
             <table>
                 <thead>
-                <tr class="d-flex flex-column mb-5">
-                    <td>
-                        <a asp-action="Details" asp-route-id="@notebook.Id"><img src="/images/notebook.png" /></a>
-                    </td>
-                    <td class="mb-2">@notebook.Title</td>
+                    <tr class="d-flex flex-column mb-5">
+                        <td>
+                            <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebook.Id"><img src="/images/notebook.png" /></a>
+                        </td>
+                        <td class="mb-2">@notebook.Title</td>
 
-                    <td>
-                        <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
+                        <td>
+                            <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary">
+                                Add Folder
+                            </a>
+                        </td>
+
+                        <td>
+                            <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
                 </thead>
             </table>
         </div>
