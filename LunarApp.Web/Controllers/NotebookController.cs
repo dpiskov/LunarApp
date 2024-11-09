@@ -103,51 +103,64 @@ namespace LunarApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET method to render the form for editing an existing notebook
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
+            // Fetches the notebook to be edited from the database by its ID
             var notebook = await context.Notebooks
-                .Where(n => n.Id == id)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .Where(n => n.Id == id)                 // Filters notebooks by ID
+                .AsNoTracking()                                 // Disables tracking for read-only operation
+                .FirstOrDefaultAsync();                         // Gets the first (or default) notebook matching the ID
 
+            // If the notebook doesn't exist, redirects to the Index view
             if (notebook == null)
             {
-                //return NotFound();
-                return RedirectToAction(nameof(Index));
+                //return NotFound();                            // Optional: Uncomment to return a 404 if the notebook is not found
+                return RedirectToAction(nameof(Index));         // Redirects to the main notebook list
             }
 
+            // Prepares a view model with the notebook's data for editing
             var model = new NotebookViewModel()
             {
-                Title = notebook.Title
+                Title = notebook.Title                          // Sets the current title of the notebook in the view model
             };
 
+            // Returns the edit view with the notebook data in the view model
             return View(model);
         }
 
 
+        // POST method to handle form submission for updating a notebook's information
         [HttpPost]
         public async Task<IActionResult> Edit(NotebookViewModel model, Guid id)
         {
+            // Checks if the submitted form data is valid
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(model);                             // If not valid, returns the form view with validation errors
             }
 
+            // Fetches the notebook to be updated from the database by its ID
             var notebook = await context.Notebooks.FindAsync(id);
 
+            // If the notebook doesn't exist, redirects to the Index view
             if (notebook == null)
             {
-                //return NotFound();
-                return RedirectToAction(nameof(Index));
+                // return NotFound();                           // Optional: Uncomment to return a 404 if the notebook is not found
+                return RedirectToAction(nameof(Index));         // Redirects to the main notebook list
             }
 
+            // Updates the notebook's title with the new value from the form
             notebook.Title = model.Title;
 
+            // Saves the changes to the database asynchronously
             await context.SaveChangesAsync();
 
+            // Redirects to the Index view to show the updated list of notebooks
             return RedirectToAction(nameof(Index));
         }
+
         // The Details action is commented out for now, but it's designed to show notebook details
         // The method would include related folders and notes as part of the notebook details
         //[HttpGet]
