@@ -27,7 +27,9 @@
                                 Add Folder
                             </a>
                         </td>
-
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@notebook.Id" class="btn btn-outline-warning">Edit</a>
+                        </td>
                         <td>
                             <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
                         </td>
