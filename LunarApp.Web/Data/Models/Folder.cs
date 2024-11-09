@@ -10,7 +10,7 @@ namespace LunarApp.Web.Data.Models
     {
         [Key]
         [Comment("Folder Identifier")]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required]
         [MaxLength(FolderTitleMaxLength)]
         [Comment("Folder title")]
