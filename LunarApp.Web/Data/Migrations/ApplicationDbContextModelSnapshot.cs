@@ -49,7 +49,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("ParentFolderId");
 
-                    b.ToTable("Folders");
+                    b.ToTable("Folders", (string)null);
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Note", b =>
@@ -92,7 +92,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("NotebookId");
 
-                    b.ToTable("Notes");
+                    b.ToTable("Notes", (string)null);
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Notebook", b =>
@@ -110,7 +110,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notebooks");
+                    b.ToTable("Notebooks", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
