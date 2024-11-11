@@ -111,6 +111,50 @@ namespace LunarApp.Web.Controllers
             return Redirect($"~/Folder?notebookId={model.NotebookId}");
 
             //return RedirectToAction("Index", "Notebook");
+
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId)
+        {
+            FolderDeleteViewModel? model;
+
+            if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
+            {
+                model = await context.Folders
+                    .Where(f => f.ParentFolderId == parentFolderId.Value)
+                    .AsNoTracking()
+                    .Select(f => new FolderDeleteViewModel()
+                    {
+                        Title = f.Title,
+                        NotebookId = f.NotebookId,
+                        ParentFolderId = f.ParentFolderId
+                    })
+                    .FirstOrDefaultAsync();
+
+                ViewData["NotebookId"] = notebookId;
+                ViewData["ParentFolderId"] = parentFolderId;
+            }
+            else if (notebookId != Guid.Empty)
+            {
+                model = await context.Folders
+                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)
+                    .Select(f => new FolderDeleteViewModel()
+                    {
+                        Title = f.Title,
+                        NotebookId = f.NotebookId
+                    })
+                    .FirstOrDefaultAsync();
+
+                ViewData["NotebookId"] = notebookId;
+            }
+            else
+            {
+                return BadRequest("NotebookId or ParentFolderId must be provided.");
+            }
+
+            return View(model);
         }
     }
 }
