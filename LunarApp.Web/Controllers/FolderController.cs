@@ -156,5 +156,40 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(FolderDeleteViewModel model)
+        {
+            if (model == null)
+            {
+                return BadRequest("Invalid model.");
+            }
+
+            Folder? folder = null;
+
+            if (model.ParentFolderId != null)
+            {
+                folder = await context.Folders
+                    .Where(pf => pf.ParentFolderId == model.ParentFolderId)
+                    .FirstOrDefaultAsync();
+
+            }
+            else if (model.NotebookId != Guid.Empty)
+            {
+                folder = await context.Folders
+                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)
+                    .FirstOrDefaultAsync();
+            }
+
+            if
+                (folder != null)
+            {
+                context.Folders.Remove(folder);
+
+                await context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index), new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId });
+        }
     }
 }
