@@ -50,7 +50,7 @@
 
 @{
     var title = ViewData["Title"]?.ToString() ?? "Folders";
-    var notebookId = (Guid)ViewData["NotebookId"];
+    var notebookId = (Guid)ViewData["NotebookId"]!;
     var parentFolderId = (Guid?)ViewData["ParentFolderId"];
 }
 
@@ -82,13 +82,18 @@
                         </td>
 
                         <td>
-                            <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a>
+                            @* <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a> *@
+                            @* <a asp-action="Remove" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-danger">Remove</a> *@
+                            <a asp-action="Remove" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-danger">Remove</a>
                         </td>
                     </tr>
                 </thead>
             </table>
         </div>
     }
+
+    <input type="hidden" asp-for="@notebookId" />
+    <input type="hidden" asp-for="@parentFolderId" />
 </div>
 
 <div class="d-flex justify-content-center">
