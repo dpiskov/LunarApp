@@ -120,40 +120,48 @@ namespace LunarApp.Web.Controllers
         {
             FolderDeleteViewModel? model;
 
+            // Check if a parent folder ID is provided and is valid
             if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
             {
+                // Retrieve folder details for the specified parent folder
                 model = await context.Folders
-                    .Where(f => f.ParentFolderId == parentFolderId.Value)
-                    .AsNoTracking()
+                    .Where(f => f.ParentFolderId == parentFolderId.Value)                  // Filter by parent folder ID
+                    .AsNoTracking()                                                              // Do not track changes for efficiency
                     .Select(f => new FolderDeleteViewModel()
                     {
                         Title = f.Title,
                         NotebookId = f.NotebookId,
                         ParentFolderId = f.ParentFolderId
                     })
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync();                                                      // Get the first match or null if none
 
+                // Store notebook and parent folder IDs in ViewData for use in the view
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
             }
+            // Check if a notebook ID is provided and is valid
             else if (notebookId != Guid.Empty)
             {
+                // Retrieve folder details for the specified notebook (without parent folder)
                 model = await context.Folders
-                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)
+                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)    // Filter by notebook ID
                     .Select(f => new FolderDeleteViewModel()
                     {
                         Title = f.Title,
                         NotebookId = f.NotebookId
                     })
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync();                                                      // Get the first match or null if none
 
+                // Store notebook ID in ViewData for use in the view
                 ViewData["NotebookId"] = notebookId;
             }
             else
             {
+                // Return a bad request if neither notebookId nor parentFolderId is provided
                 return BadRequest("NotebookId or ParentFolderId must be provided.");
             }
 
+            // Return the view with the folder model
             return View(model);
         }
 
@@ -162,33 +170,37 @@ namespace LunarApp.Web.Controllers
         {
             if (model == null)
             {
+                // Return bad request if the model is invalid
                 return BadRequest("Invalid model.");
             }
 
             Folder? folder = null;
 
+            // If a parent folder ID is provided, try to find the folder in the database
             if (model.ParentFolderId != null)
             {
                 folder = await context.Folders
-                    .Where(pf => pf.ParentFolderId == model.ParentFolderId)
-                    .FirstOrDefaultAsync();
+                    .Where(pf => pf.ParentFolderId == model.ParentFolderId)               // Filter by parent folder ID
+                    .FirstOrDefaultAsync();                                                     // Get the first match or null if none
 
             }
+            // If a notebook ID is provided, try to find the folder for the notebook (without parent folder)
             else if (model.NotebookId != Guid.Empty)
             {
                 folder = await context.Folders
-                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)
-                    .FirstOrDefaultAsync();
+                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)  // Filter by notebook ID
+                    .FirstOrDefaultAsync();                                                          // Get the first match or null if none
             }
 
-            if
-                (folder != null)
+            // If a folder is found, remove it from the database
+            if (folder != null)
             {
-                context.Folders.Remove(folder);
+                context.Folders.Remove(folder);                 // Remove the folder from the context
 
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync();               // Save changes to the database
             }
 
+            // Redirect to the Index action, passing the notebook ID and parent folder ID
             return RedirectToAction(nameof(Index), new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId });
         }
     }
