@@ -13,6 +13,7 @@ namespace LunarApp.Web.Controllers
         {
             // Holds the list of folders to be displayed
             IEnumerable<FolderInfoViewModel> folders;
+            IEnumerable<NoteInfoViewModel> notes = new List<NoteInfoViewModel>();
 
             // Checks if a parent folder ID is provided and is valid
             if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
@@ -26,6 +27,16 @@ namespace LunarApp.Web.Controllers
                         Title = f.Title,
                         NotebookId = f.NotebookId,
                         ParentFolderId = f.ParentFolderId
+                    })
+                    .ToListAsync();
+
+                notes = await context.Notes
+                    .Where(n => n.FolderId == parentFolderId.Value)
+                    .Select(n => new NoteInfoViewModel
+                    {
+                        Id = n.Id,
+                        Title = n.Title,
+                        FolderId = n.FolderId
                     })
                     .ToListAsync();
 
@@ -48,6 +59,16 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                notes = await context.Notes
+                    .Where(n => n.FolderId == null)
+                    .Select(n => new NoteInfoViewModel
+                    {
+                        Id = n.Id,
+                        Title = n.Title,
+                        FolderId = n.FolderId
+                    })
+                    .ToListAsync();
+
                 // Sets additional data for the view
                 ViewData["NotebookId"] = notebookId;
                 ViewData["Title"] = "Folders in Notebook";
@@ -59,7 +80,11 @@ namespace LunarApp.Web.Controllers
             }
 
             // Returns the view with the list of folders
-            return View(folders);
+            return View(new FolderNotesViewModel
+            {
+                Folders = folders,
+                Notes = notes
+            });
         }
 
         // GET method to render the form for creating a new folder
