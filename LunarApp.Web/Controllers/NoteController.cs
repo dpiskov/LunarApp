@@ -39,5 +39,17 @@ namespace LunarApp.Web.Controllers
 
             return RedirectToAction(nameof(Index), "Notebook");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId)
+        {
+            var model = new NoteViewModel
+            {
+                NotebookId = notebookId,
+                FolderId = parentFolderId
+            };
+
+            return View(model);
+        }
     }
 }
