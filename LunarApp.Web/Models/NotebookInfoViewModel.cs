@@ -1,6 +1,4 @@
 ﻿using LunarApp.Web.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace LunarApp.Web.Models
 {
@@ -9,7 +7,8 @@ namespace LunarApp.Web.Models
         public Guid Id { get; set; }
         public required string Title { get; set; }
         public ICollection<Folder> Folders { get; set; } = new List<Folder>();
-        public ICollection<Note> Notes { get; set; } = new List<Note>();
+        //public ICollection<Note> Notes { get; set; } = new List<Note>();
+        public IEnumerable<NoteInfoViewModel> Notes {get; set; }
 
     }
 }
