@@ -6,6 +6,9 @@
         public const int NoteTitleMinLength = 1;
         public const int NoteTitleMaxLength = 100;
 
+        public const int NoteBodyMinLength = 0;
+        public const int NoteBodyMaxLength = 20_000;
+
         // Folder
         public const int FolderTitleMinLength = 1;
         public const int FolderTitleMaxLength = 50;
