@@ -13,31 +13,17 @@
 <div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
     @foreach (var notebook in Model)
     {
-        <div class="notebook-item d-flex justify-content-center">
-            <table>
-                <thead>
-                    <tr class="d-flex flex-column mb-5">
-                        <td>
-                            <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebook.Id"><img src="/images/notebook.png" /></a>
-                        </td>
-                        <td class="mb-2">@notebook.Title</td>
-
-                        <td>
-                            <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary">
-                                Add Folder
-                            </a>
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@notebook.Id" class="btn btn-outline-warning">Edit</a>
-                        </td>
-                        <td>
-                            <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                </thead>
-            </table>
+        <div class="notebook-item text-center mx-3 my-3">
+            <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebook.Id">
+                <img src="/images/notebook.png" alt="Notebook" />
+            </a>
+            <div class="mt-2 mb-4 font-weight-bold">@notebook.Title</div>
+            <div class="d-flex flex-column align-items-center">
+                <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Folder</a>
+                @* <a asp-controller="Note" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Note</a> *@
+                <a asp-action="Edit" asp-route-id="@notebook.Id" class="btn btn-outline-warning mb-2">Edit</a>
+                <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
+            </div>
         </div>
     }
 </div>
