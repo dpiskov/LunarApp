@@ -205,10 +205,11 @@ namespace LunarApp.Web.Controllers
             // If a parent folder ID is provided, try to find the folder in the database
             if (model.ParentFolderId != null)
             {
-                folder = await context.Folders
-                    .Where(pf => pf.ParentFolderId == model.ParentFolderId)               // Filter by parent folder ID
-                    .FirstOrDefaultAsync();                                                     // Get the first match or null if none
+                folder = await context.Folders.FirstOrDefaultAsync(f => f.Id == model.ParentFolderId);
 
+                //folder = await context.Folders
+                //    .Where(pf => pf.Id == model.ParentFolderId)               // Filter by parent folder ID
+                //    .FirstOrDefaultAsync();                                                     // Get the first match or null if none
             }
             // If a notebook ID is provided, try to find the folder for the notebook (without parent folder)
             else if (model.NotebookId != Guid.Empty)
@@ -224,10 +225,19 @@ namespace LunarApp.Web.Controllers
                 context.Folders.Remove(folder);                 // Remove the folder from the context
 
                 await context.SaveChangesAsync();               // Save changes to the database
+
+                // Redirects to the parent folder view if a parent folder is specified
+                if (folder.ParentFolderId.HasValue)
+                {
+                    return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={model.NotebookId}");
+                }
             }
 
             // Redirect to the Index action, passing the notebook ID and parent folder ID
-            return RedirectToAction(nameof(Index), new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId });
+            //return RedirectToAction(nameof(Index), new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId });
+
+            // Redirects to the main notebook view if no parent folder is specified
+            return Redirect($"~/Folder?notebookId={model.NotebookId}");
         }
     }
 }
