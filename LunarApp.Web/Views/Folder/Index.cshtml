@@ -1,57 +1,9 @@
-﻿@* @model IEnumerable<FolderInfoViewModel>
+﻿@model FolderNotesViewModel
 
 @{
-    ViewData["Title"] = "Folders in Notebook";
-}
-
-<div class="text-center mb-4 mt-2">
-    <h2>@ViewData["Title"]</h2>
-</div>
-
-<hr class="border-bottom" />
-
-<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
-    @foreach (var folder in Model)
-    {
-        <div class="folder-item d-flex justify-content-center">
-            <table>
-                <thead>
-                <tr class="d-flex flex-column mb-5">
-                    <td>
-                        <a asp-action="Details" asp-route-id="@folder.Id">
-                            <img src="/images/folder.png" alt="Folder" />
-                        </a>
-                    </td>
-                    <td class="mb-2">@folder.Title</td>
-
-                    <!-- Link to add subfolder within this folder -->
-                    <td>
-                        <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-primary">
-                            Add Subfolder
-                        </a>
-                    </td>
-
-                    <td>
-                        <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a>
-                    </td>
-                </tr>
-                </thead>
-            </table>
-        </div>
-    }
-</div>
-
-<div class="d-flex justify-content-center">
-    <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@ViewData["NotebookId"]" class="btn btn-primary">Add New Folder</a>
-</div>
- *@
-
- @model IEnumerable<FolderInfoViewModel>
-
-@{
-    var title = ViewData["Title"]?.ToString() ?? "Folders";
+    var title = ViewData["Title"]?.ToString() ?? "Folders in Notebook";
     var notebookId = (Guid)ViewData["NotebookId"]!;
-    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var parentFolderId =(Guid?)ViewData["ParentFolderId"];
 }
 
 <div class="text-center mb-4 mt-2">
@@ -61,54 +13,41 @@
 <hr class="border-bottom" />
 
 <div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
-    @foreach (var folder in Model)
+    <!-- Render Folders -->
+    @foreach (var folder in Model.Folders)
     {
-        <div class="folder-item d-flex justify-content-center">
-            <table>
-                <thead>
-                    <tr class="d-flex flex-column mb-5">
-                        <td>
-                            <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId">
-                                <img src="/images/folder.png" alt="Folder" />
-                            </a>
-                        </td>
-                        <td class="mb-2">@folder.Title</td>
-
-                        <!-- Link to add subfolder within this folder -->
-                        <td>
-                            <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-primary">
-                                Add Subfolder
-                            </a>
-                        </td>
-
-                        <td>
-                            @* <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a> *@
-                            @* <a asp-action="Remove" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-danger">Remove</a> *@
-                            <a asp-action="Remove" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-danger">Remove</a>
-                        </td>
-                    </tr>
-                </thead>
-            </table>
+        <div class="folder-item text-center mx-3 my-3">
+            <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId">
+                <img src="/images/folder.png" alt="Folder" />
+            </a>
+            <div class="mt-2 mb-4 font-weight-bold">@folder.Title</div>
+            <div class="d-flex flex-column align-items-center">
+                <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-primary mb-2">Add Subfolder</a>
+                @* <a asp-action="Remove" asp-route-id="@folder.Id" class="btn btn-outline-danger">Remove</a> *@
+                <a asp-controller="Folder" asp-action="Remove" asp-route-parentFolderId="@folder.Id" asp-route-notebookId="@folder.NotebookId" class="btn btn-outline-danger">Remove</a>
+            </div>
         </div>
     }
 
-    <input type="hidden" asp-for="@notebookId" />
-    <input type="hidden" asp-for="@parentFolderId" />
+    <!-- Render Notes -->
+    @foreach (var note in Model.Notes)
+    {
+        <div class="note-item text-center mx-3 my-3">
+            <a asp-controller="Note" asp-action="Details" asp-route-id="@note.Id">
+                <img src="/images/note.png" alt="Note" />
+            </a>
+            <div class="mt-2 mb-4 font-weight-bold">@note.Title</div>
+            <div class="d-flex flex-column align-items-center">
+                @* <a asp-controller="Note" asp-action="Edit" asp-route-id="@note.Id" class="btn btn-outline-warning mb-2">Edit</a> *@
+                <a asp-controller="Note" asp-action="Remove" asp-route-id="@note.Id" class="btn btn-outline-danger">Remove</a>
+            </div>
+        </div>
+    }
 </div>
 
 <div class="d-flex justify-content-center">
-    <!-- Add folder link, dependent on the current context -->
-    @if (parentFolderId != null)
-    {
-        <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-primary">
-            Add New Subfolder
-        </a>
-    }
-    else @* if (notebookId.HasValue) *@
-    {
-        <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebookId" class="btn btn-primary">
-            Add New Folder
-        </a>
-    }
+    @* <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebookId" class="btn btn-primary">Add New Folder</a> *@
+    <a asp-controller="Folder" asp-action="Create" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-primary">Add New Folder</a>
+    @* <a asp-controller="Note" asp-action="Create" asp-route-folderId="@Model.Folders.FirstOrDefault()?.Id" asp-route-notebookId="@notebookId" class="btn btn-outline-primary mb-2">Add Note</a> *@
+    <a asp-controller="Note" asp-action="Create" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-primary mb-2">Add Note</a>
 </div>
-
