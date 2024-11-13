@@ -148,15 +148,16 @@ namespace LunarApp.Web.Controllers
             // Check if a parent folder ID is provided and is valid
             if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
             {
+                //var id = await context.Folders.FirstOrDefaultAsync(f => f.Id == parentFolderId.Value);
                 // Retrieve folder details for the specified parent folder
                 model = await context.Folders
-                    .Where(f => f.ParentFolderId == parentFolderId.Value)                  // Filter by parent folder ID
+                    .Where(f => f.Id == parentFolderId.Value)                  // Filter by parent folder ID
                     .AsNoTracking()                                                              // Do not track changes for efficiency
                     .Select(f => new FolderDeleteViewModel()
                     {
                         Title = f.Title,
                         NotebookId = f.NotebookId,
-                        ParentFolderId = f.ParentFolderId
+                        ParentFolderId = f.Id
                     })
                     .FirstOrDefaultAsync();                                                      // Get the first match or null if none
 
