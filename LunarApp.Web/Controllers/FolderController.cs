@@ -132,16 +132,17 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(FolderViewModel model)
         {
-            // Checks if the specified notebook exists
+            // Checks if the notebook exists in the database
             var notebookExists = await context.Notebooks.AnyAsync(n => n.Id == model.NotebookId);
 
             if (!notebookExists)                        // If the notebook doesn't exist
             {
+                // Adds an error message to the model state
                 ModelState.AddModelError(string.Empty, "The specified notebook does not exist.");
                 return View(model);                     // Returns the form view with an error message
             }
 
-            // Creates a new Folder object with unique ID and data from the form
+            // Creates a new Folder entity based on the form data
             Folder folder = new Folder
             {
                 Title = model.Title,
@@ -160,10 +161,6 @@ namespace LunarApp.Web.Controllers
 
             // Redirects to the main notebook view if no parent folder is specified
             return Redirect($"~/Folder?notebookId={model.NotebookId}");
-
-            //return RedirectToAction("Index", "Notebook");
-
-
         }
 
         [HttpGet]
