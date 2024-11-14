@@ -282,8 +282,34 @@ namespace LunarApp.Web.Controllers
             return Redirect($"~/Folder?notebookId={model.NotebookId}");
         }
 
-            // Redirects to the main notebook view if no parent folder is specified
-            return Redirect($"~/Folder?notebookId={model.NotebookId}");
+        // GET method to display the folder edit form
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid notebookId, Guid parentFolderId)
+        {
+            // Fetches the folder from the database
+            var folder = await context.Folders
+                .Where(f => f.Id == parentFolderId)
+                .AsNoTracking()                                 // Do not track changes for efficiency
+                .FirstOrDefaultAsync();                         // Retrieve the first match or null if not found
+
+            // If the folder does not exist, redirect to the Index view
+            if (folder is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Creates a view model for the folder to be edited
+            var model = new FolderViewModel
+            {
+                Title = folder.Title
+            };
+
+            // Stores the data for the view to access
+            //ViewData["NotebookId"] = notebookId;
+            //ViewData["ParentFolderId"] = parentFolderId;
+
+            // Returns the Edit view with the folder data
+            return View(model);
         }
     }
 }
