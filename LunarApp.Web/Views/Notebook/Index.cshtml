@@ -21,6 +21,7 @@
             <div class="d-flex flex-column align-items-center">
                 <a asp-controller="Folder" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Folder</a>
                 @* <a asp-controller="Note" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Note</a> *@
+                <a asp-action="Details" asp-route-id="@notebook.Id" class="btn btn-outline-info mb-2">Details</a>
                 <a asp-action="Edit" asp-route-id="@notebook.Id" class="btn btn-outline-warning mb-2">Edit</a>
                 <a asp-action="Remove" asp-route-id="@notebook.Id" class="btn btn-outline-danger">Remove</a>
             </div>
