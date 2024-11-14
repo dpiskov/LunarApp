@@ -49,7 +49,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("ParentFolderId");
 
-                    b.ToTable("Folders", (string)null);
+                    b.ToTable("Folders");
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Note", b =>
@@ -60,7 +60,7 @@ namespace LunarApp.Web.Data.Migrations
                         .HasComment("Note Identifier");
 
                     b.Property<string>("Body")
-                        .IsRequired()
+                        .HasMaxLength(20000)
                         .HasColumnType("nvarchar(max)")
                         .HasComment("Note body");
 
@@ -68,7 +68,7 @@ namespace LunarApp.Web.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasComment("The date the note was created on");
 
-                    b.Property<Guid>("FolderId")
+                    b.Property<Guid?>("FolderId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Identifier of a folder");
 
@@ -92,7 +92,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("NotebookId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Notebook", b =>
@@ -102,6 +102,11 @@ namespace LunarApp.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Notebook Identifier");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(20000)
+                        .HasColumnType("nvarchar(max)")
+                        .HasComment("Notebook description");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -110,7 +115,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notebooks", (string)null);
+                    b.ToTable("Notebooks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -336,9 +341,7 @@ namespace LunarApp.Web.Data.Migrations
                 {
                     b.HasOne("LunarApp.Web.Data.Models.Folder", "Folder")
                         .WithMany("Notes")
-                        .HasForeignKey("FolderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FolderId");
 
                     b.HasOne("LunarApp.Web.Data.Models.Notebook", "Notebook")
                         .WithMany("Notes")
