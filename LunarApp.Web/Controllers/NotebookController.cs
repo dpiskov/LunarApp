@@ -189,5 +189,27 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Details(NotebookDetailsViewModel model, Guid id)
+        {
+            if (ModelState.IsValid is false)
+            {
+                return View(model);
+            }
+
+            var notebook = await context.Notebooks.FindAsync(id);
+
+            if (notebook is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            notebook.Description = model.Description;
+
+            await context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
