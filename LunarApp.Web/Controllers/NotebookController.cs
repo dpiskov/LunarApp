@@ -131,7 +131,6 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-
         // POST method to handle form submission for updating a notebook's information
         [HttpPost]
         public async Task<IActionResult> Edit(NotebookViewModel model, Guid id)
@@ -162,37 +161,33 @@ namespace LunarApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // The Details action is commented out for now, but it's designed to show notebook details
-        // The method would include related folders and notes as part of the notebook details
-        //[HttpGet]
-        //public async Task<IActionResult> Details(Guid id)
-        //{
-        // Fetches the notebook with related folders and notes
-        //    var notebook = await context.Notebooks
-        //        .Include(n => n.Folders)                              // Includes related folders
-        //        .Include(n => n.Notes)                                // Includes related notes
-        //        .FirstOrDefaultAsync(n => n.Id == id);                // Filters by notebook ID
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var notebook = await context.Notebooks
+                .Where(n => n.Id == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
-        // Returns NotFound if the notebook doesn't exist
-        //    if (notebook == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (notebook is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        // Passes the notebook's ID to the view
-        //    ViewData["NotebookId"] = notebook.Id;
+            var model = new NotebookDetailsViewModel
+            {
+                //Title = notebook.Title,
+                Description = notebook.Description
+            };
 
-        // Creates a view model to display the notebook's data in the view
-        //    var viewModel = new NotebookInfoViewModel
-        //    {
-        //        Id = notebook.Id,
-        //        Title = notebook.Title,
-        //        Folders = notebook.Folders,
-        //        Notes = notebook.Notes
-        //    };
+            var notebookTitle = await context.Notebooks
+                .Where(n => n.Id == id)
+                .Select(n => n.Title)
+                .FirstOrDefaultAsync();
 
-        // Returns the view with the notebook details
-        //    return View(viewModel);
-        //}
+            ViewData["Title"] = notebookTitle;
+
+            return View(model);
+        }
     }
 }
