@@ -40,10 +40,15 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                var parentFolderTitle = await context.Folders
+                    .Where(f => f.Id == parentFolderId)
+                    .Select(f => f.Title)
+                    .FirstOrDefaultAsync();
+
                 // Sets data for the view to access
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
-                ViewData["Title"] = "Folders in Folder";
+                ViewData["Title"] = parentFolderTitle;
             }
             // If no parent folder, checks for a valid notebook ID
             else if (notebookId != Guid.Empty)
@@ -69,9 +74,14 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                var notebookTitle = await context.Notebooks
+                    .Where(nb => nb.Id == notebookId)
+                    .Select(nb => nb.Title)
+                    .FirstOrDefaultAsync();
+
                 // Sets additional data for the view
                 ViewData["NotebookId"] = notebookId;
-                ViewData["Title"] = "Folders in Notebook";
+                ViewData["Title"] = notebookTitle;
             }
             else
             {
