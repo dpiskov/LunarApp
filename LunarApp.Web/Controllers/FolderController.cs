@@ -113,12 +113,16 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId)
         {
-            // Creates a view model with notebookId and optional parentFolderId
+            // Initializes the view model with the provided notebookId and optional parentFolderId
             var model = new FolderViewModel
             {
                 NotebookId = notebookId,
                 ParentFolderId = parentFolderId
             };
+
+            // Passes notebookId and parentFolderId to the ViewData to be used in the view
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
 
             // Returns the form view with the model data
             return View(model);
