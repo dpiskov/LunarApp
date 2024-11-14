@@ -13,15 +13,16 @@ namespace LunarApp.Web.Controllers
         {
             // Holds the list of folders to be displayed
             IEnumerable<FolderInfoViewModel> folders;
-            IEnumerable<NoteInfoViewModel> notes = new List<NoteInfoViewModel>();
+            // Holds the list of notes to be displayed, initially empty
+            IEnumerable<NoteInfoViewModel> notes;
 
             // Checks if a parent folder ID is provided and is valid
             if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
             {
-                // Fetches folders inside the specified parent folder
+                // Fetches folders that are inside the specified parent folder
                 folders = await context.Folders
                     .Where(f => f.ParentFolderId == parentFolderId.Value)       // Filters folders by parentFolderId
-                    .Select(f => new FolderInfoViewModel                        // Selects needed folder details for the view model
+                    .Select(f => new FolderInfoViewModel                        // Maps folders to FolderInfoViewModel
                     {
                         Id = f.Id,
                         Title = f.Title,
@@ -30,9 +31,10 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                // Fetches notes that belong to the specified parent folder
                 notes = await context.Notes
-                    .Where(n => n.FolderId == parentFolderId.Value)
-                    .Select(n => new NoteInfoViewModel
+                .Where(n => n.FolderId == parentFolderId.Value)                  // Filters notes by parentFolderId
+                .Select(n => new NoteInfoViewModel                               // Maps notes to NoteInfoViewModel
                     {
                         Id = n.Id,
                         Title = n.Title,
@@ -40,23 +42,31 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                // Fetches the title of the parent folder
                 var parentFolderTitle = await context.Folders
                     .Where(f => f.Id == parentFolderId)
                     .Select(f => f.Title)
                     .FirstOrDefaultAsync();
 
-                // Sets data for the view to access
+                // Fetches the ID of the parent folder's parent (to allow navigation up the folder hierarchy)
+                var parentFolderGuid = await context.Folders
+                    .Where(f => f.Id == parentFolderId)
+                    .Select(f => f.ParentFolderId)
+                    .FirstOrDefaultAsync();
+
+                // Stores the data for the view to access (for navigation and display)
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
+                ViewData["ParentFolderGuid"] = parentFolderGuid;
                 ViewData["Title"] = parentFolderTitle;
             }
-            // If no parent folder, checks for a valid notebook ID
+            // If no parent folder is specified, checks if a valid notebook ID is provided
             else if (notebookId != Guid.Empty)
             {
-                // Fetches folders that belong to the notebook and have no parent folder
+                // Fetches folders that belong to the specified notebook and do not have a parent folder
                 folders = await context.Folders
-                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)
-                    .Select(f => new FolderInfoViewModel
+                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)  // Filters folders by notebookId and no parent folder
+                    .Select(f => new FolderInfoViewModel                                 // Projects folders to FolderInfoViewModel
                     {
                         Id = f.Id,
                         Title = f.Title,
@@ -64,8 +74,9 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                // Fetches notes that do not belong to any folder
                 notes = await context.Notes
-                    .Where(n => n.FolderId == null)
+                .Where(n => n.FolderId == null)                                  // Filters notes without a folder
                     .Select(n => new NoteInfoViewModel
                     {
                         Id = n.Id,
@@ -74,12 +85,13 @@ namespace LunarApp.Web.Controllers
                     })
                     .ToListAsync();
 
+                // Fetches the title of the notebook
                 var notebookTitle = await context.Notebooks
                     .Where(nb => nb.Id == notebookId)
                     .Select(nb => nb.Title)
                     .FirstOrDefaultAsync();
 
-                // Sets additional data for the view
+                // Stores the data for the view to access
                 ViewData["NotebookId"] = notebookId;
                 ViewData["Title"] = notebookTitle;
             }
@@ -89,11 +101,11 @@ namespace LunarApp.Web.Controllers
                 return BadRequest("NotebookId or ParentFolderId must be provided.");
             }
 
-            // Returns the view with the list of folders
+            // Returns the view with the list of folders and notes
             return View(new FolderNotesViewModel
             {
-                Folders = folders,
-                Notes = notes
+                Folders = folders,                    // List of folders to display
+                Notes = notes                         // List of notes to display
             });
         }
 
