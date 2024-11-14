@@ -225,6 +225,7 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
+            // Check if the model is null or invalid
             if (model == null)
             {
                 // Return bad request if the model is invalid
@@ -233,39 +234,53 @@ namespace LunarApp.Web.Controllers
 
             Folder? folder = null;
 
-            // If a parent folder ID is provided, try to find the folder in the database
+            // If a parent folder ID is provided, try to find the folder and its related entities in the database
             if (model.ParentFolderId != null)
             {
-                folder = await context.Folders.FirstOrDefaultAsync(f => f.Id == model.ParentFolderId);
-
-                //folder = await context.Folders
-                //    .Where(pf => pf.Id == model.ParentFolderId)               // Filter by parent folder ID
-                //    .FirstOrDefaultAsync();                                                     // Get the first match or null if none
+                folder = await context.Folders
+                    .Include(f => f.Notes)                                    // Include related notes for the folder
+                    .Include(f => f.ChildrenFolders)                          // Include related child folders
+                    .FirstOrDefaultAsync(f => f.Id == model.ParentFolderId);
             }
-            // If a notebook ID is provided, try to find the folder for the notebook (without parent folder)
+            // If no parent folder is provided but a notebook ID is provided, find the folder for that notebook
             else if (model.NotebookId != Guid.Empty)
             {
                 folder = await context.Folders
-                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)  // Filter by notebook ID
-                    .FirstOrDefaultAsync();                                                          // Get the first match or null if none
+                    .Include(f => f.Notes)                                    // Include related notes for the folder
+                    .Include(f => f.ChildrenFolders)                          // Include related child folders
+                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)    // Filter by notebook ID
+                    .FirstOrDefaultAsync();                                                            // Retrieve the first match or null if not found
             }
 
-            // If a folder is found, remove it from the database
+            // If the folder is found, remove it from the database
             if (folder != null)
             {
+                // Remove any child folders if they exist
+                if (folder.ChildrenFolders != null && folder.ChildrenFolders.Any())
+                {
+                    context.Folders.RemoveRange(folder.ChildrenFolders.ToList()); // Remove all child folders
+                }
+
+                // Remove any notes if they exist within the folder
+                if (folder.Notes != null && folder.Notes.Any())
+                {
+                    context.Notes.RemoveRange(folder.Notes);                      // Remove all notes associated with the folder
+                }
+
                 context.Folders.Remove(folder);                 // Remove the folder from the context
 
                 await context.SaveChangesAsync();               // Save changes to the database
 
-                // Redirects to the parent folder view if a parent folder is specified
+                // Redirect to the parent folder view if the folder has a parent folder ID
                 if (folder.ParentFolderId.HasValue)
                 {
                     return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={model.NotebookId}");
                 }
             }
 
-            // Redirect to the Index action, passing the notebook ID and parent folder ID
-            //return RedirectToAction(nameof(Index), new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId });
+            // If no parent folder is specified, redirect to the main notebook view
+            return Redirect($"~/Folder?notebookId={model.NotebookId}");
+        }
 
             // Redirects to the main notebook view if no parent folder is specified
             return Redirect($"~/Folder?notebookId={model.NotebookId}");
