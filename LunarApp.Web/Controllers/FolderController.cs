@@ -382,5 +382,40 @@ namespace LunarApp.Web.Controllers
             // Return the view with the folder details model
             return View(model);
         }
+
+        // POST method to handle form submission for updating folder details
+        [HttpPost]
+        public async Task<IActionResult> Details(FolderDetailsViewModel model, Guid notebookId, Guid parentFolderId)
+        {
+            // Check if the form data is valid; if not, return the form view with the current model
+            if (ModelState.IsValid is false)
+            {
+                return View(model);
+            }
+
+            // Retrieve the folder from the database based on the provided parentFolderId
+            var folder = await context.Folders.FindAsync(parentFolderId);
+
+            // If the folder is not found, redirect to the Index view
+            if (folder is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Update the folder's description with the new value from the model
+            folder.Description = model.Description;
+
+            // Save changes to the database
+            await context.SaveChangesAsync();
+
+            // If the folder has a parent folder, redirect to the parent folder view
+            if (folder.ParentFolderId.HasValue)
+            {
+                return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={folder.NotebookId}");
+            }
+
+            // If no parent folder is specified, redirect to the main notebook view
+            return Redirect($"~/Folder?notebookId={folder.NotebookId}");
+        }
     }
 }
