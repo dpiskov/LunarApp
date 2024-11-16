@@ -13,6 +13,8 @@
         public const int FolderTitleMinLength = 1;
         public const int FolderTitleMaxLength = 50;
 
+        public const int FolderDescriptionMaxLength = 20_000;
+
         // Notebook
         public const int NotebookTitleMinLength = 1;
         public const int NotebookTitleMaxLength = 50;
