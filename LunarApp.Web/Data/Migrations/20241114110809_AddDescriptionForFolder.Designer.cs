@@ -4,6 +4,7 @@ using LunarApp.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LunarApp.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114110809_AddDescriptionForFolder")]
+    partial class AddDescriptionForFolder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("ParentFolderId");
 
-                    b.ToTable("Folders", (string)null);
+                    b.ToTable("Folders");
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Note", b =>
@@ -97,7 +100,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasIndex("NotebookId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("LunarApp.Web.Data.Models.Notebook", b =>
@@ -120,7 +123,7 @@ namespace LunarApp.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notebooks", (string)null);
+                    b.ToTable("Notebooks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
