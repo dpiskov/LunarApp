@@ -347,5 +347,40 @@ namespace LunarApp.Web.Controllers
             // If no parent folder exists, redirect to the main notebook view
             return RedirectToAction(nameof(Index), "Folder", new { notebookId = folder.NotebookId });
         }
+
+        // GET method to display the details of a specific folder
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid notebookId, Guid parentFolderId)
+        {
+            // Retrieve the folder from the database based on the provided parentFolderId
+            var folder = await context.Folders
+                .Where(f => f.Id == parentFolderId)
+                .AsNoTracking()  // Do not track changes for efficiency, since this is a read-only operation
+                .FirstOrDefaultAsync();
+
+            // If the folder is not found, redirect to the Index view
+            if (folder is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Create a view model for displaying folder details
+            var model = new FolderDetailsViewModel()
+            {
+                Description = folder.Description  // Populate the description field from the retrieved folder
+            };
+
+            // Retrieve the folder's title for display purposes
+            var folderTitle = await context.Folders
+                .Where(f => f.Id == parentFolderId)
+                .Select(f => f.Title)
+                .FirstOrDefaultAsync();
+
+            // Store the folder's title in ViewData for use in the view
+            ViewData["Title"] = folderTitle;
+
+            // Return the view with the folder details model
+            return View(model);
+        }
     }
 }
