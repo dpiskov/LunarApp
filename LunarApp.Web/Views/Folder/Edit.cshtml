@@ -1,0 +1,38 @@
+﻿@model FolderViewModel
+
+@{
+    ViewData["Title"] = "Edit folder";
+    // var notebookId = (Guid)ViewData["NotebookId"]!;
+    // var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr />
+
+<div class="row d-flex justify-content-center align-items-center flex-column card-center">
+    <div class="col-md-6">
+        <div class="transparent-container card">
+            <form asp-controller="Folder" asp-action="Edit" method="post" class="d-flex flex-column justify-content-center align-items-center text-center">
+                
+                <input type="hidden" asp-for=NotebookId/>
+                <input type="hidden" asp-for=ParentFolderId/>
+                
+                <div class="card-body">
+                    <label asp-for="Title" class="card-title mb-2">Folder Name</label>
+                    <br />
+                    <input asp-for="Title" class="form-control transparent-container" />
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2 mb-4">Save Changes</button>
+            </form>
+
+            <div class="card-footer d-flex align-content-center justify-content-center ">
+                <a asp-controller="Folder" asp-action="Index" class="btn btn-outline-secondary">Back To Folders List</a>
+                @* <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-secondary">Back To Folders List</a> *@
+            </div>
+        </div>
+    </div>
+</div>
