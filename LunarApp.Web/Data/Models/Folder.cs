@@ -15,6 +15,9 @@ namespace LunarApp.Web.Data.Models
         [MaxLength(FolderTitleMaxLength)]
         [Comment("Folder title")]
         public required string Title { get; set; }
+        [MaxLength(FolderDescriptionMaxLength)]
+        [Comment("Folder description")]
+        public string? Description { get; set; }
         [Required]
         [Comment("Identifier of a notebook")]
         public Guid NotebookId { get; set; }
