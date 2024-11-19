@@ -36,7 +36,7 @@ namespace LunarApp.Web.Controllers
 
         // POST method to handle form submission for creating a new notebook
         [HttpPost]
-        public async Task<IActionResult> Create(NotebookViewModel model)
+        public async Task<IActionResult> Create(NotebookCreateViewModel model)
         {
             // Checks if the submitted form data is valid
             if (ModelState.IsValid == false)
