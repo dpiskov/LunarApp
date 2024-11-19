@@ -60,11 +60,11 @@ namespace LunarApp.Web.Controllers
 
         // GET method to render the confirmation page for deleting a notebook
         [HttpGet]
-        public async Task<IActionResult> Remove(Guid id)
+        public async Task<IActionResult> Remove(Guid notebookId)
         {
             // Fetches the notebook to be deleted from the database
             var model = await context.Notebooks
-                .Where(nb => nb.Id == id)                       // Filters notebooks by ID
+                .Where(nb => nb.Id == notebookId)                       // Filters notebooks by ID
                 .AsNoTracking()                                         // Disables tracking for read-only operation
                 .Select(nb => new NotebookDeleteViewModel()     // Creates a view model for the notebook to be deleted
                 {
