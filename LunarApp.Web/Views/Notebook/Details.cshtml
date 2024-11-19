@@ -1,15 +1,11 @@
 ﻿@model LunarApp.Web.Models.NotebookDetailsViewModel
 
-@{
-    var title = ViewData["Title"]?.ToString() ?? "Folders in Notebook";
-}
-
 <!-- Full-height container -->
 <div class="d-flex justify-content-center align-items-center vh-100 bg-transparent">
     <div class="card w-100 h-100 mx-3 mx-md-auto col-md-8 col-lg-6 bg-transparent bg-opacity-75 shadow-lg rounded d-flex flex-column justify-content-between">
         <!-- Card Header -->
         <div class="card-header text-center">
-            <h1 class="text-decoration-underline">@title</h1>
+            <h1 class="text-decoration-underline">@ViewData["Title"]</h1>
             <h2>Overview</h2>
         </div>
 
@@ -17,6 +13,8 @@
         <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
             <form asp-controller="Notebook" asp-action="Details" method="post" class="d-flex flex-column justify-content-center align-items-center text-center w-100 p-3">
                 <div class="mb-3 w-100">
+                    <input type="hidden" asp-for="Id" />
+
                     <label asp-for="Description" class="form-label"></label>
                     <textarea asp-for="Description" class="form-control bg-transparent" rows="10"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
@@ -27,7 +25,7 @@
 
         <!-- Card Footer -->
         <div class="card-footer d-flex justify-content-center flex-shrink-0">
-            <a asp-action="Index" class="btn btn-outline-secondary">Back To Notebooks List</a>
+            <a asp-controller="Notebook" asp-action="Index" class="btn btn-outline-secondary">Back To Notebooks List</a>
         </div>
     </div>
 </div>
