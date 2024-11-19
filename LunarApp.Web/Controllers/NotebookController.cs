@@ -188,14 +188,14 @@ namespace LunarApp.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Details(NotebookDetailsViewModel model, Guid id)
+        public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {
             if (ModelState.IsValid is false)
             {
                 return View(model);
             }
 
-            var notebook = await context.Notebooks.FindAsync(id);
+            var notebook = await context.Notebooks.FindAsync(model.Id);
 
             if (notebook is null)
             {
