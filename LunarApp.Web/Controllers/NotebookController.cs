@@ -15,7 +15,6 @@ namespace LunarApp.Web.Controllers
         {
             // Fetches all notebooks from the database and selects only necessary fields for the view model
             var model = await context.Notebooks
-                .Include(nb => nb.Notes)
                 .Select(nb => new NotebookInfoViewModel()       // Creates a simplified view model for the notebooks
                 {
                     Id = nb.Id,
