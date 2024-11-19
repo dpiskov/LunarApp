@@ -164,10 +164,10 @@ namespace LunarApp.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(Guid notebookId)
         {
             var notebook = await context.Notebooks
-                .Where(n => n.Id == id)
+                .Where(n => n.Id == notebookId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -178,16 +178,11 @@ namespace LunarApp.Web.Controllers
 
             var model = new NotebookDetailsViewModel
             {
-                //Title = notebook.Title,
+                Id = notebookId,
                 Description = notebook.Description
             };
 
-            var notebookTitle = await context.Notebooks
-                .Where(n => n.Id == id)
-                .Select(n => n.Title)
-                .FirstOrDefaultAsync();
-
-            ViewData["Title"] = notebookTitle;
+            ViewData["Title"] = notebook.Title;
 
             return View(model);
         }
