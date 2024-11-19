@@ -1,4 +1,4 @@
-﻿@model NotebookViewModel
+﻿@model NotebookCreateViewModel
 
 @{
     ViewData["Title"] = "Add a new notebook";
@@ -13,7 +13,7 @@
 <div class="row d-flex justify-content-center align-items-center flex-column card-center">
     <div class="col-md-6">
         <div class="transparent-container card">
-            <form asp-action="Create" method="post" class="d-flex flex-column justify-content-center align-items-center text-center">
+            <form asp-controller="Notebook" asp-action="Create" method="post" class="d-flex flex-column justify-content-center align-items-center text-center">
                 <div class="card-body">
                     <label asp-for="Title" class="card-title mb-2">Notebook Name</label>
                     <br />
@@ -24,7 +24,7 @@
             </form>
 
             <div class="card-footer d-flex align-content-center justify-content-center ">
-                <a asp-action="Index" class="btn btn-outline-secondary">Back To Notebooks List</a>
+                <a asp-controller="Notebook" asp-action="Index" class="btn btn-outline-secondary">Back To Notebooks List</a>
             </div>
         </div>
     </div>
