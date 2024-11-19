@@ -1,11 +1,13 @@
 ﻿using LunarApp.Web.Data;
 using LunarApp.Web.Data.Models;
 using LunarApp.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
+    [Authorize]
     public class NotebookController(ApplicationDbContext context) : Controller
     {
         // GET method to display the list of notebooks
