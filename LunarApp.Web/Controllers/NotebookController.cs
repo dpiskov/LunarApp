@@ -107,11 +107,11 @@ namespace LunarApp.Web.Controllers
 
         // GET method to render the form for editing an existing notebook
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid notebookId)
         {
             // Fetches the notebook to be edited from the database by its ID
             var notebook = await context.Notebooks
-                .Where(n => n.Id == id)                 // Filters notebooks by ID
+                .Where(n => n.Id == notebookId)                 // Filters notebooks by ID
                 .AsNoTracking()                                 // Disables tracking for read-only operation
                 .FirstOrDefaultAsync();                         // Gets the first (or default) notebook matching the ID
 
@@ -123,8 +123,9 @@ namespace LunarApp.Web.Controllers
             }
 
             // Prepares a view model with the notebook's data for editing
-            var model = new NotebookViewModel()
+            var model = new NotebookEditViewModel
             {
+                Id = notebookId,
                 Title = notebook.Title                          // Sets the current title of the notebook in the view model
             };
 
