@@ -135,7 +135,7 @@ namespace LunarApp.Web.Controllers
 
         // POST method to handle form submission for updating a notebook's information
         [HttpPost]
-        public async Task<IActionResult> Edit(NotebookViewModel model, Guid id)
+        public async Task<IActionResult> Edit(NotebookEditViewModel model)
         {
             // Checks if the submitted form data is valid
             if (!ModelState.IsValid)
@@ -144,7 +144,7 @@ namespace LunarApp.Web.Controllers
             }
 
             // Fetches the notebook to be updated from the database by its ID
-            var notebook = await context.Notebooks.FindAsync(id);
+            var notebook = await context.Notebooks.FindAsync(model.Id);
 
             // If the notebook doesn't exist, redirects to the Index view
             if (notebook == null)
