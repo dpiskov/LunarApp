@@ -1,0 +1,61 @@
+﻿@model NoteEditViewModel
+
+@{
+    // ViewData["Title"] = "Edit note";
+
+    var title = ViewData["Title"];
+
+    var lastSaved = ViewData["LastSaved"];
+
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"]!;
+    var folderId = (Guid?)ViewData["FolderId"]!;
+}
+
+@* <div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr /> *@
+
+<div class="d-flex justify-content-center align-items-center bg-transparent">
+    <div class="card w-100 h-100 mx-3 mx-md-auto col-md-8 col-lg-6 bg-transparent bg-opacity-75 shadow-lg rounded d-flex flex-column">
+        <div class="card-header text-center">
+            <h1 class="text-decoration-underline">@title</h1>
+        </div>
+        <form asp-controller="Note" asp-action="Edit" method="post" class="d-flex flex-column flex-grow-1">
+            <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
+                <div class="w-100">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+                    <input type="hidden" asp-for="LastSaved" />
+
+                    <div class="form-group mb-3 w-100 text-center">
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" class="form-control bg-transparent" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3 w-100 text-center">
+                        <label asp-for="Body" class="form-label"></label>
+                        <textarea asp-for="Body" class="form-control bg-transparent" rows="10"></textarea>
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+
+                    @*//TODO: PARSE TO SUITABLE FORMAT*@
+                    <div class="form-group mb-3 w-100 text-center">
+                        <label asp-for="LastSaved">Last Saved: @lastSaved</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex align-content-center justify-content-center gap-2 pt-3 pb-3">
+                <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+
+                <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
