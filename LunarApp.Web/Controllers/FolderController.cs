@@ -1,11 +1,14 @@
 ﻿using LunarApp.Web.Data;
 using LunarApp.Web.Data.Models;
 using LunarApp.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
+    // TODO: HANDLE EXCEPTIONS
+    [Authorize]
     public class FolderController(ApplicationDbContext context) : Controller
     {
         // GET method to display a list of folders
