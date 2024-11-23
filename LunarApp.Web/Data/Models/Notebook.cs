@@ -8,7 +8,7 @@ namespace LunarApp.Web.Data.Models
     {
         [Key]
         [Comment("Notebook Identifier")]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required]
         [MaxLength(NotebookTitleMaxLength)]
         [Comment("Notebook title")]
