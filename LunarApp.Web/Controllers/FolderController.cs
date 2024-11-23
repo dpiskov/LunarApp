@@ -462,11 +462,14 @@ namespace LunarApp.Web.Controllers
 
         // GET method to display the details of a specific folder
         [HttpGet]
-        public async Task<IActionResult> Details(Guid notebookId, Guid parentFolderId)
+        public async Task<IActionResult> Details(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
+            bool isClickedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+                parentFolderId == Guid.Empty || parentFolderId == null;
+
             // Retrieve the folder from the database based on the provided parentFolderId
-            var folder = await context.Folders
-                .Where(f => f.Id == parentFolderId)
+            Folder? folder = await context.Folders
+                .Where(f => f.Id == folderId)
                 .AsNoTracking()  // Do not track changes for efficiency, since this is a read-only operation
                 .FirstOrDefaultAsync();
 
@@ -477,19 +480,31 @@ namespace LunarApp.Web.Controllers
             }
 
             // Create a view model for displaying folder details
-            var model = new FolderDetailsViewModel()
+            FolderDetailsViewModel? model = new FolderDetailsViewModel()
             {
-                Description = folder.Description  // Populate the description field from the retrieved folder
+                Description = folder.Description,  // Populate the description field from the retrieved folder
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsClickedDirectlyFromNotebook = isClickedDirectlyFromNotebook
             };
 
-            // Retrieve the folder's title for display purposes
-            var folderTitle = await context.Folders
-                .Where(f => f.Id == parentFolderId)
-                .Select(f => f.Title)
-                .FirstOrDefaultAsync();
+            Guid newParentFolderId = Guid.Empty;
+
+            if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
+            }
 
             // Store the folder's title in ViewData for use in the view
-            ViewData["Title"] = folderTitle;
+            ViewData["Title"] = folder.Title;
+
+            // Stores the data for the view to access
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+
+            ViewData["NewParentFolderId"] = newParentFolderId;
 
             // Return the view with the folder details model
             return View(model);
