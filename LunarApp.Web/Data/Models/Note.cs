@@ -22,12 +22,11 @@ namespace LunarApp.Web.Data.Models
         public Guid NotebookId { get; set; }
         [ForeignKey(nameof(NotebookId))]
         public required Notebook Notebook { get; set; }
-        public Notebook Notebook { get; set; }
-        //[Required]
+        //public required Notebook Notebook { get; set; }
         [Comment("Identifier of a folder")]
         public Guid? FolderId { get; set; }
         [ForeignKey(nameof(FolderId))]
-        public Folder Folder { get; set; }
+        public Folder? Folder { get; set; }
         [Required]
         [Comment("The date the note was created on")]
         public DateTime DateCreated { get; set; }
