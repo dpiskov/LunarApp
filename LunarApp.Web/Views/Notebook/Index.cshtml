@@ -20,7 +20,6 @@
             <div class="mt-2 mb-4 font-weight-bold">@notebook.Title</div>
             <div class="d-flex flex-column align-items-center">
                 <a asp-controller="Folder" asp-action="AddSubfolder" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Folder</a>
-                @* <a asp-controller="Note" asp-action="Create" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Note</a> *@
                 <a asp-controller="Notebook" asp-action="Details" asp-route-notebookId="@notebook.Id" class="btn btn-outline-info mb-2">Details</a>
                 <a asp-controller="Notebook" asp-action="Edit" asp-route-notebookId="@notebook.Id" class="btn btn-outline-warning mb-2">Edit</a>
                 <a asp-controller="Notebook" asp-action="Remove" asp-route-notebookId="@notebook.Id" class="btn btn-outline-danger">Remove</a>
