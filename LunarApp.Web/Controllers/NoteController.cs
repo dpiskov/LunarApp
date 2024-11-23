@@ -143,5 +143,39 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(NoteDeleteViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Note? note = await context.Notes
+                    .Where(n => n.Id == model.Id)
+                    .FirstOrDefaultAsync();
+
+                if (note != null)
+                {
+                    context.Notes.Remove(note);
+
+                    await context.SaveChangesAsync();
+                }
+
+                if (note.FolderId != Guid.Empty && note.FolderId != null &&
+                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={note.FolderId}");
+                }
+                else if (note.FolderId != Guid.Empty && note.FolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={note.FolderId}");
+                }
+                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                }
+            }
+
+            return View(model);
+        }
     }
 }
