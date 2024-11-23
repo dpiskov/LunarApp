@@ -1,0 +1,55 @@
+﻿@model FolderCreateViewModel
+
+@{
+    ViewData["Title"] = "Add a new folder";
+
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var folderId = (Guid?)ViewData["FolderId"];
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr />
+
+<div class="row d-flex justify-content-center align-items-center flex-column card-center">
+    <div class="col-md-6">
+        <div class="transparent-container card">
+            <form asp-controller="Folder" asp-action="AddFolder" method="post" class="text-center">
+                <div class="card-body">
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+                    <input type="hidden" asp-for="IsMadeDirectlyFromNotebook" />
+
+                    <div class="form-group">
+                        <label asp-for="Title" class="card-title mb-2">Folder Name</label>
+                        <br />
+                        <input asp-for="Title" class="form-control bg-transparent" />
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex align-content-center justify-content-center gap-2 pt-3 pb-3">
+                    <button type="submit" class="btn btn-primary px-4 py-2">Create Folder</button>
+
+                    @if (folderId != Guid.Empty && folderId != null &&
+                    parentFolderId != Guid.Empty && parentFolderId != null)
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+
+                    }
+                    else if (folderId != Guid.Empty && folderId != null)
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@folderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                    }
+                    else if (notebookId != Guid.Empty)
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
