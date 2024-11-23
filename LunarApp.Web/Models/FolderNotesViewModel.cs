@@ -2,7 +2,7 @@
 {
     public class FolderNotesViewModel
     {
-        public IEnumerable<FolderInfoViewModel> Folders { get; set; }
-        public IEnumerable<NoteInfoViewModel> Notes { get; set; }
+        public required IEnumerable<FolderInfoViewModel> Folders { get; set; }
+        public required IEnumerable<NoteInfoViewModel> Notes { get; set; }
     }
 }
