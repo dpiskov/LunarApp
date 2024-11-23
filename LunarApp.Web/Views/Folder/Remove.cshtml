@@ -2,12 +2,12 @@
 
 @{
     ViewData["Title"] = "Delete Folder";
-}
 
-@{
     var notebookId = (Guid)ViewData["NotebookId"]!;
     var folderId = (Guid)ViewData["FolderId"]!;
     var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+
+    var newParentFolderId = (Guid?)ViewData["NewParentFolderId"]!;
 }
 
 <div class="text-center mb-4 mt-2">
@@ -24,23 +24,27 @@
                 <p class="text-danger mt-3 text-center">Are you sure you want to delete @(Model.Title)?</p>
             </div>
             <div class="card-footer d-flex align-content-center justify-content-center">
-                <form asp-action="Remove" method="post">
-                    @* <input type="hidden" asp-for="Id" /> *@
+                <form asp-controller="Folder" asp-action="Remove" method="post">
+                    <input type="hidden" asp-for="Title" />
                     <input type="hidden" asp-for="NotebookId" />
                     <input type="hidden" asp-for="ParentFolderId" />
-                    <input type="hidden" asp-for="Title" />
+                    <input type="hidden" asp-for="FolderId" />
                     <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
                     
-                    @* @if (parentFolderId != null)
+                    @if (parentFolderId != Guid.Empty && parentFolderId != null &&
+                         newParentFolderId != Guid.Empty && newParentFolderId != null)
                     {
-                        <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-warning">Cancel</a>
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@newParentFolderId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
                     }
-                    else if (notebookId != Guid.Empty)
+                    else if (folderId != Guid.Empty && folderId != null &&
+                             parentFolderId != Guid.Empty && parentFolderId != null)
                     {
-                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-outline-warning">Cancel</a>
-                    } *@
-
-                    <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-warning">Cancel</a>
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                    }
+                    else if (folderId != Guid.Empty && folderId != null)
+                    {
+                        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                    }
                 </form>
             </div>
         </div>
