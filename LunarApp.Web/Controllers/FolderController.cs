@@ -217,21 +217,51 @@ namespace LunarApp.Web.Controllers
             // Returns the form view with the model data
             return View(model);
         }
-            {
-                // Retrieve details for folders in the specified notebook that do not have a parent folder
-                model = await context.Folders
-                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)    // Filter by notebook ID
-                    .Select(f => new FolderDeleteViewModel()
-                    {
-                        Title = f.Title,
-                        NotebookId = f.NotebookId
-                    })
-                    .FirstOrDefaultAsync();                                                      // Retrieve the first match or null if not found
 
-                // Stores the data for the view to access
-                ViewData["NotebookId"] = notebookId;
+        // POST method to handle form submission for creating a new folder
+        [HttpPost]
+        public async Task<IActionResult> AddSubfolder(FolderCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var notebook = await context.Notebooks.FindAsync(model.NotebookId);
+                if (notebook is null)
+                {
+                    ModelState.AddModelError(string.Empty, "The selected notebook does not exist.");
+                    return View(model);
+                }
+
+                Folder folder = new Folder
+                {
+                    Title = model.Title,
+                    NotebookId = model.NotebookId,
+                    Notebook = notebook,
+                    ParentFolderId = model.FolderId
+                };
+
+                await context.Folders.AddAsync(folder);     // Adds the folder to the database
+                await context.SaveChangesAsync();           // Saves changes to the database
+
+                if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
+                model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect(
+                        $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
+                }
+                //else if (folder.Id != Guid.Empty && model.IsMadeDirectlyFromNotebook == false)
+                else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
+                }
+                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                {
+                    // Redirects to the main notebook view if no parent folder is specified
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                }
             }
-            else
+
+            return View(model);
+        }
             {
                 // Return a bad request if neither notebookId nor parentFolderId is provided
                 return BadRequest("NotebookId or ParentFolderId must be provided.");
