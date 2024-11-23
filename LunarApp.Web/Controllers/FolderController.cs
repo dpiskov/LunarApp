@@ -595,6 +595,36 @@ namespace LunarApp.Web.Controllers
 
             return (newParentFolderId, newFolderId);
         }
+
+        public async Task DeleteFolderWithChildrenAsync(Guid folderId)
+        {
+            var folder = await context.Folders
+                .Include(f => f.Notes) // Include Notes to delete them
+                .Include(f => f.ChildrenFolders) // Include child folders to delete them later
+                .FirstOrDefaultAsync(f => f.Id == folderId);
+
+            if (folder == null)
+            {
+                throw new InvalidOperationException("Folder not found.");
+            }
+
+            // Create a copy of the ChildrenFolders collection to iterate safely
+            var childFolders = folder.ChildrenFolders.ToList();
+
+            // First delete all child folders (recursively)
+            foreach (var childFolder in childFolders)
+            {
+                await DeleteFolderWithChildrenAsync(childFolder.Id); // Recursively delete child folders
+            }
+
+            // Then delete all Notes inside the current folder
+            context.Notes.RemoveRange(folder.Notes);
+
+            // Finally, delete the current folder
+            context.Folders.Remove(folder);
+
+            // Save changes to the database
+            await context.SaveChangesAsync();
         }
     }
 }
