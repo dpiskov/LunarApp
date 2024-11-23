@@ -574,17 +574,27 @@ namespace LunarApp.Web.Controllers
             return newParentFolderId;
         }
 
-            // Save changes to the database
-            await context.SaveChangesAsync();
+        private async Task<(Guid newParentFolderId, Guid newFolderId)> GetValue(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
+        {
+            var folder = await context.Folders
+                .SelectMany(f => f.ChildrenFolders)
+                .Where(f => f.Id == parentFolderId)
+                .FirstOrDefaultAsync();
 
-            // If the folder has a parent folder, redirect to the parent folder view
-            if (folder.ParentFolderId.HasValue)
+            if (folder != null)
             {
-                return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={folder.NotebookId}");
+                if (folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null)
+                {
+                    newParentFolderId = folder.ParentFolderId.Value;
+                }
+            }
+            else if (folder is null && parentFolderId is not null)
+            {
+                newFolderId = (Guid)parentFolderId;
             }
 
-            // If no parent folder is specified, redirect to the main notebook view
-            return Redirect($"~/Folder?notebookId={folder.NotebookId}");
+            return (newParentFolderId, newFolderId);
+        }
         }
     }
 }
