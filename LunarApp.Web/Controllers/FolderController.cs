@@ -9,19 +9,18 @@ namespace LunarApp.Web.Controllers
     public class FolderController(ApplicationDbContext context) : Controller
     {
         // GET method to display a list of folders
-        public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId)
+        public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
             // Holds the list of folders to be displayed
             IEnumerable<FolderInfoViewModel> folders;
             // Holds the list of notes to be displayed, initially empty
             IEnumerable<NoteInfoViewModel> notes;
 
-            // Checks if a parent folder ID is provided and is valid
-            if (parentFolderId.HasValue && parentFolderId.Value != Guid.Empty)
+            if (folderId != Guid.Empty && folderId != null)
             {
                 // Fetches folders that are inside the specified parent folder
                 folders = await context.Folders
-                    .Where(f => f.ParentFolderId == parentFolderId.Value)       // Filters folders by parentFolderId
+                    .Where(f => f.ParentFolderId == folderId)       // Filters folders by parentFolderId
                     .Select(f => new FolderInfoViewModel                        // Maps folders to FolderInfoViewModel
                     {
                         Id = f.Id,
@@ -33,35 +32,39 @@ namespace LunarApp.Web.Controllers
 
                 // Fetches notes that belong to the specified parent folder
                 notes = await context.Notes
-                .Where(n => n.FolderId == parentFolderId.Value)                  // Filters notes by parentFolderId
+                .Where(n => n.FolderId == folderId)                  // Filters notes by parentFolderId
                 .Select(n => new NoteInfoViewModel                               // Maps notes to NoteInfoViewModel
-                    {
-                        Id = n.Id,
-                        Title = n.Title,
-                        FolderId = n.FolderId
-                    })
-                    .ToListAsync();
+                {
+                    Id = n.Id,
+                    Title = n.Title,
+                    NotebookId = n.NotebookId,
+                    FolderId = n.FolderId
+                })
+                .ToListAsync();
+
+                Guid newFolderId = Guid.Empty;
+                Guid newParentFolderId = Guid.Empty;
+
+                (newParentFolderId, newFolderId) = await GetValue(parentFolderId, newParentFolderId, newFolderId);
 
                 // Fetches the title of the parent folder
                 var parentFolderTitle = await context.Folders
-                    .Where(f => f.Id == parentFolderId)
+                    .Where(f => f.Id == folderId)
                     .Select(f => f.Title)
                     .FirstOrDefaultAsync();
 
-                // Fetches the ID of the parent folder's parent (to allow navigation up the folder hierarchy)
-                var parentFolderGuid = await context.Folders
-                    .Where(f => f.Id == parentFolderId)
-                    .Select(f => f.ParentFolderId)
-                    .FirstOrDefaultAsync();
-
                 // Stores the data for the view to access (for navigation and display)
+                ViewData["Title"] = parentFolderTitle;
+
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
-                ViewData["ParentFolderGuid"] = parentFolderGuid;
-                ViewData["Title"] = parentFolderTitle;
+                ViewData["FolderId"] = folderId;
+
+                ViewData["NewParentFolderId"] = newParentFolderId;
+                ViewData["NewFolderId"] = newFolderId;
             }
             // If no parent folder is specified, checks if a valid notebook ID is provided
-            else if (notebookId != Guid.Empty)
+            else if (notebookId != Guid.Empty && notebookId != null)
             {
                 // Fetches folders that belong to the specified notebook and do not have a parent folder
                 folders = await context.Folders
@@ -70,17 +73,20 @@ namespace LunarApp.Web.Controllers
                     {
                         Id = f.Id,
                         Title = f.Title,
-                        NotebookId = f.NotebookId
+                        NotebookId = f.NotebookId,
+                        ParentFolderId = parentFolderId
                     })
                     .ToListAsync();
 
                 // Fetches notes that do not belong to any folder
                 notes = await context.Notes
                 .Where(n => n.FolderId == null)                                  // Filters notes without a folder
+                .Where(nb => nb.NotebookId == notebookId)
                     .Select(n => new NoteInfoViewModel
                     {
                         Id = n.Id,
                         Title = n.Title,
+                        NotebookId = n.NotebookId,
                         FolderId = n.FolderId
                     })
                     .ToListAsync();
