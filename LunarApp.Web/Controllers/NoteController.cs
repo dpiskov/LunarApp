@@ -60,7 +60,7 @@ namespace LunarApp.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(NoteViewModel model)
+        public async Task<IActionResult> Create(NoteCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +73,7 @@ namespace LunarApp.Web.Controllers
                 }
 
                 // Check if the folder exists, but only if a folder ID is provided
-                if (model.FolderId != Guid.Empty)
+                if (model.FolderId != Guid.Empty && model.FolderId != null)
                 {
                     var folder = await context.Folders.FindAsync(model.FolderId);
                     if (folder is null)
@@ -89,21 +89,33 @@ namespace LunarApp.Web.Controllers
                     Title = model.Title,
                     Body = model.Body,
                     NotebookId = model.NotebookId,
-                    FolderId = model.FolderId != Guid.Empty ? model.FolderId : null // Set FolderId only if provided
+                    Notebook = notebook,
+                    FolderId = model.FolderId,
+                    DateCreated = DateTime.UtcNow,
+                    LastSaved = DateTime.UtcNow
                 };
 
                 await context.Notes.AddAsync(note);
                 await context.SaveChangesAsync();
 
-                // Redirect to the appropriate Index based on whether FolderId is set or not
-                if (model.FolderId != Guid.Empty)
+                if (model.FolderId != Guid.Empty && model.FolderId != null &&
+                    model.ParentFolderId != Guid.Empty && model.FolderId != null)
                 {
-                    return RedirectToAction(nameof(Index), "Folder", new { parentFolderId = model.FolderId, notebookId = model.NotebookId });
+                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId, folderId = model.FolderId });
+                }
+                // Redirect to the appropriate Index based on whether FolderId is set or not
+                if (model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId, folderId = model.FolderId });
                     //return RedirectToAction(nameof(Index), "Folder", new { folderId = model.FolderId, notebookId = model.NotebookId });
                 }
 
                 return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId });
             }
+
+            ViewData["NotebookId"] = model.NotebookId;
+            ViewData["ParentFolderId"] = model.ParentFolderId;
+            ViewData["FolderId"] = model.FolderId;
 
             // If the model is invalid, return to the same view
             return View(model);
