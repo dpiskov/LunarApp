@@ -214,5 +214,58 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(NoteEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var note = await context.Notes.FindAsync(model.Id);
+
+                if (note == null)
+                {
+                    // TODO: TEMPORARY PATCH?
+                    if (model.FolderId != Guid.Empty && model.FolderId != null &&
+                        model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
+                    {
+                        return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
+                    }
+                    else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                    {
+                        return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
+                    }
+                    else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                    {
+                        // If no parent folder is specified, redirect to the main notebook view
+                        return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                    }
+                }
+                else
+                {
+                    note.Title = model.Title;
+                    note.Body = model.Body;
+                    note.LastSaved = DateTime.UtcNow;
+                }
+
+                await context.SaveChangesAsync();
+
+                if (model.FolderId != Guid.Empty && model.FolderId != null &&
+                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
+                }
+                else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
+                }
+                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                {
+                    // If no parent folder is specified, redirect to the main notebook view
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                }
+            }
+
+            return View(model);
+        }
     }
 }
