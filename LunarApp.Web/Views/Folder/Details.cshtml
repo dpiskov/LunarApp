@@ -1,13 +1,19 @@
-﻿@model LunarApp.Web.Models.FolderDetailsViewModel
+﻿@model FolderDetailsViewModel
 
 @{
-    var title = ViewData["Title"]?.ToString() ?? "Folders in Folder";
-    // var title = ViewData["Title"];
+    var title = ViewData["Title"];
+
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var folderId = (Guid)ViewData["FolderId"]!;
+
+    var newParentFolderId = (Guid?)ViewData["NewParentFolderId"]!;
 }
 
 <!-- Full-height container -->
-<div class="d-flex justify-content-center align-items-center vh-100 bg-transparent">
-    <div class="card w-100 h-100 mx-3 mx-md-auto col-md-8 col-lg-6 bg-transparent bg-opacity-75 shadow-lg rounded d-flex flex-column justify-content-between">
+<div class="d-flex justify-content-center align-items-center bg-transparent">
+    <div class="card w-100 h-100 mx-3 mx-md-auto col-md-8 col-lg-6 bg-transparent bg-opacity-75 shadow-lg rounded d-flex flex-column">
+
         <!-- Card Header -->
         <div class="card-header text-center">
             <h1 class="text-decoration-underline">@title</h1>
@@ -15,24 +21,41 @@
         </div>
 
         <!-- Card Body -->
-        <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
-            <form asp-controller="Folder" asp-action="Details" method="post" class="d-flex flex-column justify-content-center align-items-center text-center w-100 p-3">
-                <input type="hidden" asp-for="NotebookId" />
-                <input type="hidden" asp-for="ParentFolderId" />
+        <form asp-controller="Folder" asp-action="Details" method="post" class="d-flex flex-column flex-grow-1">
+            <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
+                <div class="w-100">
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+                    <input type="hidden" asp-for="IsClickedDirectlyFromNotebook" />
 
-                <div class="mb-3 w-100">
-                    <label asp-for="Description" class="form-label"></label>
-                    <textarea asp-for="Description" class="form-control bg-transparent" rows="10"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                    <div class="form-group mb-3 w-100 text-center">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control bg-transparent" rows="10"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-            </form>
-        </div>
+            </div>
 
-        <!-- Card Footer -->
-        <div class="card-footer d-flex justify-content-center flex-shrink-0">
-            <a asp-controller="Folder" asp-action="Index" class="btn btn-outline-secondary">Back To Folders List</a>
-            @* <a asp-controller="Folder" asp-action="Index" asp-route-parentFolderId="@parentFolderId" asp-route-notebookId="@notebookId" class="btn btn-outline-secondary">Back To Folders List</a> *@
-        </div>
+            <!-- Card Footer -->
+            <div class="card-footer d-flex align-content-center justify-content-center gap-2 pt-3 pb-3">
+                <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
+
+                @if (parentFolderId != Guid.Empty && parentFolderId != null &&
+                newParentFolderId != Guid.Empty && newParentFolderId != null)
+                {
+                    <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@newParentFolderId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                }
+                else if (folderId != Guid.Empty && folderId != null &&
+                parentFolderId != Guid.Empty && parentFolderId != null)
+                {
+                    <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                }
+                else if (folderId != Guid.Empty && folderId != null)
+                {
+                    <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                }
+            </div>
+        </form>
     </div>
 </div>
