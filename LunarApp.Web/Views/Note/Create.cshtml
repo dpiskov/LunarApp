@@ -1,22 +1,46 @@
-﻿@model LunarApp.Web.Models.NoteViewModel
+﻿@model LunarApp.Web.Models.NoteCreateViewModel
 
-<h2>Create Note</h2>
+@{
+    ViewData["Title"] = "Create Note";
 
-<form asp-action="Create" method="post">
-    <input type="hidden" asp-for="NotebookId" />
-    <input type="hidden" asp-for="FolderId" />
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var folderId = (Guid?)ViewData["FolderId"];
+}
 
-    <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr />
+
+<div class="row d-flex justify-content-center align-items-center flex-column card-center">
+    <div class="col-md-6">
+        <div class="transparent-container card">
+            <form asp-controller="Note" asp-action="Create" method="post" class="text-center">
+                <div class="card-body">
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+
+                    <div class="form-group">
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" class="form-control bg-transparent" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Body"></label>
+                        <textarea asp-for="Body" class="form-control bg-transparent"></textarea>
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex align-content-center justify-content-center gap-2 pt-3 pb-3">
+                    <button type="submit" class="btn btn-primary px-4 py-2">Create Note</button>
+                    <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Body"></label>
-        <textarea asp-for="Body" class="form-control"></textarea>
-        <span asp-validation-for="Body" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create Note</button>
-</form>
+</div>
