@@ -9,45 +9,52 @@ namespace LunarApp.Web.Controllers
 {
     public class NoteController(ApplicationDbContext context) : Controller
     {
-        public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId)
+        [HttpGet]
+        public IActionResult Create(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            IEnumerable<NoteViewModel> notes;
+            NoteCreateViewModel? model = null;
 
-            notes = await context.Notes
-                .Where(n => n.FolderId == parentFolderId)
-                .Select(n => new NoteViewModel
+            if (folderId != Guid.Empty && folderId != null &&
+                parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                model = new NoteCreateViewModel
                 {
-                    Title = n.Title,
-                    Body = n.Body,
-                    NotebookId = n.NotebookId,
-                    FolderId = n.FolderId
-                })
-                .ToListAsync();
-
-            notes = await context.Notes
-                .Where(n => n.NotebookId == notebookId && n.FolderId == null)
-                .Select(n => new NoteViewModel
+                    Title = string.Empty,
+                    NotebookId = notebookId,
+                    ParentFolderId = parentFolderId,
+                    FolderId = folderId,
+                };
+            }
+            else if (folderId != Guid.Empty && folderId != null)
+            {
+                model = new NoteCreateViewModel
                 {
-                    Title = n.Title,
-                    Body = n.Body,
-                    NotebookId = n.NotebookId
-                })
-                .ToListAsync();
+                    Title = string.Empty,
+                    NotebookId = notebookId,
+                    FolderId = folderId,
+                };
+            }
+            else if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                model = new NoteCreateViewModel
+                {
+                    Title = string.Empty,
+                    NotebookId = notebookId,
+                    FolderId = parentFolderId,
+                };
+            }
+            else if (notebookId != Guid.Empty && notebookId != null)
+            {
+                model = new NoteCreateViewModel
+                {
+                    Title = string.Empty,
+                    NotebookId = notebookId
+                };
+            }
 
             ViewData["NotebookId"] = notebookId;
-            ViewData["Title"] = "Notes in Notebook";
-
-            return RedirectToAction(nameof(Index), "Notebook");
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId)
-        {
-            var model = new NoteViewModel
-            {
-                NotebookId = notebookId,
-                FolderId = parentFolderId
-            };
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
 
             return View(model);
         }
