@@ -185,41 +185,38 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-
-        // GET method to render the form for removing a folder
         [HttpGet]
-        public async Task<IActionResult> Remove(Guid notebookId, Guid? folderId)
+        public async Task<IActionResult> AddSubfolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            FolderDeleteViewModel? model;
+            bool isMadeDirectlyFromNotebook = parentFolderId == Guid.Empty || parentFolderId == null && folderId != Guid.Empty && folderId != null;
 
-            // Check if a folder ID is provided and is valid
-            if (folderId.HasValue && folderId.Value != Guid.Empty)
+            // Initializes the view model with the provided notebookId and optional parentFolderId
+            FolderCreateViewModel model = new FolderCreateViewModel
             {
-                // Retrieve details of the specified folder using the folderId
-                model = await context.Folders
-                    .Where(f => f.Id == folderId.Value)                  // Filter by folder ID
-                    .AsNoTracking()                                            // Do not track changes for efficiency
-                    .Select(f => new FolderDeleteViewModel()
-                    {
-                        Title = f.Title,
-                        NotebookId = f.NotebookId,
-                        ParentFolderId = f.Id
-                    })
-                    .FirstOrDefaultAsync();                                    // Retrieve the first match or null if not found
+                Title = string.Empty,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsMadeDirectlyFromNotebook = isMadeDirectlyFromNotebook
+            };
 
-                // Retrieve the ParentFolderId of the current folder
-                var parentFolderId = await context.Folders
-                    .Where(f => f.Id == folderId)
-                    .Select(f => f.ParentFolderId)
-                    .FirstOrDefaultAsync();
+            Guid newParentFolderId = Guid.Empty;
 
-                // Stores the data for the view to access
-                ViewData["NotebookId"] = notebookId;
-                ViewData["FolderId"] = folderId;
-                ViewData["ParentFolderId"] = parentFolderId;
+            if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
             }
-            // Check if a valid notebookId is provided
-            else if (notebookId != Guid.Empty)
+
+            // Passes notebookId and parentFolderId to the ViewData to be used in the view
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+
+            ViewData["NewParentFolderId"] = newParentFolderId;
+
+            // Returns the form view with the model data
+            return View(model);
+        }
             {
                 // Retrieve details for folders in the specified notebook that do not have a parent folder
                 model = await context.Folders
