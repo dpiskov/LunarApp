@@ -297,64 +297,65 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // POST method to handle the removal of a folder
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
-            // Check if the model is null or invalid
-            if (model == null)
+            if (ModelState.IsValid)
             {
-                // Return bad request if the model is invalid
-                return BadRequest("Invalid model.");
-            }
+                await DeleteFolderWithChildrenAsync(model.FolderId);
 
-            Folder? folder = null;
+                var newParentFolderId = await context.Folders
+                    .Include(f => f.ChildrenFolders)
+                    .Select(f => f.ChildrenFolders
+                        .Where(cf => cf.Id == model.ParentFolderId))
+                    .FirstOrDefaultAsync();
 
-            // If a parent folder ID is provided, try to find the folder and its related entities in the database
-            if (model.ParentFolderId != null)
-            {
-                folder = await context.Folders
-                    .Include(f => f.Notes)                                    // Include related notes for the folder
-                    .Include(f => f.ChildrenFolders)                          // Include related child folders
-                    .FirstOrDefaultAsync(f => f.Id == model.ParentFolderId);
-            }
-            // If no parent folder is provided but a notebook ID is provided, find the folder for that notebook
-            else if (model.NotebookId != Guid.Empty)
-            {
-                folder = await context.Folders
-                    .Include(f => f.Notes)                                    // Include related notes for the folder
-                    .Include(f => f.ChildrenFolders)                          // Include related child folders
-                    .Where(f => f.NotebookId == model.NotebookId && f.ParentFolderId == null)    // Filter by notebook ID
-                    .FirstOrDefaultAsync();                                                            // Retrieve the first match or null if not found
-            }
+                Folder? folder = await context.Folders
+                    .Where(f => f.Id == model.FolderId)
+                    .Select(f => new Folder()
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        ParentFolderId = f.ParentFolderId,
+                        NotebookId = f.NotebookId,
+                        Notebook = null,
+                    })
+                    .FirstOrDefaultAsync();
 
-            // If the folder is found, remove it from the database
-            if (folder != null)
-            {
-                // Remove any child folders if they exist
-                if (folder.ChildrenFolders != null && folder.ChildrenFolders.Any())
+                if (folder == null)
                 {
-                    context.Folders.RemoveRange(folder.ChildrenFolders.ToList()); // Remove all child folders
+                    folder = await context.Folders
+                        .Where(f => f.Id == model.ParentFolderId)
+                        .Select(f => new Folder()
+                        {
+                            Id = f.Id,
+                            Title = f.Title,
+                            ParentFolderId = f.ParentFolderId,
+                            NotebookId = f.NotebookId,
+                            Notebook = null,
+                        })
+                        .FirstOrDefaultAsync();
                 }
 
-                // Remove any notes if they exist within the folder
-                if (folder.Notes != null && folder.Notes.Any())
+                if (folder != null && folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null &&
+                    folder.Id != Guid.Empty && folder.Id != null)
                 {
-                    context.Notes.RemoveRange(folder.Notes);                      // Remove all notes associated with the folder
+                    return Redirect(
+                        $"~/Folder?notebookId={folder.NotebookId}&parentFolderId={folder.ParentFolderId}&folderId={folder.Id}");
                 }
-
-                context.Folders.Remove(folder);                 // Remove the folder from the context
-
-                await context.SaveChangesAsync();               // Save changes to the database
-
-                // Redirect to the parent folder view if the folder has a parent folder ID
-                if (folder.ParentFolderId.HasValue)
+                else if (folder != null && folder.Id != Guid.Empty && folder.Id != null)
                 {
-                    return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={model.NotebookId}");
+                    return Redirect($"~/Folder?notebookId={folder.NotebookId}&folderId={folder.Id}");
+                }
+                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                {
+                    // Redirects to the main notebook view if no parent folder is specified
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
                 }
             }
 
-            // If no parent folder is specified, redirect to the main notebook view
-            return Redirect($"~/Folder?notebookId={model.NotebookId}");
+            return View(model);
         }
 
         // GET method to display the folder edit form
