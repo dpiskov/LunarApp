@@ -360,29 +360,56 @@ namespace LunarApp.Web.Controllers
 
         // GET method to display the folder edit form
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid notebookId, Guid parentFolderId)
+        public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            // Fetches the folder from the database
-            var folder = await context.Folders
-                .Where(f => f.Id == parentFolderId)
-                .AsNoTracking()                                 // Do not track changes for efficiency
-                .FirstOrDefaultAsync();                         // Retrieve the first match or null if not found
+            bool isEditedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+                parentFolderId == Guid.Empty || parentFolderId == null;
 
-            // If the folder does not exist, redirect to the Index view
+            // Fetches the folder from the database
+            Folder? folder = await context.Folders
+                .Where(f => f.Id == folderId)
+                .AsNoTracking() // Do not track changes for efficiency
+                .FirstOrDefaultAsync(); // Retrieve the first match or null if not found
+
+            //TODO: SIMPLIFY IF POSSIBLE
             if (folder is null)
             {
-                return RedirectToAction(nameof(Index));
+                if (folderId != Guid.Empty && folderId != null &&
+                    parentFolderId != Guid.Empty && parentFolderId != null)
+                {
+                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId, parentFolderId = parentFolderId, folderId = folderId });
+                }
+                if (folderId != Guid.Empty && folderId != null)
+                {
+                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId, folderId = folderId });
+                }
+
+                return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId });
             }
 
             // Creates a view model for the folder to be edited
-            var model = new FolderViewModel
+            var model = new FolderEditViewModel()
             {
-                Title = folder.Title
+                Title = folder.Title,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsEditedDirectlyFromNotebook = isEditedDirectlyFromNotebook
             };
 
+            Guid newParentFolderId = Guid.Empty;
+
+            if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
+            }
+
             // Stores the data for the view to access
-            //ViewData["NotebookId"] = notebookId;
-            //ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+
+            ViewData["NewParentFolderId"] = newParentFolderId;
 
             // Returns the Edit view with the folder data
             return View(model);
