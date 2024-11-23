@@ -121,5 +121,27 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
+        {
+            NoteDeleteViewModel? model = await context.Notes
+                .Where(n => n.Id == noteId)
+                .AsNoTracking()
+                .Select(n => new NoteDeleteViewModel()
+                {
+                    Id = n.Id,
+                    Title = n.Title,
+                    NotebookId = n.NotebookId,
+                    ParentFolderId = parentFolderId,
+                    FolderId = n.FolderId
+                })
+                .FirstOrDefaultAsync();
+
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+
+            return View(model);
+        }
     }
 }
