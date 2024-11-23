@@ -177,5 +177,42 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
+        {
+            var note = await context.Notes
+                .Where(n => n.Id == noteId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (note == null)
+            {
+                // TODO: FIX ROUTING
+                return RedirectToAction(nameof(Index), "Notebook");
+            }
+
+            var model = new NoteEditViewModel
+            {
+                Id = noteId,
+                Title = note.Title,
+                Body = note.Body,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                LastSaved = note.LastSaved
+            };
+
+            //TODO: Format LastSaved properly
+            ViewData["LastSaved"] = note.LastSaved;
+
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+
+            ViewData["Title"] = note.Title;
+
+            return View(model);
+        }
     }
 }
