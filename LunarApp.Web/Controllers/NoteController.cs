@@ -121,35 +121,5 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        //public async Task<IActionResult> Index(Guid notebookId, Guid folderId)
-        //{
-        //    IEnumerable<NoteViewModel> notes;
-
-        //    notes = await context.Notes
-        //        .Where(n => n.FolderId == folderId)
-        //        .Select(n => new NoteViewModel
-        //        {
-        //            Title = n.Title,
-        //            Body = n.Body,
-        //            NotebookId = n.NotebookId,
-        //            FolderId = n.FolderId
-        //        })
-        //        .ToListAsync();
-
-        //    notes = await context.Notes
-        //        .Where(n => n.NotebookId == notebookId && n.FolderId == null)
-        //        .Select(n => new NoteViewModel
-        //        {
-        //            Title = n.Title,
-        //            Body = n.Body,
-        //            NotebookId = n.NotebookId
-        //        })
-        //        .ToListAsync();
-
-        //    ViewData["NotebookId"] = notebookId;
-        //    ViewData["Title"] = "Notes in Notebook";
-
-        //    return RedirectToAction(nameof(Index), "Notebook");
-        //}
     }
 }
