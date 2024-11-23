@@ -142,37 +142,47 @@ namespace LunarApp.Web.Controllers
 
         // POST method to handle form submission for creating a new folder
         [HttpPost]
-        public async Task<IActionResult> Create(FolderViewModel model)
+        public async Task<IActionResult> AddFolder(FolderCreateViewModel model)
         {
-            // Checks if the notebook exists in the database
-            var notebookExists = await context.Notebooks.AnyAsync(n => n.Id == model.NotebookId);
-
-            if (!notebookExists)                        // If the notebook doesn't exist
+            if (ModelState.IsValid)
             {
-                // Adds an error message to the model state
-                ModelState.AddModelError(string.Empty, "The specified notebook does not exist.");
-                return View(model);                     // Returns the form view with an error message
+                var notebook = await context.Notebooks.FindAsync(model.NotebookId);
+                if (notebook is null)
+                {
+                    ModelState.AddModelError(string.Empty, "The selected notebook does not exist.");
+                    return View(model);
+                }
+
+                Folder folder = new Folder
+                {
+                    Title = model.Title,
+                    NotebookId = model.NotebookId,
+                    Notebook = notebook,
+                    ParentFolderId = model.FolderId
+                };
+
+                await context.Folders.AddAsync(folder); // Adds the folder to the database
+                await context.SaveChangesAsync(); // Saves changes to the database
+
+                if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
+                    model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect(
+                        $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
+                }
+                //else if (folder.Id != Guid.Empty && model.IsMadeDirectlyFromNotebook == false)
+                else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
+                }
+                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+                {
+                    // Redirects to the main notebook view if no parent folder is specified
+                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                }
             }
 
-            // Creates a new Folder entity based on the form data
-            Folder folder = new Folder
-            {
-                Title = model.Title,
-                NotebookId = model.NotebookId,
-                ParentFolderId = model.ParentFolderId
-            };
-
-            await context.Folders.AddAsync(folder);     // Adds the folder to the database
-            await context.SaveChangesAsync();           // Saves changes to the database
-
-            // Redirects to the parent folder view if a parent folder is specified
-            if (folder.ParentFolderId.HasValue)
-            {
-                return Redirect($"~/Folder?parentFolderId={folder.ParentFolderId.Value}&notebookId={model.NotebookId}");
-            }
-
-            // Redirects to the main notebook view if no parent folder is specified
-            return Redirect($"~/Folder?notebookId={model.NotebookId}");
+            return View(model);
         }
 
 
