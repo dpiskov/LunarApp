@@ -556,14 +556,23 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-            // If the folder is not found, redirect to the Index view
-            if (folder is null)
+        private async Task<Guid> GetValue(Guid? parentFolderId, Guid newParentFolderId)
+        {
+            var folder = await context.Folders
+                .SelectMany(f => f.ChildrenFolders)
+                .Where(f => f.Id == parentFolderId)
+                .FirstOrDefaultAsync();
+
+            if (folder != null)
             {
-                return RedirectToAction(nameof(Index));
+                if (folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null)
+                {
+                    newParentFolderId = folder.ParentFolderId.Value;
+                }
             }
 
-            // Update the folder's description with the new value from the model
-            folder.Description = model.Description;
+            return newParentFolderId;
+        }
 
             // Save changes to the database
             await context.SaveChangesAsync();
