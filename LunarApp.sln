@@ -5,7 +5,19 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LunarApp.Web", "LunarApp.Web\LunarApp.Web.csproj", "{096627D1-252B-436C-9FEA-A80D64EAC6E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarApp.Web.ViewModels", "LunarApp.Web.ViewModels\LunarApp.Web.ViewModels.csproj", "{49A085F6-4A0C-457F-A7CA-A2296F400B56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LunarApp.Web.ViewModels", "LunarApp.Web.ViewModels\LunarApp.Web.ViewModels.csproj", "{49A085F6-4A0C-457F-A7CA-A2296F400B56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LunarApp.Common", "LunarApp.Common\LunarApp.Common.csproj", "{5B4AC09C-FFF4-4A4F-8C7C-FD528BA0F8BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LunarApp.Data.Models", "LunarApp.Data.Models\LunarApp.Data.Models.csproj", "{46540402-01EF-464C-BFD7-CF84FD67E59B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{ACDE3652-6D55-4979-BEA2-240F764F5E74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{3E544191-12AF-42CC-9EB2-4FD6933E8609}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LunarApp.Data", "LunarApp.Data\LunarApp.Data.csproj", "{E3210C94-9F55-419F-BAEA-B86954952811}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarApp.Web.Infrastructure", "LunarApp.Web.Infrastructure\LunarApp.Web.Infrastructure.csproj", "{972C0474-153A-47F6-B944-5907C48B98A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +33,32 @@ Global
 		{49A085F6-4A0C-457F-A7CA-A2296F400B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49A085F6-4A0C-457F-A7CA-A2296F400B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49A085F6-4A0C-457F-A7CA-A2296F400B56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B4AC09C-FFF4-4A4F-8C7C-FD528BA0F8BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B4AC09C-FFF4-4A4F-8C7C-FD528BA0F8BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B4AC09C-FFF4-4A4F-8C7C-FD528BA0F8BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B4AC09C-FFF4-4A4F-8C7C-FD528BA0F8BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46540402-01EF-464C-BFD7-CF84FD67E59B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46540402-01EF-464C-BFD7-CF84FD67E59B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46540402-01EF-464C-BFD7-CF84FD67E59B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46540402-01EF-464C-BFD7-CF84FD67E59B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3210C94-9F55-419F-BAEA-B86954952811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3210C94-9F55-419F-BAEA-B86954952811}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3210C94-9F55-419F-BAEA-B86954952811}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3210C94-9F55-419F-BAEA-B86954952811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972C0474-153A-47F6-B944-5907C48B98A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{972C0474-153A-47F6-B944-5907C48B98A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{972C0474-153A-47F6-B944-5907C48B98A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{972C0474-153A-47F6-B944-5907C48B98A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{096627D1-252B-436C-9FEA-A80D64EAC6E8} = {ACDE3652-6D55-4979-BEA2-240F764F5E74}
+		{49A085F6-4A0C-457F-A7CA-A2296F400B56} = {ACDE3652-6D55-4979-BEA2-240F764F5E74}
+		{46540402-01EF-464C-BFD7-CF84FD67E59B} = {3E544191-12AF-42CC-9EB2-4FD6933E8609}
+		{E3210C94-9F55-419F-BAEA-B86954952811} = {3E544191-12AF-42CC-9EB2-4FD6933E8609}
+		{972C0474-153A-47F6-B944-5907C48B98A5} = {ACDE3652-6D55-4979-BEA2-240F764F5E74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E208C87C-CE3A-4374-BB1B-1E3762D6E66A}
