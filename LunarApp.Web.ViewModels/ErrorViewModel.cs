@@ -1,4 +1,4 @@
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels
 {
     public class ErrorViewModel
     {
