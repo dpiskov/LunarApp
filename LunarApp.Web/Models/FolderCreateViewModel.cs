@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static LunarApp.Web.Common.ValidationConstants;
+using static LunarApp.Common.ValidationConstants.Folder;
+using static LunarApp.Common.EntityValidationMessages.Folder;
 
 namespace LunarApp.Web.Models
 {
     public class FolderCreateViewModel
     {
-        [Required]
+        [Required(ErrorMessage = FolderTitleRequiredMessage)]
         [StringLength(FolderTitleMaxLength, MinimumLength = FolderTitleMinLength)]
         public required string Title { get; set; }
 
