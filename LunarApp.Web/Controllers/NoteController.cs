@@ -1,13 +1,18 @@
-﻿using System.Net.NetworkInformation;
-using LunarApp.Web.Data;
-using LunarApp.Web.Data.Models;
+﻿using System.Globalization;
+using LunarApp.Data;
+using LunarApp.Data.Models;
 using LunarApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using static LunarApp.Common.ValidationConstants.Note;
+
 namespace LunarApp.Web.Controllers
 {
+    // TODO'S
+    // TODO: Handle exceptions
+
     [Authorize]
     public class NoteController(ApplicationDbContext context) : Controller
     {
@@ -93,8 +98,8 @@ namespace LunarApp.Web.Controllers
                     NotebookId = model.NotebookId,
                     Notebook = notebook,
                     FolderId = model.FolderId,
-                    DateCreated = DateTime.UtcNow,
-                    LastSaved = DateTime.UtcNow
+                    DateCreated = model.DateCreated,
+                    LastSaved = model.LastSaved
                 };
 
                 await context.Notes.AddAsync(note);
@@ -202,10 +207,12 @@ namespace LunarApp.Web.Controllers
                 NotebookId = notebookId,
                 ParentFolderId = parentFolderId,
                 FolderId = folderId,
+                DateCreated = note.DateCreated,
                 LastSaved = note.LastSaved
             };
 
             //TODO: Format LastSaved properly
+            ViewData["DateCreated"] = note.DateCreated;
             ViewData["LastSaved"] = note.LastSaved;
 
             ViewData["NotebookId"] = notebookId;
@@ -246,7 +253,7 @@ namespace LunarApp.Web.Controllers
                 {
                     note.Title = model.Title;
                     note.Body = model.Body;
-                    note.LastSaved = DateTime.UtcNow;
+                    note.LastSaved = DateTime.Now;
                 }
 
                 await context.SaveChangesAsync();
