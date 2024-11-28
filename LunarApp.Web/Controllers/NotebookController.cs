@@ -1,5 +1,5 @@
-﻿using LunarApp.Web.Data;
-using LunarApp.Web.Data.Models;
+﻿using LunarApp.Data;
+using LunarApp.Data.Models;
 using LunarApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +20,7 @@ namespace LunarApp.Web.Controllers
                     Id = nb.Id,
                     Title = nb.Title
                 })
+                .OrderBy(nb => nb.Title)
                 .AsNoTracking()                                        // Disables tracking of entities for better performance (read-only)
                 .ToListAsync();                                        // Asynchronously gets the list of notebooks
 
