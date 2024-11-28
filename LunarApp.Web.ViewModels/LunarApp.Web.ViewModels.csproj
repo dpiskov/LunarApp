@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Folder\" />
-    <Folder Include="Notebook\" />
-    <Folder Include="Note\" />
   </ItemGroup>
 
   <ItemGroup>
