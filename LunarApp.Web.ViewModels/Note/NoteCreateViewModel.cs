@@ -1,18 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 using static LunarApp.Common.ValidationConstants.Note;
 using static LunarApp.Common.EntityValidationMessages.Note;
 
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels.Note
 {
-    public class NoteEditViewModel
+    public class NoteCreateViewModel
     {
-        public Guid Id { get; set; }
         [Required(ErrorMessage = NoteTitleRequiredMessage)]
-        [StringLength(NoteTitleMaxLength, MinimumLength = NoteTitleMinLength)]
+        [MinLength(NoteTitleMinLength)]
+        [MaxLength(NoteTitleMaxLength)]
         public required string Title { get; set; }
+
+        //[MinLength(NoteBodyMinLength)]
         [MaxLength(NoteBodyMaxLength)]
         public string? Body { get; set; }
+
         [Required]
         public Guid NotebookId { get; set; }
         public Guid? ParentFolderId { get; set; }
