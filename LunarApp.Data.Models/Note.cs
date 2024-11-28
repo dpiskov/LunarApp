@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using static LunarApp.Web.Common.ValidationConstants;
+using static LunarApp.Common.ValidationConstants.Note;
 
-namespace LunarApp.Web.Data.Models
+namespace LunarApp.Data.Models
 {
     public class Note
     {
@@ -21,12 +21,12 @@ namespace LunarApp.Web.Data.Models
         [Comment("Identifier of a notebook")]
         public Guid NotebookId { get; set; }
         [ForeignKey(nameof(NotebookId))]
-        public required Notebook Notebook { get; set; }
+        public virtual Notebook? Notebook { get; set; }
         //public required Notebook Notebook { get; set; }
         [Comment("Identifier of a folder")]
         public Guid? FolderId { get; set; }
         [ForeignKey(nameof(FolderId))]
-        public Folder? Folder { get; set; }
+        public virtual Folder? Folder { get; set; }
         [Required]
         [Comment("The date the note was created on")]
         public DateTime DateCreated { get; set; }

@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using static LunarApp.Common.ValidationConstants.Folder;
 
-using static LunarApp.Web.Common.ValidationConstants;
-
-namespace LunarApp.Web.Data.Models
+namespace LunarApp.Data.Models
 {
     public class Folder
     {
@@ -22,13 +21,13 @@ namespace LunarApp.Web.Data.Models
         [Comment("Identifier of a notebook")]
         public Guid NotebookId { get; set; }
         [ForeignKey(nameof(NotebookId))]
-        public required Notebook Notebook { get; set; }
+        public virtual Notebook? Notebook { get; set; }
         [Comment("Identifier of a parent folder")]
         public Guid? ParentFolderId { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
-        public Folder? ParentFolder { get; set; }
+        public virtual Folder? ParentFolder { get; set; }
 
-        public ICollection<Folder> ChildrenFolders { get; set; } = new List<Folder>();
-        public ICollection<Note> Notes { get; set; } = new List<Note>();
+        public virtual ICollection<Folder> ChildrenFolders { get; set; } = new List<Folder>();
+        public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
     }
 }
