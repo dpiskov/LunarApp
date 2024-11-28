@@ -1,4 +1,4 @@
-﻿namespace LunarApp.Web.Models
+﻿namespace LunarApp.Web.ViewModels.Notebook
 {
     public class NotebookDeleteViewModel
     {

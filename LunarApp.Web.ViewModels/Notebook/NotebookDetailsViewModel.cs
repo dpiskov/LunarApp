@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 using static LunarApp.Common.ValidationConstants.Notebook;
 
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels.Notebook
 {
     public class NotebookDetailsViewModel
     {
