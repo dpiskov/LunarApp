@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels.Folder
 {
     public class FolderDeleteViewModel
     {

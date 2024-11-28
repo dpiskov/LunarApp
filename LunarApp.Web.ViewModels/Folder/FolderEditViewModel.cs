@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 using static LunarApp.Common.ValidationConstants.Folder;
 using static LunarApp.Common.EntityValidationMessages.Folder;
 
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels.Folder
 {
     public class FolderEditViewModel
     {

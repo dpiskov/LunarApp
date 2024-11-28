@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using static LunarApp.Common.ValidationConstants.Folder;
 
-namespace LunarApp.Web.Models
+namespace LunarApp.Web.ViewModels.Folder
 {
     public class FolderDetailsViewModel
     {

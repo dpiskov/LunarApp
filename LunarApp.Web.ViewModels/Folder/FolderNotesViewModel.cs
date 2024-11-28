@@ -1,4 +1,6 @@
-﻿namespace LunarApp.Web.Models
+﻿using LunarApp.Web.ViewModels.Note;
+
+namespace LunarApp.Web.ViewModels.Folder
 {
     public class FolderNotesViewModel
     {
