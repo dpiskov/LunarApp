@@ -6,6 +6,7 @@
     var title = ViewData["Title"];
 
     var lastSaved = ViewData["LastSaved"];
+    var dateCreated = ViewData["DateCreated"];
 
     var notebookId = (Guid)ViewData["NotebookId"]!;
     var parentFolderId = (Guid?)ViewData["ParentFolderId"]!;
@@ -45,6 +46,9 @@
                     </div>
 
                     @*//TODO: PARSE TO SUITABLE FORMAT*@
+                    <div class="form-group mb-3 w-100 text-center">
+                        <label asp-for="DateCreated">Date Created: @dateCreated</label>
+                    </div>
                     <div class="form-group mb-3 w-100 text-center">
                         <label asp-for="LastSaved">Last Saved: @lastSaved</label>
                     </div>
