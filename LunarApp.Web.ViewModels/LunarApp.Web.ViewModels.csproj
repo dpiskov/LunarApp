@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Folder\" />
+    <Folder Include="Notebook\" />
+    <Folder Include="Note\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LunarApp.Common\LunarApp.Common.csproj" />
+  </ItemGroup>
+
 </Project>
