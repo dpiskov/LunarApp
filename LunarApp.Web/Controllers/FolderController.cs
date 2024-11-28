@@ -1,6 +1,7 @@
 ﻿using LunarApp.Data;
 using LunarApp.Data.Models;
-using LunarApp.Web.Models;
+using LunarApp.Web.ViewModels.Folder;
+using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

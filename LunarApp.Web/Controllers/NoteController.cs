@@ -1,12 +1,9 @@
-﻿using System.Globalization;
-using LunarApp.Data;
+﻿using LunarApp.Data;
 using LunarApp.Data.Models;
-using LunarApp.Web.Models;
+using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-using static LunarApp.Common.ValidationConstants.Note;
 
 namespace LunarApp.Web.Controllers
 {
