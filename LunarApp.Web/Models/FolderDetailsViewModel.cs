@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static LunarApp.Web.Common.ValidationConstants;
+using static LunarApp.Common.ValidationConstants.Folder;
 
 namespace LunarApp.Web.Models
 {
