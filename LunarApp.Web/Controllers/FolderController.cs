@@ -1,5 +1,5 @@
-﻿using LunarApp.Web.Data;
-using LunarApp.Web.Data.Models;
+﻿using LunarApp.Data;
+using LunarApp.Data.Models;
 using LunarApp.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace LunarApp.Web.Controllers
             // Holds the list of notes to be displayed, initially empty
             IEnumerable<NoteInfoViewModel> notes;
 
-            if (folderId != Guid.Empty && folderId != null)
+            if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
             {
                 // Fetches folders that are inside the specified parent folder
                 folders = await context.Folders
@@ -31,6 +31,7 @@ namespace LunarApp.Web.Controllers
                         NotebookId = f.NotebookId,
                         ParentFolderId = f.ParentFolderId
                     })
+                    .OrderBy(f => f.Title)
                     .ToListAsync();
 
                 // Fetches notes that belong to the specified parent folder
@@ -43,6 +44,7 @@ namespace LunarApp.Web.Controllers
                     NotebookId = n.NotebookId,
                     FolderId = n.FolderId
                 })
+                .OrderBy(n => n.Title)
                 .ToListAsync();
 
                 Guid newFolderId = Guid.Empty;
@@ -79,6 +81,7 @@ namespace LunarApp.Web.Controllers
                         NotebookId = f.NotebookId,
                         ParentFolderId = parentFolderId
                     })
+                    .OrderBy(f => f.Title)
                     .ToListAsync();
 
                 // Fetches notes that do not belong to any folder
@@ -92,6 +95,7 @@ namespace LunarApp.Web.Controllers
                         NotebookId = n.NotebookId,
                         FolderId = n.FolderId
                     })
+                .OrderBy(n => n.Title)
                     .ToListAsync();
 
                 // Fetches the title of the notebook
@@ -107,7 +111,9 @@ namespace LunarApp.Web.Controllers
             else
             {
                 // Returns an error if neither notebookId nor parentFolderId is provided
-                return BadRequest("NotebookId or ParentFolderId must be provided.");
+                //return BadRequest("NotebookId or ParentFolderId must be provided.");
+
+                return RedirectToAction(nameof(Index), "Notebook");
             }
 
             // Returns the view with the list of folders and notes
@@ -467,6 +473,11 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
+            //bool isIdValid = Guid.TryParse(strNotebookId, out Guid notebookId);
+            //if (isIdValid is false)
+            //{
+            //    return RedirectToAction(nameof(Index));
+            //}
             bool isClickedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
                 parentFolderId == Guid.Empty || parentFolderId == null;
 
