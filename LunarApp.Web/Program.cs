@@ -1,4 +1,7 @@
-using LunarApp.Web.Data;
+using LunarApp.Data;
+using LunarApp.Data.Models;
+using LunarApp.Web.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +19,22 @@ namespace LunarApp.Web
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services
+                .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+                {
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddRoles<IdentityRole<Guid>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddUserManager<UserManager<ApplicationUser>>();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+            });
+
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
@@ -39,6 +55,7 @@ namespace LunarApp.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -46,6 +63,7 @@ namespace LunarApp.Web
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            app.ApplyMigrations();
             app.Run();
         }
     }
