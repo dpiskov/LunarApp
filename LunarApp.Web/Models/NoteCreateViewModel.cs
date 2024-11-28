@@ -1,16 +1,17 @@
-﻿using static LunarApp.Web.Common.ValidationConstants;
+﻿using static LunarApp.Common.ValidationConstants.Note;
+using static LunarApp.Common.EntityValidationMessages.Note;
 using System.ComponentModel.DataAnnotations;
 
 namespace LunarApp.Web.Models
 {
     public class NoteCreateViewModel
     {
-        [Required]
+        [Required(ErrorMessage = NoteTitleRequiredMessage)]
         [MinLength(NoteTitleMinLength)]
         [MaxLength(NoteTitleMaxLength)]
         public required string Title { get; set; }
 
-        [MinLength(NoteBodyMinLength)]
+        //[MinLength(NoteBodyMinLength)]
         [MaxLength(NoteBodyMaxLength)]
         public string? Body { get; set; }
 
@@ -18,5 +19,7 @@ namespace LunarApp.Web.Models
         public Guid NotebookId { get; set; }
         public Guid? ParentFolderId { get; set; }
         public Guid? FolderId { get; set; }
+        public DateTime DateCreated { get; set; } = DateTime.Now;
+        public DateTime LastSaved { get; set; } = DateTime.Now;
     }
 }
