@@ -1,5 +1,6 @@
 ﻿using LunarApp.Data.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace LunarApp.Data.Repository
 {
@@ -13,20 +14,34 @@ namespace LunarApp.Data.Repository
             _context = context;
             _dbSet = context.Set<TType>();
         }
-        public TType GetById(TId id)
+        public TType? GetById(TId id)
         {
-            TType entity = _dbSet.Find(id);
+            TType? entity = _dbSet.Find(id);
 
             return entity;
         }
 
-        public async Task<TType> GetByIdAsync(TId id)
+        public async Task<TType?> GetByIdAsync(TId id)
         {
-            TType entity = await _dbSet.FindAsync(id);
+            TType? entity = await _dbSet.FindAsync(id);
+
+            return entity;
+        }
+        public TType? FirstOrDefault(Func<TType, bool> predicate)
+        {
+            TType? entity = _dbSet
+                .FirstOrDefault(predicate);
 
             return entity;
         }
 
+        public async Task<TType?> FirstOrDefaultAsync(Expression<Func<TType, bool>> predicate)
+        {
+            TType? entity = await _dbSet
+                .FirstOrDefaultAsync(predicate);
+
+            return entity;
+        }
         public IEnumerable<TType> GetAll()
         {
             return _dbSet.ToArray();
@@ -68,7 +83,7 @@ namespace LunarApp.Data.Repository
 
         public bool Delete(TId id)
         {
-            TType entity = GetById(id);
+            TType? entity = GetById(id);
             if (entity is null)
             {
                 return false;
@@ -82,7 +97,7 @@ namespace LunarApp.Data.Repository
 
         public async Task<bool> DeleteAsync(TId id)
         {
-            TType entity = await GetByIdAsync(id);
+            TType? entity = await GetByIdAsync(id);
             if (entity is null)
             {
                 return false;
