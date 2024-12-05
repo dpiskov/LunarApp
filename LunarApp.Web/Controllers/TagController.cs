@@ -113,5 +113,45 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(TagEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var tag = await context.Tags.FindAsync(model.Id);
+
+                if (tag == null)
+                {
+                    if (model.FolderId != Guid.Empty && model.FolderId != null &&
+                        model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
+                    {
+                        return Redirect($"~/Tag?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}&noteId={model.NoteId}");
+                    }
+                    else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                    {
+                        return Redirect($"~/Tag?notebookId={model.NotebookId}&folderId={model.FolderId}&noteId={model.NoteId}");
+                    }
+                }
+                else
+                {
+                    tag.Name = model.Name;
+                }
+
+                await context.SaveChangesAsync();
+
+                if (model.FolderId != Guid.Empty && model.FolderId != null &&
+                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
+                {
+                    return Redirect($"~/Tag?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}&noteId={model.NoteId}");
+                }
+                else if (model.FolderId != Guid.Empty && model.FolderId != null)
+                {
+                    return Redirect($"~/Tag?notebookId={model.NotebookId}&folderId={model.FolderId}&noteId={model.NoteId}");
+                }
+            }
+
+            return View(model);
+        }
     }
 }
