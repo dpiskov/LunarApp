@@ -4,6 +4,7 @@ using LunarApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LunarApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203112841_AddedTagEntityModelAndSeedDatabase")]
+    partial class AddedTagEntityModelAndSeedDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +123,7 @@ namespace LunarApp.Data.Migrations
 
                     b.HasIndex("ParentFolderId");
 
-                    b.ToTable("Folders", (string)null);
+                    b.ToTable("Folders");
 
                     b.HasData(
                         new
@@ -213,7 +216,7 @@ namespace LunarApp.Data.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
 
                     b.HasData(
                         new
@@ -288,7 +291,7 @@ namespace LunarApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notebooks", (string)null);
+                    b.ToTable("Notebooks");
 
                     b.HasData(
                         new
@@ -338,7 +341,7 @@ namespace LunarApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
 
                     b.HasData(
                         new
