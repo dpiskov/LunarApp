@@ -97,9 +97,21 @@ namespace LunarApp.Services.Data
             return await notebookRepository.UpdateAsync(notebook);
         }
 
-        public Task<NotebookDetailsViewModel?> GetNotebookDetailsByIdAsync(Guid id)
+        public async Task<NotebookDetailsViewModel?> GetNotebookDetailsByIdAsync(Guid notebookId)
         {
-            throw new NotImplementedException();
+            NotebookDetailsViewModel? model = await notebookRepository
+                .GetAllAttached()
+                .Where(nb => nb.Id == notebookId)
+                .Select(nb => new NotebookDetailsViewModel
+                {
+                    Id = nb.Id,
+                    Title = nb.Title,
+                    Description = nb.Description
+                })
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return model;
         }
 
         public Task<bool> EditDetailsNotebookAsync(NotebookDetailsViewModel? model)

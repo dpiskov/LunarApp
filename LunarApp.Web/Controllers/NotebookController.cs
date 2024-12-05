@@ -117,23 +117,14 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId)
         {
-            var notebook = await context.Notebooks
-                .Where(n => n.Id == notebookId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            NotebookDetailsViewModel? model = await notebookService.GetNotebookDetailsByIdAsync(notebookId);
 
-            if (notebook is null)
+            if (model is null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var model = new NotebookDetailsViewModel
-            {
-                Id = notebookId,
-                Description = notebook.Description
-            };
-
-            ViewData["Title"] = notebook.Title;
+            ViewData["Title"] = model.Title;
 
             return View(model);
         }
