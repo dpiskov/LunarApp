@@ -295,9 +295,32 @@ namespace LunarApp.Services.Data
             return (model, newParentFolderId);
         }
 
-        public Task<(bool isEdited, Folder? parentFolder)> EditDetailsFolderAsync(FolderDetailsViewModel? model)
+        public async Task<(bool isEdited, Folder? parentFolder)> EditDetailsFolderAsync(FolderDetailsViewModel? model)
         {
-            throw new NotImplementedException();
+            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            {
+                return (false, null);
+            }
+
+            Folder? folder = await folderRepository.GetByIdAsync(model.FolderId);
+
+            if (folder is null)
+            {
+                return (false, null);
+            }
+
+            folder.Description = model.Description;
+
+            Folder? parentFolder = null;
+
+            if (model.ParentFolderId.HasValue)
+            {
+                parentFolder = await folderRepository.GetByIdAsync(model.ParentFolderId.Value);
+            }
+
+            bool isEdited = await folderRepository.UpdateAsync(folder);
+
+            return (isEdited, parentFolder);
         }
 
         public Task<string?> GetFolderTitleAsync(Guid folderId)

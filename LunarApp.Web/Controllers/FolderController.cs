@@ -272,29 +272,17 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for updating folder details
         [HttpPost]
         public async Task<IActionResult> Details(FolderDetailsViewModel model)
         {
-            // Check if the form data is valid; if not, return the form view with the current model
             if (ModelState.IsValid)
             {
-                // Retrieve the folder from the database based on the provided parentFolderId
-                Folder? folder = await context.Folders.FindAsync(model.FolderId);
+                (bool isEdited, Folder? parentFolder) = await folderService.EditDetailsFolderAsync(model);
 
-                // If the folder is not found, redirect to the Index view
-                if (folder is null)
+                if (isEdited is false)
                 {
                     return RedirectToAction(nameof(Index));
                 }
-
-                // Update the folder's description with the new value from the model
-                folder.Description = model.Description;
-
-                // Save changes to the database
-                await context.SaveChangesAsync();
-
-                Folder? parentFolder = await context.Folders.FindAsync(model.ParentFolderId);
 
                 if (parentFolder != null && parentFolder.ParentFolderId != Guid.Empty && parentFolder.ParentFolderId != null &&
                     parentFolder.Id != Guid.Empty && parentFolder.Id != null)
@@ -302,7 +290,6 @@ namespace LunarApp.Web.Controllers
                     return Redirect(
                         $"~/Folder?notebookId={parentFolder.NotebookId}&parentFolderId={parentFolder.ParentFolderId}&folderId={parentFolder.Id}");
                 }
-                //else if (folder.Id != Guid.Empty && model.IsMadeDirectlyFromNotebook == false)
                 else if (parentFolder != null && parentFolder.Id != Guid.Empty && parentFolder.Id != null &&
                          model.IsClickedDirectlyFromNotebook == false)
                 {
@@ -310,7 +297,6 @@ namespace LunarApp.Web.Controllers
                 }
                 else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
                 {
-                    // Redirects to the main notebook view if no parent folder is specified
                     return Redirect($"~/Folder?notebookId={model.NotebookId}");
                 }
             }
