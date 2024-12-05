@@ -145,28 +145,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to render the form for removing a folder
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            FolderDeleteViewModel? model = await context.Folders
-                .Where(f => f.Id == folderId) // Filter by folder ID
-                .AsNoTracking() // Do not track changes for efficiency
-                .Select(f => new FolderDeleteViewModel()
-                {
-                    Title = f.Title,
-                    NotebookId = f.NotebookId,
-                    ParentFolderId = f.ParentFolderId,
-                    FolderId = f.Id
-                })
-                .FirstOrDefaultAsync(); // Retrieve the first match or null if not found
-
-            Guid newParentFolderId = Guid.Empty;
-
-            if (parentFolderId != Guid.Empty && parentFolderId != null)
-            {
-                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
-            }
+            (FolderDeleteViewModel? model, Guid newParentFolderId) =
+                await folderService.GetFolderForDeleteByIdAsync(notebookId, parentFolderId, folderId);
 
             // Stores the data for the view to access
             ViewData["NotebookId"] = notebookId;
