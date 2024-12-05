@@ -17,7 +17,12 @@ namespace LunarApp.Data.Repository.Interfaces
         Task AddRangeAsync(TType[] items);
         bool Delete(TId id);
         Task<bool> DeleteAsync(TId id);
+        void DeleteRange(IEnumerable<TType> entities);
+        Task DeleteRangeAsync(IEnumerable<TType> entities);
         bool Update(TType item);
         Task<bool> UpdateAsync(TType item);
+        void SaveChanges();
+        Task SaveChangesAsync();
+
     }
 }
