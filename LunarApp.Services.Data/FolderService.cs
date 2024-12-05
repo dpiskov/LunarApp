@@ -332,9 +332,13 @@ namespace LunarApp.Services.Data
                 .FirstOrDefaultAsync();
         }
 
-        public Task<string?> GetNotebookTitleAsync(Guid notebookId)
+        public async Task<string?> GetNotebookTitleAsync(Guid notebookId)
         {
-            throw new NotImplementedException();
+            return await notebookRepository
+                .GetAllAttached()
+                .Where(nb => nb.Id == notebookId)
+                .Select(nb => nb.Title)
+                .FirstOrDefaultAsync();
         }
 
         public Task<Guid> GetParentFolderIdAsync(Guid? parentFolderId, Guid newParentFolderId)
