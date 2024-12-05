@@ -30,5 +30,27 @@ namespace LunarApp.Web.Controllers
 
             return View(tags);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
+        {
+            TagCreateViewModel? model = null;
+
+            model = new TagCreateViewModel
+            {
+                Name = string.Empty,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                NoteId = noteId
+            };
+
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+            ViewData["NoteId"] = noteId;
+
+            return View(model);
+        }
     }
 }
