@@ -48,28 +48,15 @@ namespace LunarApp.Web.Controllers
             return View(foldersAndNotes);
         }
 
-        // GET method to render the form for creating a new folder
         [HttpGet]
         public async Task<IActionResult> AddFolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            bool isMadeDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
-                parentFolderId == Guid.Empty || parentFolderId == null;
+            FolderCreateViewModel? model = await folderService.GetAddFolderModelAsync(notebookId, parentFolderId, folderId);
 
-            FolderCreateViewModel model = new FolderCreateViewModel
-            {
-                Title = string.Empty,
-                NotebookId = notebookId,
-                ParentFolderId = parentFolderId,
-                FolderId = folderId,
-                IsMadeDirectlyFromNotebook = isMadeDirectlyFromNotebook
-            };
-
-            // Passes notebookId and parentFolderId to the ViewData to be used in the view
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
             ViewData["FolderId"] = folderId;
 
-            // Returns the form view with the model data
             return View(model);
         }
 

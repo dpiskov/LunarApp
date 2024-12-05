@@ -86,9 +86,19 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public Task<FolderCreateViewModel> GetAddFolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<FolderCreateViewModel> GetAddFolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            throw new NotImplementedException();
+            bool isMadeDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+                parentFolderId == Guid.Empty || parentFolderId == null;
+
+            return new FolderCreateViewModel
+            {
+                Title = string.Empty,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsMadeDirectlyFromNotebook = isMadeDirectlyFromNotebook
+            };
         }
 
         public Task<(bool isSuccess, string? errorMessage, Folder? folder)> AddFolderAsync(FolderCreateViewModel model)
