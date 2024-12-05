@@ -172,6 +172,23 @@ namespace LunarApp.Data
                 LastSaved = DateTime.Now
             };
 
+            builder.Entity<Tag>().HasData(
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Urgent",
+                },
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Important",
+                },
+                new Tag
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Not Urgent",
+                });
+
             builder.Entity<Notebook>().HasData(
                 softwareEngineeringNotebook,
                 musicProductionNotebook,
