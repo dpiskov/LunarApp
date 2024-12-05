@@ -1,0 +1,43 @@
+﻿@using LunarApp.Web.ViewModels.Tag
+@model TagRemoveViewModel
+
+@{
+    ViewData["Title"] = "Delete Tag";
+
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"]!;
+    var folderId = (Guid?)ViewData["FolderId"]!;
+    var noteId = (Guid)ViewData["NoteId"]!;
+    var tagId = (Guid)ViewData["TagId"]!;
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<hr class="border-bottom" />
+
+<div class="row d-flex align-content-center justify-content-center card-center">
+    <div class="col-md-6">
+        <div class="transparent-container card">
+            <div class="card-body">
+                <h3 class="card-title text-center">@Model.Name</h3>
+                <p class="text-danger mt-3 text-center">Are you sure you want to delete @(Model.Name)?</p>
+            </div>
+            <div class="card-footer d-flex align-content-center justify-content-center">
+                <form asp-controller="Tag" asp-action="Remove" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Name" />
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+                    <input type="hidden" asp-for="NoteId" />
+
+                    <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
+
+                    <a asp-controller="Tag" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" asp-route-noteId="@noteId" class="btn btn-outline-warning">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
