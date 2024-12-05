@@ -341,9 +341,9 @@ namespace LunarApp.Services.Data
                 .FirstOrDefaultAsync();
         }
 
-        public Task<Guid> GetParentFolderIdAsync(Guid? parentFolderId, Guid newParentFolderId)
+        public async Task<Guid> GetParentFolderIdAsync(Guid? parentFolderId, Guid newParentFolderId)
         {
-            throw new NotImplementedException();
+            return await folderHelperService.GetParentFolderIdAsync(parentFolderId, newParentFolderId);
         }
 
         public Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
