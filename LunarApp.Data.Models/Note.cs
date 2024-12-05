@@ -27,6 +27,10 @@ namespace LunarApp.Data.Models
         public Guid? FolderId { get; set; }
         [ForeignKey(nameof(FolderId))]
         public virtual Folder? Folder { get; set; }
+        [Comment("Identifier of a tag")]
+        public Guid? TagId { get; set; }
+        [ForeignKey(nameof(TagId))]
+        public virtual Tag? Tag { get; set; }
         [Required]
         [Comment("The date the note was created on")]
         public DateTime DateCreated { get; set; }
