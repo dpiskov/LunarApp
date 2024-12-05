@@ -64,18 +64,14 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(NotebookDeleteViewModel model)
         {
-            // Fetches the notebook from the database by its ID
-            Notebook? notebook = await context.Notebooks
-                .Where(nb => nb.Id == model.Id)
-                .FirstOrDefaultAsync();
+            bool isDeleted = await notebookService
+                .DeleteNotebookAsync(model.Id);
 
-            // If the notebook exists, removes it from the database
-            if (notebook != null)
+            if (isDeleted is false)
             {
-                context.Notebooks.Remove(notebook);                     // Removes the notebook from the context (database)
-
-                // Saves changes to the database asynchronously
-                await context.SaveChangesAsync();
+                TempData["ErrorMessage"] =
+                    "Unexpected error occurred while trying to delete the cinema! Please contact system administrator!";
+                return this.RedirectToAction(nameof(Remove), new { notebookId = model.Id });
             }
 
             // Redirects to the Index view to show the updated list of notebooks
