@@ -23,9 +23,24 @@ namespace LunarApp.Services.Data
             return newParentFolderId;
         }
 
-        public Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
+        public async Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
         {
-            throw new NotImplementedException();
+            Folder? folder = await folderRepository
+                .GetAllAttached()
+                .SelectMany(f => f.ChildrenFolders)
+                .Where(f => f.Id == parentFolderId)
+                .FirstOrDefaultAsync();
+
+            if (folder is not null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
+            {
+                newParentFolderId = folder.ParentFolderId.Value;
+            }
+            else if (folder is null && parentFolderId is not null)
+            {
+                newFolderId = parentFolderId.Value;
+            }
+
+            return (newParentFolderId, newFolderId);
         }
     }
 }
