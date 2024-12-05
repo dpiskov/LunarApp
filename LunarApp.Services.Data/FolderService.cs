@@ -105,7 +105,7 @@ namespace LunarApp.Services.Data
         {
             Notebook? notebook = await notebookRepository.GetByIdAsync(model.NotebookId);
 
-            if (notebook is null)
+            if (notebook == null)
             {
                 return (false, "The selected notebook does not exist.", null);
             }
@@ -179,7 +179,7 @@ namespace LunarApp.Services.Data
                 .Include(f => f.ChildrenFolders)
                 .FirstOrDefaultAsync(f => f.Id == folderId);
 
-            if (folder is null)
+            if (folder == null)
             {
                 throw new InvalidOperationException("Folder not found.");
             }
@@ -208,7 +208,7 @@ namespace LunarApp.Services.Data
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (folder is null)
+            if (folder == null)
             {
                 return (null, Guid.Empty);
             }
@@ -234,13 +234,13 @@ namespace LunarApp.Services.Data
 
         public async Task<(bool isEdited, Folder? parentFolder)> EditFolderAsync(FolderEditViewModel model)
         {
-            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
                 return (false, null);
             }
 
             Folder? folder = await folderRepository.GetByIdAsync(model.FolderId);
-            if (folder is null)
+            if (folder == null)
             {
                 return (false, null);
             }
@@ -270,7 +270,7 @@ namespace LunarApp.Services.Data
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (folder is null)
+            if (folder == null)
             {
                 return (null, Guid.Empty);
             }
@@ -297,14 +297,14 @@ namespace LunarApp.Services.Data
 
         public async Task<(bool isEdited, Folder? parentFolder)> EditDetailsFolderAsync(FolderDetailsViewModel? model)
         {
-            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
                 return (false, null);
             }
 
             Folder? folder = await folderRepository.GetByIdAsync(model.FolderId);
 
-            if (folder is null)
+            if (folder == null)
             {
                 return (false, null);
             }
