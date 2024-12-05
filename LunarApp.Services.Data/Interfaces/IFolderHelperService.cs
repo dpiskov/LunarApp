@@ -6,6 +6,5 @@
 
         Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId,
             Guid newParentFolderId, Guid newFolderId);
-        Task<string?> GetParentFolderTitleAsync(Guid folderId);
     }
 }
