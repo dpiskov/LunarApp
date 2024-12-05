@@ -43,12 +43,12 @@
                 <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
 
                 @if (parentFolderId != Guid.Empty && parentFolderId != null &&
-                newParentFolderId != Guid.Empty && newParentFolderId != null)
+                     newParentFolderId != Guid.Empty && newParentFolderId != null)
                 {
                     <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@newParentFolderId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
                 }
                 else if (folderId != Guid.Empty && folderId != null &&
-                parentFolderId != Guid.Empty && parentFolderId != null)
+                         parentFolderId != Guid.Empty && parentFolderId != null)
                 {
                     <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
                 }
@@ -60,3 +60,4 @@
         </form>
     </div>
 </div>
+
