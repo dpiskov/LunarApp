@@ -1,17 +1,14 @@
-﻿using LunarApp.Data;
-using LunarApp.Data.Models;
+﻿using LunarApp.Data.Models;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Folder;
-using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
     // TODO: HANDLE EXCEPTIONS
     [Authorize]
-    public class FolderController(ApplicationDbContext context, IFolderService folderService) : Controller
+    public class FolderController(IFolderService folderService) : Controller
     {
         public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
@@ -302,77 +299,6 @@ namespace LunarApp.Web.Controllers
             }
 
             return View(model);
-        }
-
-        private async Task<Guid> GetValue(Guid? parentFolderId, Guid newParentFolderId)
-        {
-            var folder = await context.Folders
-                .SelectMany(f => f.ChildrenFolders)
-                .Where(f => f.Id == parentFolderId)
-                .FirstOrDefaultAsync();
-
-            if (folder != null)
-            {
-                if (folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null)
-                {
-                    newParentFolderId = folder.ParentFolderId.Value;
-                }
-            }
-
-            return newParentFolderId;
-        }
-
-        private async Task<(Guid newParentFolderId, Guid newFolderId)> GetValue(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
-        {
-            var folder = await context.Folders
-                .SelectMany(f => f.ChildrenFolders)
-                .Where(f => f.Id == parentFolderId)
-                .FirstOrDefaultAsync();
-
-            if (folder != null)
-            {
-                if (folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null)
-                {
-                    newParentFolderId = folder.ParentFolderId.Value;
-                }
-            }
-            else if (folder is null && parentFolderId is not null)
-            {
-                newFolderId = (Guid)parentFolderId;
-            }
-
-            return (newParentFolderId, newFolderId);
-        }
-
-        public async Task DeleteFolderWithChildrenAsync(Guid folderId)
-        {
-            var folder = await context.Folders
-                .Include(f => f.Notes) // Include Notes to delete them
-                .Include(f => f.ChildrenFolders) // Include child folders to delete them later
-                .FirstOrDefaultAsync(f => f.Id == folderId);
-
-            if (folder == null)
-            {
-                throw new InvalidOperationException("Folder not found.");
-            }
-
-            // Create a copy of the ChildrenFolders collection to iterate safely
-            var childFolders = folder.ChildrenFolders.ToList();
-
-            // First delete all child folders (recursively)
-            foreach (var childFolder in childFolders)
-            {
-                await DeleteFolderWithChildrenAsync(childFolder.Id); // Recursively delete child folders
-            }
-
-            // Then delete all Notes inside the current folder
-            context.Notes.RemoveRange(folder.Notes);
-
-            // Finally, delete the current folder
-            context.Folders.Remove(folder);
-
-            // Save changes to the database
-            await context.SaveChangesAsync();
         }
     }
 }
