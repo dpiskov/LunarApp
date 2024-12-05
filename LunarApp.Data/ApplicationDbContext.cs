@@ -23,6 +23,7 @@ namespace LunarApp.Data
         public virtual DbSet<Notebook> Notebooks { get; set; } = null!;
         public virtual DbSet<Folder> Folders { get; set; } = null!;
         public virtual DbSet<Note> Notes { get; set; } = null!;
+        public virtual DbSet<Tag> Tags { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
