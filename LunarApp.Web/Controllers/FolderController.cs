@@ -224,29 +224,17 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for editing a folder
         [HttpPost]
         public async Task<IActionResult> Edit(FolderEditViewModel model)
         {
-            // Check if the model is valid; if not, return the view with the current model data
             if (ModelState.IsValid)
             {
-                // Fetch the folder from the database using the provided parentFolderId
-                var folder = await context.Folders.FindAsync(model.FolderId);
+                (bool isEdited, Folder? parentFolder) = await folderService.EditFolderAsync(model);
 
-                // If the folder is not found, redirect to the Index view
-                if (folder is null)
+                if (isEdited is false)
                 {
                     return RedirectToAction(nameof(Index));
                 }
-
-                // Update the folder's title with the new value from the form
-                folder.Title = model.Title;
-
-                // Save the changes to the database
-                await context.SaveChangesAsync();
-
-                var parentFolder = await context.Folders.FindAsync(model.ParentFolderId);
 
                 if (parentFolder != null && parentFolder.ParentFolderId != Guid.Empty && parentFolder.ParentFolderId != null &&
                     parentFolder.Id != Guid.Empty && parentFolder.Id != null)
@@ -261,12 +249,11 @@ namespace LunarApp.Web.Controllers
                 }
                 else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
                 {
-                    // Redirects to the main notebook view if no parent folder is specified
                     return Redirect($"~/Folder?notebookId={model.NotebookId}");
                 }
             }
 
-            return View(model);                 // If the form submission is invalid, return the form with errors
+            return View(model);
         }
 
         // GET method to display the details of a specific folder
