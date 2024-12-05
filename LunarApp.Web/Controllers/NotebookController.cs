@@ -8,24 +8,16 @@ using Microsoft.EntityFrameworkCore;
 namespace LunarApp.Web.Controllers
 {
     [Authorize]
-    public class NotebookController(ApplicationDbContext context) : Controller
+    public class NotebookController(INotebookService notebookService)
+        : Controller
     {
         // GET method to display the list of notebooks
         public async Task<IActionResult> Index()
         {
-            // Fetches all notebooks from the database and selects only necessary fields for the view model
-            var model = await context.Notebooks
-                .Select(nb => new NotebookInfoViewModel()       // Creates a simplified view model for the notebooks
-                {
-                    Id = nb.Id,
-                    Title = nb.Title
-                })
-                .OrderBy(nb => nb.Title)
-                .AsNoTracking()                                        // Disables tracking of entities for better performance (read-only)
-                .ToListAsync();                                        // Asynchronously gets the list of notebooks
+            IEnumerable<NotebookInfoViewModel> notebooks = await notebookService.IndexGetAllOrderedByTitleAsync();
 
             // Returns the view with the model containing the notebooks data
-            return View(model);
+            return View(notebooks);
         }
 
         // GET method to render the form for creating a new notebook

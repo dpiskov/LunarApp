@@ -8,9 +8,20 @@ namespace LunarApp.Services.Data
 {
     public class NotebookService(IRepository<Notebook, Guid> notebookRepository) : INotebookService
     {
-        public Task<IEnumerable<NotebookInfoViewModel>> IndexGetAllOrderedByTitleAsync()
+        public async Task<IEnumerable<NotebookInfoViewModel>> IndexGetAllOrderedByTitleAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<NotebookInfoViewModel> notebooks = await notebookRepository
+                .GetAllAttached()
+                .Select(nb => new NotebookInfoViewModel()
+                {
+                    Id = nb.Id,
+                    Title = nb.Title
+                })
+                .OrderBy(nb => nb.Title)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return notebooks;
         }
 
         public Task AddNotebookAsync(NotebookCreateViewModel model)
