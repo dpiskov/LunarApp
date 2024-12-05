@@ -109,6 +109,42 @@ namespace LunarApp.Data.Repository
             return true;
         }
 
+        public void DeleteRange(IEnumerable<TType> entities)
+        {
+            //if (entities == null)
+            //{
+            //    throw new ArgumentNullException(nameof(entities), "The entities collection cannot be null.");
+            //}
+
+            var entityList = entities.ToList();
+
+            //if (!entityList.Any())
+            //{
+            //    throw new ArgumentException("The entities collection cannot be empty.", nameof(entities));
+            //}
+
+            _dbSet.RemoveRange(entityList);
+            _context.SaveChanges();
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<TType> entities)
+        {
+            //if (entities == null)
+            //{
+            //    throw new ArgumentNullException(nameof(entities), "The entities collection cannot be null.");
+            //}
+
+            var entityList = entities.ToList();
+
+            //if (!entityList.Any())
+            //{
+            //    throw new ArgumentException("The entities collection cannot be empty.", nameof(entities));
+            //}
+
+            _dbSet.RemoveRange(entityList);
+            await _context.SaveChangesAsync();
+        }
+
         public bool Update(TType item)
         {
             try
@@ -139,6 +175,14 @@ namespace LunarApp.Data.Repository
             {
                 return false;
             }
+        }
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
