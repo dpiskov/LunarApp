@@ -191,21 +191,14 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to display the folder edit form
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            bool isEditedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
-                parentFolderId == Guid.Empty || parentFolderId == null;
+            (FolderEditViewModel model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId);
 
-            // Fetches the folder from the database
-            Folder? folder = await context.Folders
-                .Where(f => f.Id == folderId)
-                .AsNoTracking() // Do not track changes for efficiency
-                .FirstOrDefaultAsync(); // Retrieve the first match or null if not found
 
             //TODO: SIMPLIFY IF POSSIBLE
-            if (folder is null)
+            if (model is null)
             {
                 if (folderId != Guid.Empty && folderId != null &&
                     parentFolderId != Guid.Empty && parentFolderId != null)
@@ -218,23 +211,6 @@ namespace LunarApp.Web.Controllers
                 }
 
                 return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId });
-            }
-
-            // Creates a view model for the folder to be edited
-            var model = new FolderEditViewModel()
-            {
-                Title = folder.Title,
-                NotebookId = notebookId,
-                ParentFolderId = parentFolderId,
-                FolderId = folderId,
-                IsEditedDirectlyFromNotebook = isEditedDirectlyFromNotebook
-            };
-
-            Guid newParentFolderId = Guid.Empty;
-
-            if (parentFolderId != Guid.Empty && parentFolderId != null)
-            {
-                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
             }
 
             // Stores the data for the view to access
