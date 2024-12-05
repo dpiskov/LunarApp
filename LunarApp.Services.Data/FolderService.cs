@@ -14,9 +14,76 @@ namespace LunarApp.Services.Data
         IFolderHelperService folderHelperService)
         : IFolderService
     {
-        public Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId,
+    Guid? folderId)
         {
-            throw new NotImplementedException();
+            IEnumerable<FolderInfoViewModel> folders = new List<FolderInfoViewModel>();
+            IEnumerable<NoteInfoViewModel> notes = new List<NoteInfoViewModel>();
+
+            if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
+            {
+                folders = await folderRepository
+                    .GetAllAttached()
+                    .Where(f => f.ParentFolderId == folderId)
+                    .Select(f => new FolderInfoViewModel
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        NotebookId = f.NotebookId,
+                        ParentFolderId = f.ParentFolderId
+                    })
+                    .OrderBy(f => f.Title)
+                    .ToListAsync();
+
+                notes = await noteRepository
+                    .GetAllAttached()
+                    .Where(n => n.FolderId == folderId)
+                    .Select(n => new NoteInfoViewModel
+                    {
+                        Id = n.Id,
+                        Title = n.Title,
+                        NotebookId = n.NotebookId,
+                        FolderId = n.FolderId
+                    })
+                    .OrderBy(n => n.Title)
+                    .ToListAsync();
+            }
+            else if (notebookId != Guid.Empty && notebookId != null)
+            {
+                folders = await folderRepository
+                    .GetAllAttached()
+                    .Where(f => f.NotebookId == notebookId &&
+                                f.ParentFolderId == null)
+                    .Select(f => new FolderInfoViewModel
+                    {
+                        Id = f.Id,
+                        Title = f.Title,
+                        NotebookId = f.NotebookId,
+                        ParentFolderId = parentFolderId
+                    })
+                    .OrderBy(f => f.Title)
+                    .ToListAsync();
+
+                notes = await noteRepository
+                    .GetAllAttached()
+                    .Where(n => n.FolderId == null)
+                    .Where(nb => nb.NotebookId == notebookId)
+                    .Select(n => new NoteInfoViewModel
+                    {
+                        Id = n.Id,
+                        Title = n.Title,
+                        NotebookId = n.NotebookId,
+                        FolderId = n.FolderId
+                    })
+                    .OrderBy(n => n.Title)
+                    .ToListAsync();
+            }
+
+            return new FolderNotesViewModel
+            {
+                Folders = folders,
+                Notes = notes
+            };
         }
 
         public Task<FolderCreateViewModel> GetAddFolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)

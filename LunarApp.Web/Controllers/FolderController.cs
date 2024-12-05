@@ -1,5 +1,6 @@
 ﻿using LunarApp.Data;
 using LunarApp.Data.Models;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Folder;
 using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
@@ -10,56 +11,19 @@ namespace LunarApp.Web.Controllers
 {
     // TODO: HANDLE EXCEPTIONS
     [Authorize]
-    public class FolderController(ApplicationDbContext context) : Controller
+    public class FolderController(ApplicationDbContext context, IFolderService folderService) : Controller
     {
-        // GET method to display a list of folders
         public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            // Holds the list of folders to be displayed
-            IEnumerable<FolderInfoViewModel> folders;
-            // Holds the list of notes to be displayed, initially empty
-            IEnumerable<NoteInfoViewModel> notes;
+            FolderNotesViewModel foldersAndNotes = await folderService.IndexGetAllFoldersAsync(notebookId, parentFolderId, folderId);
 
             if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
             {
-                // Fetches folders that are inside the specified parent folder
-                folders = await context.Folders
-                    .Where(f => f.ParentFolderId == folderId)       // Filters folders by parentFolderId
-                    .Select(f => new FolderInfoViewModel                        // Maps folders to FolderInfoViewModel
-                    {
-                        Id = f.Id,
-                        Title = f.Title,
-                        NotebookId = f.NotebookId,
-                        ParentFolderId = f.ParentFolderId
-                    })
-                    .OrderBy(f => f.Title)
-                    .ToListAsync();
+                string? parentFolderTitle = await folderService.GetFolderTitleAsync(folderId.Value);
 
-                // Fetches notes that belong to the specified parent folder
-                notes = await context.Notes
-                .Where(n => n.FolderId == folderId)                  // Filters notes by parentFolderId
-                .Select(n => new NoteInfoViewModel                               // Maps notes to NoteInfoViewModel
-                {
-                    Id = n.Id,
-                    Title = n.Title,
-                    NotebookId = n.NotebookId,
-                    FolderId = n.FolderId
-                })
-                .OrderBy(n => n.Title)
-                .ToListAsync();
+                (Guid newParentFolderId, Guid newFolderId) =
+                    await folderService.GetFolderAndParentIdsAsync(parentFolderId, Guid.Empty, Guid.Empty);
 
-                Guid newFolderId = Guid.Empty;
-                Guid newParentFolderId = Guid.Empty;
-
-                (newParentFolderId, newFolderId) = await GetValue(parentFolderId, newParentFolderId, newFolderId);
-
-                // Fetches the title of the parent folder
-                var parentFolderTitle = await context.Folders
-                    .Where(f => f.Id == folderId)
-                    .Select(f => f.Title)
-                    .FirstOrDefaultAsync();
-
-                // Stores the data for the view to access (for navigation and display)
                 ViewData["Title"] = parentFolderTitle;
 
                 ViewData["NotebookId"] = notebookId;
@@ -69,60 +33,19 @@ namespace LunarApp.Web.Controllers
                 ViewData["NewParentFolderId"] = newParentFolderId;
                 ViewData["NewFolderId"] = newFolderId;
             }
-            // If no parent folder is specified, checks if a valid notebook ID is provided
             else if (notebookId != Guid.Empty && notebookId != null)
             {
-                // Fetches folders that belong to the specified notebook and do not have a parent folder
-                folders = await context.Folders
-                    .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null)  // Filters folders by notebookId and no parent folder
-                    .Select(f => new FolderInfoViewModel                                 // Projects folders to FolderInfoViewModel
-                    {
-                        Id = f.Id,
-                        Title = f.Title,
-                        NotebookId = f.NotebookId,
-                        ParentFolderId = parentFolderId
-                    })
-                    .OrderBy(f => f.Title)
-                    .ToListAsync();
+                string? notebookTitle = await folderService.GetNotebookTitleAsync(notebookId);
 
-                // Fetches notes that do not belong to any folder
-                notes = await context.Notes
-                .Where(n => n.FolderId == null)                                  // Filters notes without a folder
-                .Where(nb => nb.NotebookId == notebookId)
-                    .Select(n => new NoteInfoViewModel
-                    {
-                        Id = n.Id,
-                        Title = n.Title,
-                        NotebookId = n.NotebookId,
-                        FolderId = n.FolderId
-                    })
-                .OrderBy(n => n.Title)
-                    .ToListAsync();
-
-                // Fetches the title of the notebook
-                var notebookTitle = await context.Notebooks
-                    .Where(nb => nb.Id == notebookId)
-                    .Select(nb => nb.Title)
-                    .FirstOrDefaultAsync();
-
-                // Stores the data for the view to access
                 ViewData["NotebookId"] = notebookId;
                 ViewData["Title"] = notebookTitle;
             }
             else
             {
-                // Returns an error if neither notebookId nor parentFolderId is provided
-                //return BadRequest("NotebookId or ParentFolderId must be provided.");
-
                 return RedirectToAction(nameof(Index), "Notebook");
             }
 
-            // Returns the view with the list of folders and notes
-            return View(new FolderNotesViewModel
-            {
-                Folders = folders,                    // List of folders to display
-                Notes = notes                         // List of notes to display
-            });
+            return View(foldersAndNotes);
         }
 
         // GET method to render the form for creating a new folder
