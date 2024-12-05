@@ -79,5 +79,39 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
+        {
+            Tag? tag = await context.Tags
+                .Where(t => t.Id == tagId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (tag == null)
+            {
+                return RedirectToAction(nameof(Index), "Tag");
+            }
+
+            TagEditViewModel model = new TagEditViewModel
+            {
+                Id = tagId,
+                Name = tag.Name,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                NoteId = noteId
+            };
+
+            ViewData["NotebookId"] = notebookId;
+            ViewData["ParentFolderId"] = parentFolderId;
+            ViewData["FolderId"] = folderId;
+            ViewData["NoteId"] = noteId;
+            ViewData["TagId"] = tagId;
+
+            ViewData["Title"] = tag.Name;
+
+            return View(model);
+        }
     }
 }
