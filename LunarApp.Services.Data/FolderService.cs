@@ -101,9 +101,26 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public Task<(bool isSuccess, string? errorMessage, Folder? folder)> AddFolderAsync(FolderCreateViewModel model)
+        public async Task<(bool isSuccess, string? errorMessage, Folder? folder)> AddFolderAsync(FolderCreateViewModel model)
         {
-            throw new NotImplementedException();
+            Notebook? notebook = await notebookRepository.GetByIdAsync(model.NotebookId);
+
+            if (notebook is null)
+            {
+                return (false, "The selected notebook does not exist.", null);
+            }
+
+            Folder folder = new Folder
+            {
+                Title = model.Title,
+                NotebookId = model.NotebookId,
+                Notebook = notebook,
+                ParentFolderId = model.FolderId
+            };
+
+            await folderRepository.AddAsync(folder);
+
+            return (true, null, folder);
         }
 
         public Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)

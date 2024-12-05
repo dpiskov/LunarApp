@@ -60,46 +60,35 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for creating a new folder
         [HttpPost]
         public async Task<IActionResult> AddFolder(FolderCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid is false)
             {
-                var notebook = await context.Notebooks.FindAsync(model.NotebookId);
-                if (notebook is null)
-                {
-                    ModelState.AddModelError(string.Empty, "The selected notebook does not exist.");
-                    return View(model);
-                }
+                return View(model);
+            }
 
-                Folder folder = new Folder
-                {
-                    Title = model.Title,
-                    NotebookId = model.NotebookId,
-                    Notebook = notebook,
-                    ParentFolderId = model.FolderId
-                };
+            (bool isSuccess, string? errorMessage, Folder? folder) = await folderService.AddFolderAsync(model);
 
-                await context.Folders.AddAsync(folder); // Adds the folder to the database
-                await context.SaveChangesAsync(); // Saves changes to the database
+            if (isSuccess is false)
+            {
+                ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
+                return View(model);
+            }
 
-                if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
-                    model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return Redirect(
-                        $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
-                }
-                //else if (folder.Id != Guid.Empty && model.IsMadeDirectlyFromNotebook == false)
-                else if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
-                }
-                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-                {
-                    // Redirects to the main notebook view if no parent folder is specified
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
-                }
+            if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
+                model.FolderId != Guid.Empty && model.FolderId != null)
+            {
+                return Redirect(
+                    $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
+            }
+            else if (model.FolderId != Guid.Empty && model.FolderId != null)
+            {
+                return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
+            }
+            else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
+            {
+                return Redirect($"~/Folder?notebookId={model.NotebookId}");
             }
 
             return View(model);
