@@ -123,9 +123,27 @@ namespace LunarApp.Services.Data
             return (true, null, folder);
         }
 
-        public Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            throw new NotImplementedException();
+            bool isMadeDirectlyFromNotebook = parentFolderId == Guid.Empty || parentFolderId == null && folderId != Guid.Empty && folderId != null;
+
+            FolderCreateViewModel model = new FolderCreateViewModel
+            {
+                Title = string.Empty,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsMadeDirectlyFromNotebook = isMadeDirectlyFromNotebook
+            };
+
+            Guid newParentFolderId = Guid.Empty;
+
+            if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+            }
+
+            return (model, newParentFolderId);
         }
 
         public Task<(FolderDeleteViewModel? model, Guid newParentFolderId)> GetFolderForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)

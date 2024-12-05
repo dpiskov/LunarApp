@@ -97,33 +97,15 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AddSubfolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            bool isMadeDirectlyFromNotebook = parentFolderId == Guid.Empty || parentFolderId == null && folderId != Guid.Empty && folderId != null;
 
-            // Initializes the view model with the provided notebookId and optional parentFolderId
-            FolderCreateViewModel model = new FolderCreateViewModel
-            {
-                Title = string.Empty,
-                NotebookId = notebookId,
-                ParentFolderId = parentFolderId,
-                FolderId = folderId,
-                IsMadeDirectlyFromNotebook = isMadeDirectlyFromNotebook
-            };
+            (FolderCreateViewModel model, Guid newParentFolderId) = await folderService.GetAddSubfolderModelAsync(notebookId, parentFolderId, folderId);
 
-            Guid newParentFolderId = Guid.Empty;
-
-            if (parentFolderId != Guid.Empty && parentFolderId != null)
-            {
-                newParentFolderId = await GetValue(parentFolderId, newParentFolderId);
-            }
-
-            // Passes notebookId and parentFolderId to the ViewData to be used in the view
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
             ViewData["FolderId"] = folderId;
 
             ViewData["NewParentFolderId"] = newParentFolderId;
 
-            // Returns the form view with the model data
             return View(model);
         }
 
