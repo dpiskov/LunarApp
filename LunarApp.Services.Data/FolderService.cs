@@ -259,9 +259,40 @@ namespace LunarApp.Services.Data
             return (isEdited, parentFolder);
         }
 
-        public Task<(FolderDetailsViewModel? model, Guid newParentFolderId)> GetFolderDetailsByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
+        public async Task<(FolderDetailsViewModel? model, Guid newParentFolderId)> GetFolderDetailsByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            throw new NotImplementedException();
+            bool isClickedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+                parentFolderId == Guid.Empty || parentFolderId == null;
+
+            Folder? folder = await folderRepository
+                .GetAllAttached()
+                .Where(f => f.Id == folderId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (folder is null)
+            {
+                return (null, Guid.Empty);
+            }
+
+            FolderDetailsViewModel? model = new FolderDetailsViewModel()
+            {
+                Title = folder.Title,
+                Description = folder.Description,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                IsClickedDirectlyFromNotebook = isClickedDirectlyFromNotebook
+            };
+
+            Guid newParentFolderId = Guid.Empty;
+
+            if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+            }
+
+            return (model, newParentFolderId);
         }
 
         public Task<(bool isEdited, Folder? parentFolder)> EditDetailsFolderAsync(FolderDetailsViewModel? model)
