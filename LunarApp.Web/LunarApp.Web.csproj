@@ -24,7 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LunarApp.Common\LunarApp.Common.csproj" />
+    <ProjectReference Include="..\LunarApp.Data.Models\LunarApp.Data.Models.csproj" />
     <ProjectReference Include="..\LunarApp.Data\LunarApp.Data.csproj" />
+    <ProjectReference Include="..\LunarApp.Services.Data\LunarApp.Services.Data.csproj" />
     <ProjectReference Include="..\LunarApp.Web.Infrastructure\LunarApp.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\LunarApp.Web.ViewModels\LunarApp.Web.ViewModels.csproj" />
   </ItemGroup>
