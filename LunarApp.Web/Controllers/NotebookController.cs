@@ -82,25 +82,12 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId)
         {
-            // Fetches the notebook to be edited from the database by its ID
-            var notebook = await context.Notebooks
-                .Where(n => n.Id == notebookId)                 // Filters notebooks by ID
-                .AsNoTracking()                                 // Disables tracking for read-only operation
-                .FirstOrDefaultAsync();                         // Gets the first (or default) notebook matching the ID
+            NotebookEditViewModel? model = await notebookService.GetNotebookForEditByIdAsync(notebookId);
 
-            // If the notebook doesn't exist, redirects to the Index view
-            if (notebook == null)
+            if (model is null)
             {
-                //return NotFound();                            // Optional: Uncomment to return a 404 if the notebook is not found
-                return RedirectToAction(nameof(Index));         // Redirects to the main notebook list
+                return RedirectToAction(nameof(Index));
             }
-
-            // Prepares a view model with the notebook's data for editing
-            var model = new NotebookEditViewModel
-            {
-                Id = notebookId,
-                Title = notebook.Title                          // Sets the current title of the notebook in the view model
-            };
 
             // Returns the edit view with the notebook data in the view model
             return View(model);
