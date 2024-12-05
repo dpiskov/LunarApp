@@ -34,9 +34,20 @@ namespace LunarApp.Services.Data
             await notebookRepository.AddAsync(notebook);
         }
 
-        public Task<NotebookDeleteViewModel?> GetNotebookForDeleteByIdAsync(Guid notebookId)
+        public async Task<NotebookDeleteViewModel?> GetNotebookForDeleteByIdAsync(Guid notebookId)
         {
-            throw new NotImplementedException();
+            NotebookDeleteViewModel? model = await notebookRepository
+                .GetAllAttached()
+                .Where(nb => nb.Id == notebookId)
+                .AsNoTracking()
+                .Select(nb => new NotebookDeleteViewModel()
+                {
+                    Id = nb.Id,
+                    Title = nb.Title
+                })
+                .FirstOrDefaultAsync();
+
+            return model;
         }
 
         public Task<bool> DeleteNotebookAsync(Guid notebookId)

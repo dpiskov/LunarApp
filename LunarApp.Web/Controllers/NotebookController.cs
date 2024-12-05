@@ -47,19 +47,11 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId)
         {
-            // Fetches the notebook to be deleted from the database
-            var model = await context.Notebooks
-                .Where(nb => nb.Id == notebookId)                       // Filters notebooks by ID
-                .AsNoTracking()                                         // Disables tracking for read-only operation
-                .Select(nb => new NotebookDeleteViewModel()     // Creates a view model for the notebook to be deleted
-                {
-                    Id = nb.Id,
-                    Title = nb.Title
-                })
-                .FirstOrDefaultAsync();                                 // Gets the first (or default) notebook matching the ID
+            NotebookDeleteViewModel? model =
+                await notebookService.GetNotebookForDeleteByIdAsync(notebookId);
 
             // If the notebook doesn't exist, redirects to the Index view
-            if (model == null)
+            if (model is null)
             {
                 return RedirectToAction(nameof(Index));
             }
