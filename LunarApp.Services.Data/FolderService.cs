@@ -171,9 +171,30 @@ namespace LunarApp.Services.Data
             return (model, newParentFolderId);
         }
 
-        public Task DeleteFolderWithChildrenAsync(Guid folderId)
+        public async Task DeleteFolderWithChildrenAsync(Guid folderId)
         {
-            throw new NotImplementedException();
+            Folder? folder = await folderRepository
+                .GetAllAttached()
+                .Include(f => f.Notes)
+                .Include(f => f.ChildrenFolders)
+                .FirstOrDefaultAsync(f => f.Id == folderId);
+
+            if (folder is null)
+            {
+                throw new InvalidOperationException("Folder not found.");
+            }
+
+            List<Folder>? childFolders = folder.ChildrenFolders.ToList();
+
+            foreach (Folder? childFolder in childFolders)
+            {
+                await DeleteFolderWithChildrenAsync(childFolder.Id);
+            }
+
+            await noteRepository.DeleteRangeAsync(folder.Notes);
+            await folderRepository.DeleteAsync(folder.Id);
+
+            await folderRepository.SaveChangesAsync();
         }
 
         public Task<(FolderEditViewModel model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)

@@ -162,46 +162,14 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle the removal of a folder
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await DeleteFolderWithChildrenAsync(model.FolderId);
+                await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
 
-                var newParentFolderId = await context.Folders
-                    .Include(f => f.ChildrenFolders)
-                    .Select(f => f.ChildrenFolders
-                        .Where(cf => cf.Id == model.ParentFolderId))
-                    .FirstOrDefaultAsync();
-
-                Folder? folder = await context.Folders
-                    .Where(f => f.Id == model.FolderId)
-                    .Select(f => new Folder()
-                    {
-                        Id = f.Id,
-                        Title = f.Title,
-                        ParentFolderId = f.ParentFolderId,
-                        NotebookId = f.NotebookId,
-                        Notebook = null,
-                    })
-                    .FirstOrDefaultAsync();
-
-                if (folder == null)
-                {
-                    folder = await context.Folders
-                        .Where(f => f.Id == model.ParentFolderId)
-                        .Select(f => new Folder()
-                        {
-                            Id = f.Id,
-                            Title = f.Title,
-                            ParentFolderId = f.ParentFolderId,
-                            NotebookId = f.NotebookId,
-                            Notebook = null,
-                        })
-                        .FirstOrDefaultAsync();
-                }
+                var folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
 
                 if (folder != null && folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null &&
                     folder.Id != Guid.Empty && folder.Id != null)
