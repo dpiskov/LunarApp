@@ -2,6 +2,11 @@
 {
     public static class ValidationConstants
     {
+        public static class Tag
+        {
+            public const int TagNameMinLength = 1;
+            public const int TagNameMaxLength = 30;
+        }
         public static class Note
         {
             // Note
