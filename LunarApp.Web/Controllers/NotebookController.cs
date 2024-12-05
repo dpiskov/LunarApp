@@ -98,26 +98,17 @@ namespace LunarApp.Web.Controllers
         public async Task<IActionResult> Edit(NotebookEditViewModel model)
         {
             // Checks if the submitted form data is valid
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid is false)
             {
                 return View(model);                             // If not valid, returns the form view with validation errors
             }
 
-            // Fetches the notebook to be updated from the database by its ID
-            var notebook = await context.Notebooks.FindAsync(model.Id);
+            bool isEdited = await notebookService.EditNotebookAsync(model);
 
-            // If the notebook doesn't exist, redirects to the Index view
-            if (notebook == null)
+            if (isEdited is false)
             {
-                // return NotFound();                           // Optional: Uncomment to return a 404 if the notebook is not found
-                return RedirectToAction(nameof(Index));         // Redirects to the main notebook list
+                return RedirectToAction(nameof(Index));
             }
-
-            // Updates the notebook's title with the new value from the form
-            notebook.Title = model.Title;
-
-            // Saves the changes to the database asynchronously
-            await context.SaveChangesAsync();
 
             // Redirects to the Index view to show the updated list of notebooks
             return RedirectToAction(nameof(Index));
