@@ -32,20 +32,12 @@ namespace LunarApp.Web.Controllers
         public async Task<IActionResult> Create(NotebookCreateViewModel model)
         {
             // Checks if the submitted form data is valid
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid is false)
             {
                 return View(model);                                    // If not valid, returns the form view with validation errors
             }
 
-            // Creates a new Notebook object using the model data
-            Notebook notebook = new Notebook()
-            {
-                Title = model.Title                                    // Sets the notebook's title from the form input
-            };
-
-            // Adds the new notebook to the database and saves changes asynchronously
-            await context.Notebooks.AddAsync(notebook);
-            await context.SaveChangesAsync();
+            await notebookService.AddNotebookAsync(model);
 
             // Redirects to the Index action to show the updated list of notebooks
             return RedirectToAction(nameof(Index));

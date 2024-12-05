@@ -24,9 +24,14 @@ namespace LunarApp.Services.Data
             return notebooks;
         }
 
-        public Task AddNotebookAsync(NotebookCreateViewModel model)
+        public async Task AddNotebookAsync(NotebookCreateViewModel model)
         {
-            throw new NotImplementedException();
+            Notebook notebook = new Notebook()
+            {
+                Title = model.Title
+            };
+
+            await notebookRepository.AddAsync(notebook);
         }
 
         public Task<NotebookDeleteViewModel?> GetNotebookForDeleteByIdAsync(Guid notebookId)
