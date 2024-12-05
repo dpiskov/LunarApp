@@ -1,9 +1,7 @@
-﻿using LunarApp.Data;
-using LunarApp.Data.Models;
+﻿using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Notebook;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
@@ -132,21 +130,18 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {
+            // Checks if the submitted form data is valid
             if (ModelState.IsValid is false)
             {
-                return View(model);
+                return View(model);                             // If not valid, returns the form view with validation errors
             }
 
-            var notebook = await context.Notebooks.FindAsync(model.Id);
+            bool isEdited = await notebookService.EditDetailsNotebookAsync(model);
 
-            if (notebook is null)
+            if (isEdited is false)
             {
                 return RedirectToAction(nameof(Index));
             }
-
-            notebook.Description = model.Description;
-
-            await context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

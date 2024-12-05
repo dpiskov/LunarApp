@@ -114,9 +114,22 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task<bool> EditDetailsNotebookAsync(NotebookDetailsViewModel? model)
+        public async Task<bool> EditDetailsNotebookAsync(NotebookDetailsViewModel? model)
         {
-            throw new NotImplementedException();
+            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            {
+                return false;
+            }
+
+            var notebook = await notebookRepository.GetByIdAsync(model.Id);
+            if (notebook is null)
+            {
+                return false;
+            }
+
+            notebook.Description = model.Description;
+
+            return await notebookRepository.UpdateAsync(notebook);
         }
     }
 }
