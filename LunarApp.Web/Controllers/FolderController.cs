@@ -319,5 +319,27 @@ namespace LunarApp.Web.Controllers
 
             return RedirectToAction("Index", "Notebook"); // Fallback
         }
+
+        private IActionResult RedirectToFolderOrNotebookIndexForEdit(Guid notebookId, Guid? parentFolderId, Guid folderId,
+            Guid newParentFolderId)
+        {
+            if (newParentFolderId != Guid.Empty && newParentFolderId != null &&
+                parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                return Redirect(
+                    $"~/Folder?notebookId={notebookId}&parentFolderId={newParentFolderId}&folderId={parentFolderId}");
+            }
+            if (folderId != Guid.Empty && folderId != null &&
+                parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                return Redirect($"~/Folder?notebookId={notebookId}&folderId={parentFolderId}");
+            }
+            if (folderId != Guid.Empty && folderId != null)
+            {
+                return Redirect($"~/Folder?notebookId={notebookId}");
+            }
+
+            return RedirectToAction("Index", "Notebook"); // Fallback
+        }
     }
 }
