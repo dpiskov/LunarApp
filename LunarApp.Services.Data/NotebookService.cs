@@ -50,17 +50,17 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public async Task<bool> DeleteNotebookAsync(Guid notebookId)
+        public async Task DeleteNotebookAsync(Guid notebookId)
         {
             Notebook? notebook = await notebookRepository
                 .FirstOrDefaultAsync(nb => nb.Id == notebookId);
 
-            if (notebook is null)
+            if (notebook == null)
             {
-                return false;
+                return;
             }
 
-            return await notebookRepository.DeleteAsync(notebookId);
+            await notebookRepository.DeleteAsync(notebookId);
         }
 
         public async Task<NotebookEditViewModel?> GetNotebookForEditByIdAsync(Guid notebookId)
@@ -81,13 +81,13 @@ namespace LunarApp.Services.Data
 
         public async Task<bool> EditNotebookAsync(NotebookEditViewModel? model)
         {
-            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
                 return false;
             }
 
-            var notebook = await notebookRepository.GetByIdAsync(model.Id);
-            if (notebook is null)
+            Notebook? notebook = await notebookRepository.GetByIdAsync(model.Id);
+            if (notebook == null)
             {
                 return false;
             }
@@ -116,13 +116,13 @@ namespace LunarApp.Services.Data
 
         public async Task<bool> EditDetailsNotebookAsync(NotebookDetailsViewModel? model)
         {
-            if (model is null || string.IsNullOrWhiteSpace(model.Title))
+            if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
                 return false;
             }
 
-            var notebook = await notebookRepository.GetByIdAsync(model.Id);
-            if (notebook is null)
+            Notebook? notebook = await notebookRepository.GetByIdAsync(model.Id);
+            if (notebook == null)
             {
                 return false;
             }
