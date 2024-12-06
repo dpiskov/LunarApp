@@ -60,14 +60,14 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFolder(FolderCreateViewModel model)
         {
-            if (ModelState.IsValid is false)
+            if (ModelState.IsValid == false)
             {
                 return View(model);
             }
 
-            (bool isSuccess, string? errorMessage, Folder? folder) = await folderService.AddFolderAsync(model);
+            (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
 
-            if (isSuccess is false)
+            if (isSuccess == false)
             {
                 ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
                 return View(model);
@@ -109,14 +109,14 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSubfolder(FolderCreateViewModel model)
         {
-            if (ModelState.IsValid is false)
+            if (ModelState.IsValid == false)
             {
                 return View(model);
             }
 
-            (bool isSuccess, string? errorMessage, Folder? folder) = await folderService.AddFolderAsync(model);
+            (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
 
-            if (isSuccess is false)
+            if (isSuccess == false)
             {
                 ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
                 return View(model);
@@ -166,7 +166,7 @@ namespace LunarApp.Web.Controllers
             {
                 await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
 
-                var folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
+                Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
 
                 if (folder != null && folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null &&
                     folder.Id != Guid.Empty && folder.Id != null)
@@ -191,11 +191,10 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            (FolderEditViewModel model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId);
-
+            (FolderEditViewModel? model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId);
 
             //TODO: SIMPLIFY IF POSSIBLE
-            if (model is null)
+            if (model == null)
             {
                 if (folderId != Guid.Empty && folderId != null &&
                     parentFolderId != Guid.Empty && parentFolderId != null)
@@ -228,7 +227,7 @@ namespace LunarApp.Web.Controllers
             {
                 (bool isEdited, Folder? parentFolder) = await folderService.EditFolderAsync(model);
 
-                if (isEdited is false)
+                if (isEdited == false)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -276,7 +275,7 @@ namespace LunarApp.Web.Controllers
             {
                 (bool isEdited, Folder? parentFolder) = await folderService.EditDetailsFolderAsync(model);
 
-                if (isEdited is false)
+                if (isEdited == false)
                 {
                     return RedirectToAction(nameof(Index));
                 }
