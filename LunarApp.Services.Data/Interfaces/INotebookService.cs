@@ -10,7 +10,7 @@ namespace LunarApp.Services.Data.Interfaces
 
         Task<NotebookDeleteViewModel?> GetNotebookForDeleteByIdAsync(Guid notebookId);
 
-        Task<bool> DeleteNotebookAsync(Guid notebookId);
+        Task DeleteNotebookAsync(Guid notebookId);
 
         Task<NotebookEditViewModel?> GetNotebookForEditByIdAsync(Guid notebookId);
 
