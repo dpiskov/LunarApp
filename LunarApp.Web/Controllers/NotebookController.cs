@@ -30,7 +30,7 @@ namespace LunarApp.Web.Controllers
         public async Task<IActionResult> Create(NotebookCreateViewModel model)
         {
             // Checks if the submitted form data is valid
-            if (ModelState.IsValid is false)
+            if (ModelState.IsValid == false)
             {
                 return View(model);                                    // If not valid, returns the form view with validation errors
             }
@@ -49,7 +49,7 @@ namespace LunarApp.Web.Controllers
                 await notebookService.GetNotebookForDeleteByIdAsync(notebookId);
 
             // If the notebook doesn't exist, redirects to the Index view
-            if (model is null)
+            if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -62,18 +62,15 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(NotebookDeleteViewModel model)
         {
-            bool isDeleted = await notebookService
-                .DeleteNotebookAsync(model.Id);
-
-            if (isDeleted is false)
+            if (ModelState.IsValid)
             {
-                TempData["ErrorMessage"] =
-                    "Unexpected error occurred while trying to delete the cinema! Please contact system administrator!";
-                return this.RedirectToAction(nameof(Remove), new { notebookId = model.Id });
+                await notebookService
+                    .DeleteNotebookAsync(model.Id);
+
+                return RedirectToAction(nameof(Index));
             }
 
-            // Redirects to the Index view to show the updated list of notebooks
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
         // GET method to render the form for editing an existing notebook
@@ -82,7 +79,7 @@ namespace LunarApp.Web.Controllers
         {
             NotebookEditViewModel? model = await notebookService.GetNotebookForEditByIdAsync(notebookId);
 
-            if (model is null)
+            if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -95,21 +92,19 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(NotebookEditViewModel model)
         {
-            // Checks if the submitted form data is valid
-            if (ModelState.IsValid is false)
+            if (ModelState.IsValid)
             {
-                return View(model);                             // If not valid, returns the form view with validation errors
-            }
+                bool isEdited = await notebookService.EditNotebookAsync(model);
 
-            bool isEdited = await notebookService.EditNotebookAsync(model);
+                if (isEdited == false)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
 
-            if (isEdited is false)
-            {
                 return RedirectToAction(nameof(Index));
             }
 
-            // Redirects to the Index view to show the updated list of notebooks
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
         [HttpGet]
@@ -117,7 +112,7 @@ namespace LunarApp.Web.Controllers
         {
             NotebookDetailsViewModel? model = await notebookService.GetNotebookDetailsByIdAsync(notebookId);
 
-            if (model is null)
+            if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -131,14 +126,14 @@ namespace LunarApp.Web.Controllers
         public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {
             // Checks if the submitted form data is valid
-            if (ModelState.IsValid is false)
+            if (ModelState.IsValid == false)
             {
                 return View(model);                             // If not valid, returns the form view with validation errors
             }
 
             bool isEdited = await notebookService.EditDetailsNotebookAsync(model);
 
-            if (isEdited is false)
+            if (isEdited == false)
             {
                 return RedirectToAction(nameof(Index));
             }
