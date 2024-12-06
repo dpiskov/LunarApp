@@ -5,6 +5,8 @@ namespace LunarApp.Web.ViewModels.Folder
 {
     public class FolderDetailsViewModel
     {
+        [Required]
+        public required string Title { get; set; }
         [MaxLength(FolderDescriptionMaxLength)]
         public string? Description { get; set; }
         [Required]
