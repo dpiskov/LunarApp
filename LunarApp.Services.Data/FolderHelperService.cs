@@ -15,7 +15,7 @@ namespace LunarApp.Services.Data
                 .Where(f => f.Id == parentFolderId)
                 .FirstOrDefaultAsync();
 
-            if (folder is not null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
+            if (folder != null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
             {
                 newParentFolderId = folder.ParentFolderId.Value;
             }
@@ -31,11 +31,11 @@ namespace LunarApp.Services.Data
                 .Where(f => f.Id == parentFolderId)
                 .FirstOrDefaultAsync();
 
-            if (folder is not null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
+            if (folder != null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
             {
                 newParentFolderId = folder.ParentFolderId.Value;
             }
-            else if (folder is null && parentFolderId is not null)
+            else if (folder == null && parentFolderId != null)
             {
                 newFolderId = parentFolderId.Value;
             }
