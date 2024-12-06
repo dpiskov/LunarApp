@@ -208,5 +208,31 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        private IActionResult RedirectToTagIndexView(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
+        {
+            string redirectUrl = string.Empty;
+
+            if (folderId != Guid.Empty && folderId != null &&
+                parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                redirectUrl += $"~/Tag?notebookId={notebookId}&parentFolderId={parentFolderId}&folderId={folderId}";
+            }
+            else if (folderId != Guid.Empty && folderId != null)
+            {
+                redirectUrl += $"~/Tag?notebookId={notebookId}&folderId={folderId}";
+            }
+            else if (notebookId != Guid.Empty && notebookId != null)
+            {
+                redirectUrl += $"~/Tag?notebookId={notebookId}";
+            }
+
+            if (noteId != Guid.Empty && noteId != null)
+            {
+                redirectUrl += $"&noteId={noteId}";
+            }
+
+            return Redirect(redirectUrl);
+        }
     }
 }
