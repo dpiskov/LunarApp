@@ -117,9 +117,19 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task DeleteTagAsync(Guid tagId)
+        public async Task DeleteTagAsync(Guid tagId)
         {
-            throw new NotImplementedException();
+            Tag? tag = await tagRepository
+                .GetAllAttached()
+                .Where(t => t.Id == tagId)
+                .FirstOrDefaultAsync();
+
+            if (tag == null)
+            {
+                return;
+            }
+
+            await tagRepository.DeleteAsync(tagId);
         }
     }
 }

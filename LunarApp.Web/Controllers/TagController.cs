@@ -1,16 +1,12 @@
-﻿using LunarApp.Data;
-using LunarApp.Data.Models;
-using LunarApp.Services.Data.Interfaces;
+﻿using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Tag;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
     [Authorize]
-    public class TagController(ApplicationDbContext context) : Controller
-    public class TagController(ApplicationDbContext context, ITagService tagService) : Controller
+    public class TagController(ITagService tagService) : Controller
     {
         public async Task<IActionResult> Index(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
@@ -103,25 +99,9 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Tag? tag = await context.Tags
-                    .Where(t => t.Id == model.Id)
-                    .FirstOrDefaultAsync();
+                await tagService.DeleteTagAsync(model.Id);
 
-                if (tag != null)
-                {
-                    context.Tags.Remove(tag);
-                    await context.SaveChangesAsync();
-                }
-
-                if (model.FolderId != Guid.Empty && model.FolderId != null &&
-                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
-                {
-                    return Redirect($"~/Tag?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}&noteId={model.NoteId}");
-                }
-                else if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return Redirect($"~/Tag?notebookId={model.NotebookId}&folderId={model.FolderId}&noteId={model.NoteId}");
-                }
+                return RedirectToTagIndexView(model.NotebookId, model.ParentFolderId, model.FolderId, model.NoteId);
             }
 
             return View(model);
