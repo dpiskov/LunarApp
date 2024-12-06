@@ -97,9 +97,24 @@ namespace LunarApp.Services.Data
             return isEdited;
         }
 
-        public Task<TagRemoveViewModel?> GetTagForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
+        public async Task<TagRemoveViewModel?> GetTagForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
         {
-            throw new NotImplementedException();
+            TagRemoveViewModel? model = await tagRepository
+                .GetAllAttached()
+                .Where(t => t.Id == tagId)
+                .AsNoTracking()
+                .Select(t => new TagRemoveViewModel()
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    NotebookId = notebookId,
+                    ParentFolderId = parentFolderId,
+                    FolderId = folderId,
+                    NoteId = noteId
+                })
+                .FirstOrDefaultAsync();
+
+            return model;
         }
 
         public Task DeleteTagAsync(Guid tagId)
