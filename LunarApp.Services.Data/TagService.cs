@@ -10,9 +10,20 @@ namespace LunarApp.Services.Data
         IRepository<Tag, Guid> tagRepository
         ) : ITagService
     {
-        public Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync()
+        public async Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<TagViewModel> tags = await tagRepository
+                .GetAllAttached()
+                .Select(t => new TagViewModel
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                })
+                .OrderBy(t => t.Name)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return tags;
         }
 
         public Task<TagCreateViewModel> GetCreateTagAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)

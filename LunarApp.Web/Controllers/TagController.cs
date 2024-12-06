@@ -1,5 +1,6 @@
 ﻿using LunarApp.Data;
 using LunarApp.Data.Models;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Tag;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,19 +10,11 @@ namespace LunarApp.Web.Controllers
 {
     [Authorize]
     public class TagController(ApplicationDbContext context) : Controller
+    public class TagController(ApplicationDbContext context, ITagService tagService) : Controller
     {
         public async Task<IActionResult> Index(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
-            IEnumerable<TagViewModel> tags = await context.Tags
-                .Select(t => new TagViewModel
-                {
-                    Id = t.Id,
-                    Name = t.Name
-                })
-                .OrderBy(t => t.Name)
-                .AsNoTracking()
-                .ToListAsync();
-            //List<Tag> tags = context.Tags.ToList();
+            IEnumerable<TagViewModel> tags = await tagService.IndexGetAllTagsOrderedByNameAsync();
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
