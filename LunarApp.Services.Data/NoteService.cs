@@ -3,6 +3,7 @@ using LunarApp.Data.Repository.Interfaces;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Note;
 using LunarApp.Web.ViewModels.Tag;
+using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Services.Data
 {
@@ -43,9 +44,17 @@ namespace LunarApp.Services.Data
             throw new NotImplementedException();
         }
 
-        public Task<List<TagViewModel>> GetAllTagsAsync()
+        public async Task<List<TagViewModel>> GetAllTagsAsync()
         {
-            throw new NotImplementedException();
+            return await tagRepository
+                .GetAllAttached()
+                .AsNoTracking()
+                .Select(t => new TagViewModel
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                })
+                .ToListAsync();
         }
     }
 }
