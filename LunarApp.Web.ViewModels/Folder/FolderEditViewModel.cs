@@ -15,6 +15,6 @@ namespace LunarApp.Web.ViewModels.Folder
         public Guid NotebookId { get; set; }
         public Guid? ParentFolderId { get; set; }
         public Guid FolderId { get; set; }
-        public bool IsEditedDirectlyFromNotebook { get; set; }
+        public bool IsAccessedDirectlyFromNotebook { get; set; }
     }
 }
