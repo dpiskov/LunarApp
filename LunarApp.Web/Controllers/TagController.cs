@@ -83,7 +83,7 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
         {
-            TagRemoveViewModel model = await tagService.GetTagForDeleteByIdAsync(notebookId, parentFolderId, folderId, noteId, tagId);
+            TagRemoveViewModel? model = await tagService.GetTagForDeleteByIdAsync(notebookId, parentFolderId, folderId, noteId, tagId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
