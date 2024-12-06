@@ -1,5 +1,9 @@
 using LunarApp.Data;
 using LunarApp.Data.Models;
+using LunarApp.Data.Repository;
+using LunarApp.Data.Repository.Interfaces;
+using LunarApp.Services.Data;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +37,16 @@ namespace LunarApp.Web
             {
                 options.LoginPath = "/Identity/Account/Login";
             });
+
+            //builder.Services.AddScoped<IRepository<Notebook, Guid>, BaseRepository<Notebook, Guid>>();
+            //builder.Services.AddScoped<IRepository<Folder, Guid>, BaseRepository<Folder, Guid>>();
+            //builder.Services.AddScoped<IRepository<Note, Guid>, BaseRepository<Note, Guid>>();
+            builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
+            builder.Services.AddScoped<INotebookService, NotebookService>();
+            builder.Services.AddScoped<IFolderService, FolderService>();
+            builder.Services.AddScoped<IFolderHelperService, FolderHelperService>();
+            builder.Services.AddScoped<INoteService, NoteService>();
+            builder.Services.AddScoped<ITagService, TagService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
