@@ -50,9 +50,30 @@ namespace LunarApp.Services.Data
             await tagRepository.AddAsync(tag);
         }
 
-        public Task<TagEditViewModel?> GetTagForEditByIdAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
+        public async Task<TagEditViewModel?> GetTagForEditByIdAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
         {
-            throw new NotImplementedException();
+            Tag? tag = await tagRepository
+                .GetAllAttached()
+                .Where(t => t.Id == tagId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (tag == null)
+            {
+                return null;
+            }
+
+            TagEditViewModel model = new TagEditViewModel
+            {
+                Id = tagId,
+                Name = tag.Name,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                NoteId = noteId
+            };
+
+            return model;
         }
 
         public Task<bool> EditTagAsync(TagEditViewModel? model)
