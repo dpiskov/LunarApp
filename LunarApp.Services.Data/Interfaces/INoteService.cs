@@ -13,7 +13,7 @@ namespace LunarApp.Services.Data.Interfaces
             Guid noteId);
         Task DeleteNoteAsync(Guid noteId);
         Task<NoteEditViewModel?> GetNoteForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId);
-        Task<bool> EditNoteAsync(NoteEditViewModel model);
+        Task<bool> EditNoteAsync(NoteEditViewModel? model);
 
 
         Task<List<TagViewModel>> GetAllTagsAsync();
