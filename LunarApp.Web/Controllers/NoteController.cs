@@ -54,18 +54,7 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
         {
-            NoteDeleteViewModel? model = await context.Notes
-                .Where(n => n.Id == noteId)
-                .AsNoTracking()
-                .Select(n => new NoteDeleteViewModel()
-                {
-                    Id = n.Id,
-                    Title = n.Title,
-                    NotebookId = n.NotebookId,
-                    ParentFolderId = parentFolderId,
-                    FolderId = n.FolderId
-                })
-                .FirstOrDefaultAsync();
+            NoteDeleteViewModel? model = await noteService.GetNoteForDeleteByIdAsync(notebookId, parentFolderId, folderId, noteId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
