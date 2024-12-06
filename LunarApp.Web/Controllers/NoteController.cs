@@ -79,38 +79,23 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
         {
-            var note = await context.Notes
-                .Where(n => n.Id == noteId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            NoteEditViewModel? model = await noteService.GetNoteForEditByIdAsync(notebookId, parentFolderId, folderId, noteId);
 
-            if (note == null)
+            if (model == null)
             {
-                // TODO: FIX ROUTING
                 return RedirectToAction(nameof(Index), "Notebook");
             }
 
-            var model = new NoteEditViewModel
-            {
-                Id = noteId,
-                Title = note.Title,
-                Body = note.Body,
-                NotebookId = notebookId,
-                ParentFolderId = parentFolderId,
-                FolderId = folderId,
-                DateCreated = note.DateCreated,
-                LastSaved = note.LastSaved
-            };
-
             //TODO: Format LastSaved properly
-            ViewData["DateCreated"] = note.DateCreated;
-            ViewData["LastSaved"] = note.LastSaved;
+            ViewData["DateCreated"] = model.DateCreated;
+            ViewData["LastSaved"] = model.LastSaved;
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
             ViewData["FolderId"] = folderId;
+            ViewData["NoteId"] = noteId;
 
-            ViewData["Title"] = note.Title;
+            ViewData["Title"] = model.Title;
 
             return View(model);
         }

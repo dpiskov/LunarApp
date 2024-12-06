@@ -112,9 +112,36 @@ namespace LunarApp.Services.Data
             await noteRepository.DeleteAsync(noteId);
         }
 
-        public Task<NoteEditViewModel?> GetNoteForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
+        public async Task<NoteEditViewModel?> GetNoteForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
         {
-            throw new NotImplementedException();
+            Note? note = await noteRepository
+                .GetAllAttached()
+                .Where(n => n.Id == noteId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (note == null)
+            {
+                return null;
+            }
+
+            List<TagViewModel> tags = await GetAllTagsAsync();
+
+            NoteEditViewModel model = new NoteEditViewModel
+            {
+                Id = noteId,
+                Title = note.Title,
+                Body = note.Body,
+                NotebookId = notebookId,
+                ParentFolderId = parentFolderId,
+                FolderId = folderId,
+                DateCreated = note.DateCreated,
+                LastSaved = note.LastSaved,
+                SelectedTagId = note.TagId,
+                Tags = tags
+            };
+
+            return model;
         }
 
         public Task<bool> EditNoteAsync(NoteEditViewModel model)
