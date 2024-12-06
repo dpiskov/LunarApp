@@ -68,30 +68,9 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Note? note = await context.Notes
-                    .Where(n => n.Id == model.Id)
-                    .FirstOrDefaultAsync();
+                await noteService.DeleteNoteAsync(model.Id);
 
-                if (note != null)
-                {
-                    context.Notes.Remove(note);
-
-                    await context.SaveChangesAsync();
-                }
-
-                if (note.FolderId != Guid.Empty && note.FolderId != null &&
-                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={note.FolderId}");
-                }
-                else if (note.FolderId != Guid.Empty && note.FolderId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={note.FolderId}");
-                }
-                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
-                }
+                return RedirectToFolderIndexView(model.NotebookId, model.ParentFolderId, model.FolderId);
             }
 
             return View(model);
