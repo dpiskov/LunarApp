@@ -101,13 +101,13 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public async Task<(bool isSuccess, string? errorMessage, Folder? folder)> AddFolderAsync(FolderCreateViewModel model)
+        public async Task<(bool isSuccess, string? errorMessage)> AddFolderAsync(FolderCreateViewModel model)
         {
             Notebook? notebook = await notebookRepository.GetByIdAsync(model.NotebookId);
 
             if (notebook == null)
             {
-                return (false, "The selected notebook does not exist.", null);
+                return (false, "The selected notebook does not exist.");
             }
 
             Folder folder = new Folder
@@ -120,7 +120,7 @@ namespace LunarApp.Services.Data
 
             await folderRepository.AddAsync(folder);
 
-            return (true, null, folder);
+            return (true, null);
         }
 
         public async Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
@@ -184,7 +184,7 @@ namespace LunarApp.Services.Data
                 throw new InvalidOperationException("Folder not found.");
             }
 
-            List<Folder>? childFolders = folder.ChildrenFolders.ToList();
+            List<Folder> childFolders = folder.ChildrenFolders.ToList();
 
             foreach (Folder? childFolder in childFolders)
             {
@@ -197,7 +197,7 @@ namespace LunarApp.Services.Data
             await folderRepository.SaveChangesAsync();
         }
 
-        public async Task<(FolderEditViewModel model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
+        public async Task<(FolderEditViewModel? model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
             bool isEditedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
                 parentFolderId == Guid.Empty || parentFolderId == null;
@@ -232,7 +232,7 @@ namespace LunarApp.Services.Data
             return (model, newParentFolderId);
         }
 
-        public async Task<(bool isEdited, Folder? parentFolder)> EditFolderAsync(FolderEditViewModel model)
+        public async Task<(bool isEdited, Folder? parentFolder)> EditFolderAsync(FolderEditViewModel? model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
