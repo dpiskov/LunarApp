@@ -199,7 +199,7 @@ namespace LunarApp.Services.Data
 
         public async Task<(FolderEditViewModel? model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            bool isEditedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+            bool isAccessedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
                 parentFolderId == Guid.Empty || parentFolderId == null;
 
             Folder? folder = await folderRepository
@@ -219,7 +219,7 @@ namespace LunarApp.Services.Data
                 NotebookId = notebookId,
                 ParentFolderId = parentFolderId,
                 FolderId = folderId,
-                IsEditedDirectlyFromNotebook = isEditedDirectlyFromNotebook
+                IsAccessedDirectlyFromNotebook = isAccessedDirectlyFromNotebook
             };
 
             Guid newParentFolderId = Guid.Empty;
@@ -261,7 +261,7 @@ namespace LunarApp.Services.Data
 
         public async Task<(FolderDetailsViewModel? model, Guid newParentFolderId)> GetFolderDetailsByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            bool isClickedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+            bool isAccessedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
                 parentFolderId == Guid.Empty || parentFolderId == null;
 
             Folder? folder = await folderRepository
@@ -282,7 +282,7 @@ namespace LunarApp.Services.Data
                 NotebookId = notebookId,
                 ParentFolderId = parentFolderId,
                 FolderId = folderId,
-                IsClickedDirectlyFromNotebook = isClickedDirectlyFromNotebook
+                IsAccessedDirectlyFromNotebook = isAccessedDirectlyFromNotebook
             };
 
             Guid newParentFolderId = Guid.Empty;
