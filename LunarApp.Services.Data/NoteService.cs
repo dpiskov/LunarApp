@@ -14,9 +14,32 @@ namespace LunarApp.Services.Data
         IRepository<Tag, Guid> tagRepository)
         : INoteService
     {
-        public Task<NoteCreateViewModel> GetCreateNoteAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<NoteCreateViewModel> GetCreateNoteAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            throw new NotImplementedException();
+            List<TagViewModel> tags = await GetAllTagsAsync();
+
+            NoteCreateViewModel model = new NoteCreateViewModel
+            {
+                Title = string.Empty,
+                NotebookId = notebookId,
+                Tags = tags
+            };
+
+            if (folderId != Guid.Empty && folderId != null)
+            {
+                model.FolderId = folderId;
+
+                if (parentFolderId != Guid.Empty && parentFolderId != null)
+                {
+                    model.ParentFolderId = parentFolderId;
+                }
+            }
+            else if (parentFolderId != Guid.Empty && parentFolderId != null)
+            {
+                model.FolderId = parentFolderId;
+            }
+
+            return model;
         }
 
         public Task<(bool isSuccess, string? errorMessage)> CreateNoteAsync(NoteCreateViewModel model)

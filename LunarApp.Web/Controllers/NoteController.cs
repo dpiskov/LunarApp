@@ -1,5 +1,6 @@
 ﻿using LunarApp.Data;
 using LunarApp.Data.Models;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,49 +13,13 @@ namespace LunarApp.Web.Controllers
 
     [Authorize]
     public class NoteController(ApplicationDbContext context) : Controller
+    public class NoteController(ApplicationDbContext context, 
+        INoteService noteService) : Controller
     {
         [HttpGet]
-        public IActionResult Create(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            NoteCreateViewModel? model = null;
-
-            if (folderId != Guid.Empty && folderId != null &&
-                parentFolderId != Guid.Empty && parentFolderId != null)
-            {
-                model = new NoteCreateViewModel
-                {
-                    Title = string.Empty,
-                    NotebookId = notebookId,
-                    ParentFolderId = parentFolderId,
-                    FolderId = folderId,
-                };
-            }
-            else if (folderId != Guid.Empty && folderId != null)
-            {
-                model = new NoteCreateViewModel
-                {
-                    Title = string.Empty,
-                    NotebookId = notebookId,
-                    FolderId = folderId,
-                };
-            }
-            else if (parentFolderId != Guid.Empty && parentFolderId != null)
-            {
-                model = new NoteCreateViewModel
-                {
-                    Title = string.Empty,
-                    NotebookId = notebookId,
-                    FolderId = parentFolderId,
-                };
-            }
-            else if (notebookId != Guid.Empty && notebookId != null)
-            {
-                model = new NoteCreateViewModel
-                {
-                    Title = string.Empty,
-                    NotebookId = notebookId
-                };
-            }
+            NoteCreateViewModel model = await noteService.GetCreateNoteAsync(notebookId, parentFolderId, folderId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
