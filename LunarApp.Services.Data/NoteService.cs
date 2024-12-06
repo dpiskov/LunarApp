@@ -42,9 +42,40 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task<(bool isSuccess, string? errorMessage)> CreateNoteAsync(NoteCreateViewModel model)
+        public async Task<(bool isSuccess, string? errorMessage)> CreateNoteAsync(NoteCreateViewModel model)
         {
-            throw new NotImplementedException();
+            Notebook? notebook = await notebookRepository.GetByIdAsync(model.NotebookId);
+            if (notebook == null)
+            {
+                return (false, "The selected notebook does not exist.");
+            }
+
+            if (model.FolderId != Guid.Empty && model.FolderId != null)
+            {
+                Folder? folder = await folderRepository.GetByIdAsync(model.FolderId.Value);
+                if (folder == null)
+                {
+                    return (false, "The selected folder does not exist.");
+                }
+            }
+
+            Note note = new Note
+            {
+                Title = model.Title,
+                Body = model.Body,
+                NotebookId = model.NotebookId,
+                Notebook = notebook,
+                FolderId = model.FolderId,
+                TagId = model.SelectedTagId,
+                DateCreated = model.DateCreated,
+                LastSaved = model.LastSaved
+            };
+
+            await noteRepository.AddAsync(note);
+
+            model.Tags = await GetAllTagsAsync();
+
+            return (true, null);
         }
 
         public Task<NoteDeleteViewModel?> GetNoteForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)

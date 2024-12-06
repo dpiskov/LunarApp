@@ -31,63 +31,24 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(NoteCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid == false)
             {
-                // Check if the notebook exists
-                var notebook = await context.Notebooks.FindAsync(model.NotebookId);
-                if (notebook is null)
-                {
-                    ModelState.AddModelError(string.Empty, "The selected notebook does not exist.");
-                    return View(model);
-                }
+                return View(model);
+            }
 
-                // Check if the folder exists, but only if a folder ID is provided
-                if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    var folder = await context.Folders.FindAsync(model.FolderId);
-                    if (folder is null)
-                    {
-                        ModelState.AddModelError(string.Empty, "The selected folder does not exist.");
-                        return View(model);
-                    }
-                }
+            (bool isSuccess, string? errorMessage) = await noteService.CreateNoteAsync(model);
 
-                // Create the new note
-                var note = new Note
-                {
-                    Title = model.Title,
-                    Body = model.Body,
-                    NotebookId = model.NotebookId,
-                    Notebook = notebook,
-                    FolderId = model.FolderId,
-                    DateCreated = model.DateCreated,
-                    LastSaved = model.LastSaved
-                };
-
-                await context.Notes.AddAsync(note);
-                await context.SaveChangesAsync();
-
-                if (model.FolderId != Guid.Empty && model.FolderId != null &&
-                    model.ParentFolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId, parentFolderId = model.ParentFolderId, folderId = model.FolderId });
-                }
-                // Redirect to the appropriate Index based on whether FolderId is set or not
-                if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId, folderId = model.FolderId });
-                    //return RedirectToAction(nameof(Index), "Folder", new { folderId = model.FolderId, notebookId = model.NotebookId });
-                }
-
-                return RedirectToAction(nameof(Index), "Folder", new { notebookId = model.NotebookId });
+            if (isSuccess == false)
+            {
+                ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
+                return View(model);
             }
 
             ViewData["NotebookId"] = model.NotebookId;
             ViewData["ParentFolderId"] = model.ParentFolderId;
             ViewData["FolderId"] = model.FolderId;
 
-            // If the model is invalid, return to the same view
-            return View(model);
+            return RedirectToFolderIndexView(model.NotebookId, model.ParentFolderId, model.FolderId);
         }
 
         [HttpGet]
