@@ -25,6 +25,7 @@
         <form asp-controller="Folder" asp-action="Details" method="post" class="d-flex flex-column flex-grow-1">
             <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
                 <div class="w-100">
+                    <input type="hidden" asp-for="Title" />
                     <input type="hidden" asp-for="NotebookId" />
                     <input type="hidden" asp-for="ParentFolderId" />
                     <input type="hidden" asp-for="FolderId" />
