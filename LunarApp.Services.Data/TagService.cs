@@ -76,9 +76,25 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task<bool> EditTagAsync(TagEditViewModel? model)
+        public async Task<bool> EditTagAsync(TagEditViewModel? model)
         {
-            throw new NotImplementedException();
+            if (model == null || string.IsNullOrWhiteSpace(model.Name))
+            {
+                return false;
+            }
+
+            Tag? tag = await tagRepository.GetByIdAsync(model.Id);
+
+            if (tag == null)
+            {
+                return false;
+            }
+
+            tag.Name = model.Name;
+
+            bool isEdited = await tagRepository.UpdateAsync(tag);
+
+            return isEdited;
         }
 
         public Task<TagRemoveViewModel?> GetTagForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
