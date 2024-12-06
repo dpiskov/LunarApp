@@ -152,5 +152,24 @@ namespace LunarApp.Web.Controllers
 
             return View(model);
         }
+
+        private IActionResult RedirectToFolderIndexView(Guid notebookId, Guid? parentFolderId = null, Guid? folderId = null)
+        {
+            if (folderId.HasValue && folderId != Guid.Empty &&
+                parentFolderId.HasValue && parentFolderId != Guid.Empty)
+            {
+                return Redirect($"~/Folder?notebookId={notebookId}&parentFolderId={parentFolderId}&folderId={folderId}");
+            }
+            else if (folderId.HasValue && folderId != Guid.Empty)
+            {
+                return Redirect($"~/Folder?notebookId={notebookId}&folderId={folderId}");
+            }
+            else if (notebookId != Guid.Empty)
+            {
+                return Redirect($"~/Folder?notebookId={notebookId}");
+            }
+
+            return RedirectToAction("Index", "Notebook");
+        }
     }
 }
