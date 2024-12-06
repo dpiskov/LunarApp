@@ -73,22 +73,7 @@ namespace LunarApp.Web.Controllers
                 return View(model);
             }
 
-            if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
-                model.FolderId != Guid.Empty && model.FolderId != null)
-            {
-                return Redirect(
-                    $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
-            }
-            else if (model.FolderId != Guid.Empty && model.FolderId != null)
-            {
-                return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
-            }
-            else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-            {
-                return Redirect($"~/Folder?notebookId={model.NotebookId}");
-            }
-
-            return View(model);
+            return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
         }
 
         [HttpGet]
@@ -122,24 +107,7 @@ namespace LunarApp.Web.Controllers
                 return View(model);
             }
 
-            if (model.ParentFolderId != Guid.Empty && model.ParentFolderId != null &&
-                model.FolderId != Guid.Empty && model.FolderId != null)
-            {
-                return Redirect(
-                    $"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
-            }
-            //else if (folder.Id != Guid.Empty && model.IsMadeDirectlyFromNotebook == false)
-            else if (model.FolderId != Guid.Empty && model.FolderId != null)
-            {
-                return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
-            }
-            else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-            {
-                // Redirects to the main notebook view if no parent folder is specified
-                return Redirect($"~/Folder?notebookId={model.NotebookId}");
-            }
-
-            return View(model);
+            return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
         }
 
         [HttpGet]
@@ -162,30 +130,21 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid == false)
             {
-                await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
-
-                Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
-
-                if (folder != null && folder.ParentFolderId != Guid.Empty && folder.ParentFolderId != null &&
-                    folder.Id != Guid.Empty && folder.Id != null)
-                {
-                    return Redirect(
-                        $"~/Folder?notebookId={folder.NotebookId}&parentFolderId={folder.ParentFolderId}&folderId={folder.Id}");
-                }
-                else if (folder != null && folder.Id != Guid.Empty && folder.Id != null)
-                {
-                    return Redirect($"~/Folder?notebookId={folder.NotebookId}&folderId={folder.Id}");
-                }
-                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-                {
-                    // Redirects to the main notebook view if no parent folder is specified
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
-                }
+                return View(model);
             }
 
-            return View(model);
+            await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
+
+            Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
+
+            if (folder != null)
+            {
+                return RedirectToFolderOrNotebookIndex(folder.NotebookId, folder.ParentFolderId, folder.Id);
+            }
+
+            return RedirectToFolderOrNotebookIndex(model.NotebookId, Guid.Empty, Guid.Empty);
         }
 
         [HttpGet]
@@ -196,17 +155,7 @@ namespace LunarApp.Web.Controllers
             //TODO: SIMPLIFY IF POSSIBLE
             if (model == null)
             {
-                if (folderId != Guid.Empty && folderId != null &&
-                    parentFolderId != Guid.Empty && parentFolderId != null)
-                {
-                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId, parentFolderId = parentFolderId, folderId = folderId });
-                }
-                if (folderId != Guid.Empty && folderId != null)
-                {
-                    return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId, folderId = folderId });
-                }
-
-                return RedirectToAction(nameof(Index), "Folder", new { notebookId = notebookId });
+                return RedirectToFolderOrNotebookIndexForEdit(notebookId, parentFolderId, folderId, newParentFolderId);
             }
 
             // Stores the data for the view to access
@@ -232,21 +181,16 @@ namespace LunarApp.Web.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                if (parentFolder != null && parentFolder.ParentFolderId != Guid.Empty && parentFolder.ParentFolderId != null &&
-                    parentFolder.Id != Guid.Empty && parentFolder.Id != null)
+                if (parentFolder != null)
                 {
-                    return Redirect(
-                        $"~/Folder?notebookId={parentFolder.NotebookId}&parentFolderId={parentFolder.ParentFolderId}&folderId={parentFolder.Id}");
-                }
-                else if (parentFolder != null && parentFolder.Id != Guid.Empty && parentFolder.Id != null &&
-                         model.IsEditedDirectlyFromNotebook == false)
-                {
-                    return Redirect($"~/Folder?notebookId={parentFolder.NotebookId}&folderId={parentFolder.Id}");
+                    return RedirectToFolderForEditOrDetails(parentFolder.NotebookId, parentFolder.ParentFolderId, parentFolder.Id, model.IsAccessedDirectlyFromNotebook);
                 }
                 else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
                 {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                    return RedirectToFolderForEditOrDetails(model.NotebookId, Guid.Empty, Guid.Empty, model.IsAccessedDirectlyFromNotebook);
                 }
+
+                return RedirectToAction("Index", "Notebook"); // Fallback
             }
 
             return View(model);
@@ -280,21 +224,16 @@ namespace LunarApp.Web.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                if (parentFolder != null && parentFolder.ParentFolderId != Guid.Empty && parentFolder.ParentFolderId != null &&
-                    parentFolder.Id != Guid.Empty && parentFolder.Id != null)
+                if (parentFolder != null)
                 {
-                    return Redirect(
-                        $"~/Folder?notebookId={parentFolder.NotebookId}&parentFolderId={parentFolder.ParentFolderId}&folderId={parentFolder.Id}");
-                }
-                else if (parentFolder != null && parentFolder.Id != Guid.Empty && parentFolder.Id != null &&
-                         model.IsClickedDirectlyFromNotebook == false)
-                {
-                    return Redirect($"~/Folder?notebookId={parentFolder.NotebookId}&folderId={parentFolder.Id}");
+                    return RedirectToFolderForEditOrDetails(parentFolder.NotebookId, parentFolder.ParentFolderId, parentFolder.Id, model.IsAccessedDirectlyFromNotebook);
                 }
                 else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
                 {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
+                    return RedirectToFolderForEditOrDetails(model.NotebookId, Guid.Empty, Guid.Empty, model.IsAccessedDirectlyFromNotebook);
                 }
+
+                return RedirectToAction("Index", "Notebook"); // Fallback
             }
 
             return View(model);
