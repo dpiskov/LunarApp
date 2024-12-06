@@ -144,9 +144,28 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task<bool> EditNoteAsync(NoteEditViewModel model)
+        public async Task<bool> EditNoteAsync(NoteEditViewModel model)
         {
-            throw new NotImplementedException();
+            if (model == null || string.IsNullOrWhiteSpace(model.Title))
+            {
+                return false;
+            }
+
+            Note? note = await noteRepository.GetByIdAsync(model.Id);
+
+            if (note == null)
+            {
+                return false;
+            }
+
+            note.Title = model.Title;
+            note.Body = model.Body;
+            note.TagId = model.SelectedTagId;
+            note.LastSaved = DateTime.Now;
+
+            bool isEdited = await noteRepository.UpdateAsync(note);
+
+            return isEdited;
         }
 
         public async Task<List<TagViewModel>> GetAllTagsAsync()

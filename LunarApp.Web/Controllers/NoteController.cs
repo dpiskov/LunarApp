@@ -1,20 +1,14 @@
-﻿using LunarApp.Data;
-using LunarApp.Data.Models;
-using LunarApp.Services.Data.Interfaces;
+﻿using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Note;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web.Controllers
 {
     // TODO'S
     // TODO: Handle exceptions
-
     [Authorize]
-    public class NoteController(ApplicationDbContext context) : Controller
-    public class NoteController(ApplicationDbContext context, 
-        INoteService noteService) : Controller
+    public class NoteController(INoteService noteService) : Controller
     {
         [HttpGet]
         public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId, Guid? folderId)
@@ -105,50 +99,12 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var note = await context.Notes.FindAsync(model.Id);
+                await noteService.EditNoteAsync(model);
 
-                if (note == null)
-                {
-                    // TODO: TEMPORARY PATCH?
-                    if (model.FolderId != Guid.Empty && model.FolderId != null &&
-                        model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
-                    {
-                        return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
-                    }
-                    else if (model.FolderId != Guid.Empty && model.FolderId != null)
-                    {
-                        return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
-                    }
-                    else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-                    {
-                        // If no parent folder is specified, redirect to the main notebook view
-                        return Redirect($"~/Folder?notebookId={model.NotebookId}");
-                    }
-                }
-                else
-                {
-                    note.Title = model.Title;
-                    note.Body = model.Body;
-                    note.LastSaved = DateTime.Now;
-                }
-
-                await context.SaveChangesAsync();
-
-                if (model.FolderId != Guid.Empty && model.FolderId != null &&
-                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}");
-                }
-                else if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}&folderId={model.FolderId}");
-                }
-                else if (model.NotebookId != Guid.Empty && model.NotebookId != null)
-                {
-                    // If no parent folder is specified, redirect to the main notebook view
-                    return Redirect($"~/Folder?notebookId={model.NotebookId}");
-                }
+                return RedirectToFolderIndexView(model.NotebookId, model.ParentFolderId, model.FolderId);
             }
+
+            model.Tags = await noteService.GetAllTagsAsync();
 
             return View(model);
         }
