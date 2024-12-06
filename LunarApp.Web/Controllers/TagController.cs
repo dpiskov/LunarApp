@@ -42,23 +42,9 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Tag tag = new Tag
-                {
-                    Name = model.Name
-                };
+                await tagService.CreateTagAsync(model);
 
-                context.Tags.Add(tag);
-                await context.SaveChangesAsync();
-
-                if (model.FolderId != Guid.Empty && model.FolderId != null &&
-                    model.ParentFolderId != Guid.Empty && model.ParentFolderId != null)
-                {
-                    return Redirect($"~/Tag?notebookId={model.NotebookId}&parentFolderId={model.ParentFolderId}&folderId={model.FolderId}&noteId={model.NoteId}");
-                }
-                else if (model.FolderId != Guid.Empty && model.FolderId != null)
-                {
-                    return Redirect($"~/Tag?notebookId={model.NotebookId}&folderId={model.FolderId}&noteId={model.NoteId}");
-                }
+                return RedirectToTagIndexView(model.NotebookId, model.ParentFolderId, model.FolderId, model.NoteId);
             }
 
             return View(model);

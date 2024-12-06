@@ -40,9 +40,14 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public Task CreateTagAsync(TagCreateViewModel model)
+        public async Task CreateTagAsync(TagCreateViewModel model)
         {
-            throw new NotImplementedException();
+            Tag tag = new Tag
+            {
+                Name = model.Name
+            };
+
+            await tagRepository.AddAsync(tag);
         }
 
         public Task<TagEditViewModel?> GetTagForEditByIdAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
