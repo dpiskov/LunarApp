@@ -144,7 +144,7 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public async Task<bool> EditNoteAsync(NoteEditViewModel model)
+        public async Task<bool> EditNoteAsync(NoteEditViewModel? model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Title))
             {
