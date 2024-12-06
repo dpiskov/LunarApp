@@ -27,16 +27,7 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
-            TagCreateViewModel? model = null;
-
-            model = new TagCreateViewModel
-            {
-                Name = string.Empty,
-                NotebookId = notebookId,
-                ParentFolderId = parentFolderId,
-                FolderId = folderId,
-                NoteId = noteId
-            };
+            TagCreateViewModel model = await tagService.GetCreateTagAsync(notebookId, parentFolderId, folderId, noteId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
