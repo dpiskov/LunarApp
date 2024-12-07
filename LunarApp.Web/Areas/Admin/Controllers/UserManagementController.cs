@@ -42,5 +42,30 @@ namespace LunarApp.Web.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveRole(string userId, string role)
+        {
+            Guid userGuid = Guid.Empty;
+            if (IsGuidValid(userId, ref userGuid) == false)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            bool userExists = await userService.UserExistsByIdAsync(userGuid);
+
+            if (userExists == false)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            bool removeResult = await userService.RemoveUserRoleAsync(userGuid, role);
+            if (removeResult == false)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
