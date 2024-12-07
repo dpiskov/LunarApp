@@ -1,11 +1,8 @@
 using LunarApp.Data;
 using LunarApp.Data.Models;
-using LunarApp.Data.Repository;
-using LunarApp.Data.Repository.Interfaces;
 using LunarApp.Services.Data;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +13,9 @@ namespace LunarApp.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            string adminEmail = builder.Configuration.GetValue<string>("Administrator:Email")!;
+            string adminUsername = builder.Configuration.GetValue<string>("Administrator:Username")!;
+            string adminPassword = builder.Configuration.GetValue<string>("Administrator:Password")!;
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -47,6 +47,7 @@ namespace LunarApp.Web
             builder.Services.AddScoped<IFolderHelperService, FolderHelperService>();
             builder.Services.AddScoped<INoteService, NoteService>();
             builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -73,9 +74,24 @@ namespace LunarApp.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
+
+            app.SeedAdministrator(adminEmail, adminUsername, adminPassword);
+
+            app.MapControllerRoute(
+                name: "Areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "Errors",
+                pattern: "{controller=Home}/{action=Index}/{statusCode?}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.ApplyMigrations();
