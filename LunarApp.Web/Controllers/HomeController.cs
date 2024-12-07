@@ -20,10 +20,26 @@ namespace LunarApp.Web.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(int? statusCode = null)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (statusCode.HasValue == false)
+            {
+                return View("Error");
+            }
+
+            if (statusCode == 404)
+            {
+                return View("Error404");
+            }
+            else if (statusCode == 401 || statusCode == 403)
+            {
+                return View("Error403");
+            }
+
+            return View("Error500");
+
+            //return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
