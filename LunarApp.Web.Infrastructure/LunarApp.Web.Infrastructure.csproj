@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LunarApp.Common\LunarApp.Common.csproj" />
     <ProjectReference Include="..\LunarApp.Data\LunarApp.Data.csproj" />
   </ItemGroup>
 
