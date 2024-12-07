@@ -63,9 +63,30 @@ namespace LunarApp.Services.Data
             return true;
         }
 
-        public Task<bool> RemoveUserRoleAsync(Guid userId, string roleName)
+        public async Task<bool> RemoveUserRoleAsync(Guid userId, string roleName)
         {
-            throw new NotImplementedException();
+            ApplicationUser? user = await userManager
+                .FindByIdAsync(userId.ToString());
+            bool roleExists = await roleManager.RoleExistsAsync(roleName);
+
+            if (user == null || roleExists == false)
+            {
+                return false;
+            }
+
+            bool alreadyInRole = await userManager.IsInRoleAsync(user, roleName);
+            if (alreadyInRole)
+            {
+                IdentityResult? result = await userManager
+                    .RemoveFromRoleAsync(user, roleName);
+
+                if (result.Succeeded == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public Task<bool> DeleteUserAsync(Guid userId)
