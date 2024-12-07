@@ -29,9 +29,12 @@ namespace LunarApp.Services.Data
             return allUsersViewModel;
         }
 
-        public Task<bool> UserExistsByIdAsync(Guid userId)
+        public async Task<bool> UserExistsByIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            ApplicationUser? user = await userManager
+                .FindByIdAsync(userId.ToString());
+
+            return user != null;
         }
 
         public Task<bool> AssignUserToRoleAsync(Guid userId, string roleName)
