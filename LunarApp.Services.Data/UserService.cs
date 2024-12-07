@@ -89,9 +89,24 @@ namespace LunarApp.Services.Data
             return true;
         }
 
-        public Task<bool> DeleteUserAsync(Guid userId)
+        public async Task<bool> DeleteUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            ApplicationUser? user = await userManager
+                .FindByIdAsync(userId.ToString());
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            IdentityResult? result = await userManager
+                .DeleteAsync(user);
+            if (result.Succeeded == false)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
