@@ -48,6 +48,7 @@ namespace LunarApp.Web
             builder.Services.AddScoped<INoteService, NoteService>();
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IBaseService, BaseService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
@@ -77,8 +78,10 @@ namespace LunarApp.Web
             //app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
             app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
-
-            app.SeedAdministrator(adminEmail, adminUsername, adminPassword);
+            if (app.Environment.IsDevelopment())
+            {
+                app.SeedAdministrator(adminEmail, adminUsername, adminPassword);
+            }
 
             app.MapControllerRoute(
                 name: "Areas",
