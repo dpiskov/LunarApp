@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LunarApp.Services.Data
 {
     public class UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager)
-        : BaseService, IUserService
+        : IUserService
     {
         public async Task<IEnumerable<AllUsersViewModel>> GetAllUsersAsync()
         {
