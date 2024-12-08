@@ -38,17 +38,8 @@ namespace LunarApp.Web
                 options.LoginPath = "/Identity/Account/Login";
             });
 
-            //builder.Services.AddScoped<IRepository<Notebook, Guid>, BaseRepository<Notebook, Guid>>();
-            //builder.Services.AddScoped<IRepository<Folder, Guid>, BaseRepository<Folder, Guid>>();
-            //builder.Services.AddScoped<IRepository<Note, Guid>, BaseRepository<Note, Guid>>();
             builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
-            builder.Services.AddScoped<INotebookService, NotebookService>();
-            builder.Services.AddScoped<IFolderService, FolderService>();
-            builder.Services.AddScoped<IFolderHelperService, FolderHelperService>();
-            builder.Services.AddScoped<INoteService, NoteService>();
-            builder.Services.AddScoped<ITagService, TagService>();
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IBaseService, BaseService>();
+            builder.Services.RegisterUserDefinedServices(typeof(INotebookService).Assembly);
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
