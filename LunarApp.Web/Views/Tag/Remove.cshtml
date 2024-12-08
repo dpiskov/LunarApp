@@ -26,12 +26,13 @@
             </div>
             <div class="card-footer d-flex align-content-center justify-content-center">
                 <form asp-controller="Tag" asp-action="Remove" method="post">
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="Name" />
-                    <input type="hidden" asp-for="NotebookId" />
-                    <input type="hidden" asp-for="ParentFolderId" />
-                    <input type="hidden" asp-for="FolderId" />
-                    <input type="hidden" asp-for="NoteId" />
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Name"/>
+                    <input type="hidden" asp-for="NotebookId"/>
+                    <input type="hidden" asp-for="ParentFolderId"/>
+                    <input type="hidden" asp-for="FolderId"/>
+                    <input type="hidden" asp-for="NoteId"/>
 
                     <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
 

@@ -19,17 +19,18 @@
             <h1 class="text-decoration-underline">@title</h1>
         </div>
         <form asp-controller="Note" asp-action="Edit" method="post" class="d-flex flex-column flex-grow-1">
+            @Html.AntiForgeryToken()
             <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
                 <div class="w-100">
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="NotebookId" />
-                    <input type="hidden" asp-for="ParentFolderId" />
-                    <input type="hidden" asp-for="FolderId" />
-                    <input type="hidden" asp-for="LastSaved" />
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="NotebookId"/>
+                    <input type="hidden" asp-for="ParentFolderId"/>
+                    <input type="hidden" asp-for="FolderId"/>
+                    <input type="hidden" asp-for="LastSaved"/>
 
                     <div class="form-group mb-3 w-100 text-center">
                         <label asp-for="Title"></label>
-                        <input asp-for="Title" class="form-control bg-transparent" />
+                        <input asp-for="Title" class="form-control bg-transparent"/>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 

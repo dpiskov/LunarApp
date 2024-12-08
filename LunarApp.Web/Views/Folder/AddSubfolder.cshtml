@@ -21,16 +21,17 @@
     <div class="col-md-6">
         <div class="transparent-container card">
             <form asp-controller="Folder" asp-action="AddSubfolder" method="post" class="text-center">
+                @Html.AntiForgeryToken()
                 <div class="card-body">
-                    <input type="hidden" asp-for="NotebookId" />
-                    <input type="hidden" asp-for="ParentFolderId" />
-                    <input type="hidden" asp-for="FolderId" />
-                    <input type="hidden" asp-for="IsMadeDirectlyFromNotebook" />
+                    <input type="hidden" asp-for="NotebookId"/>
+                    <input type="hidden" asp-for="ParentFolderId"/>
+                    <input type="hidden" asp-for="FolderId"/>
+                    <input type="hidden" asp-for="IsMadeDirectlyFromNotebook"/>
 
                     <div class="form-group">
                         <label asp-for="Title" class="card-title mb-2">Folder Name</label>
-                        <br />
-                        <input asp-for="Title" class="form-control bg-transparent" />
+                        <br/>
+                        <input asp-for="Title" class="form-control bg-transparent"/>
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
@@ -39,12 +40,12 @@
                     <button type="submit" class="btn btn-primary px-4 py-2">Create Folder</button>
 
                     @if (parentFolderId != Guid.Empty && parentFolderId != null &&
-                    newParentFolderId != Guid.Empty && newParentFolderId != null)
+                         newParentFolderId != Guid.Empty && newParentFolderId != null)
                     {
                         <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@newParentFolderId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
                     }
                     else if (folderId != Guid.Empty && folderId != null &&
-                    parentFolderId != Guid.Empty && parentFolderId != null)
+                             parentFolderId != Guid.Empty && parentFolderId != null)
                     {
                         <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@parentFolderId" class="btn btn-outline-warning px-4 py-2">Cancel</a>
                     }

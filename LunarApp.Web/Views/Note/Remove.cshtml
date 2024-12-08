@@ -24,11 +24,12 @@
             </div>
             <div class="card-footer d-flex align-content-center justify-content-center">
                 <form asp-controller="Note" asp-action="Remove" method="post">
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="Title" />
-                    <input type="hidden" asp-for="NotebookId" />
-                    <input type="hidden" asp-for="ParentFolderId" />
-                    <input type="hidden" asp-for="FolderId" />
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Title"/>
+                    <input type="hidden" asp-for="NotebookId"/>
+                    <input type="hidden" asp-for="ParentFolderId"/>
+                    <input type="hidden" asp-for="FolderId"/>
 
                     <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
 

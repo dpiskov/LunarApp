@@ -15,12 +15,13 @@
     <div class="col-md-6">
         <div class="transparent-container card">
             <form asp-controller="Notebook" asp-action="Edit" method="post" class="text-center">
+                @Html.AntiForgeryToken()
                 <div class="card-body">
-                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Id"/>
 
                     <label asp-for="Title" class="card-title mb-2">Notebook Name</label>
-                    <br />
-                    <input asp-for="Title" class="form-control bg-transparent" />
+                    <br/>
+                    <input asp-for="Title" class="form-control bg-transparent"/>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 

@@ -20,8 +20,9 @@
             </div>
             <div class="card-footer d-flex align-content-center justify-content-center">
                 <form asp-controller="Notebook" asp-action="Remove" method="post">
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="Title" />
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Title"/>
                     <button type="submit" class="btn btn-outline-danger">Confirm Delete</button>
                     <a asp-controller="Notebook" asp-action="Index" class="btn btn-outline-warning">Cancel</a>
                 </form>
