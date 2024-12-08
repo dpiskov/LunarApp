@@ -2,6 +2,7 @@
 using LunarApp.Data.Repository.Interfaces;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Folder;
+using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Services.Data
 {
@@ -19,9 +20,15 @@ namespace LunarApp.Services.Data
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<string>> GetAllTagsAsync()
+        public async Task<IEnumerable<string>> GetAllTagsAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<string> allTags = await tagRepository
+                .GetAllAttached()
+                .Select(t => t.Name)
+                .Distinct()
+                .ToArrayAsync();
+
+            return allTags;
         }
     }
 }
