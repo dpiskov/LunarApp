@@ -13,12 +13,12 @@
 
 <hr class="border-bottom" />
 
-<form method="get" asp-controller="Notebook" asp-action="Index" class="mb-4 d-flex justify-content-center">
+<form asp-controller="Notebook" asp-action="Index" method="get" class="mb-4 d-flex justify-content-center">
     <div class="row w-100 justify-content-center">
 
         <!-- Slightly smaller column size for SearchQuery -->
         <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
-            <input asp-for="SearchQuery" class="form-control" placeholder="Search by title..." />
+            <input asp-for="SearchQuery" class="form-control" placeholder="Search by title..."/>
         </div>
         <!-- Slightly smaller column size for TagFilter -->
         <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
