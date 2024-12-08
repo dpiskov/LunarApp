@@ -23,6 +23,10 @@ namespace LunarApp.Data.Models
         [ForeignKey(nameof(NotebookId))]
         public virtual Notebook? Notebook { get; set; }
         //public required Notebook Notebook { get; set; }
+        [Comment("Identifier of a parent folder")]
+        public Guid? ParentFolderId { get; set; }
+        [ForeignKey(nameof(ParentFolderId))]
+        public virtual Folder? ParentFolder { get; set; }
         [Comment("Identifier of a folder")]
         public Guid? FolderId { get; set; }
         [ForeignKey(nameof(FolderId))]
