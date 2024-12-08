@@ -65,6 +65,7 @@ namespace LunarApp.Services.Data
                 Body = model.Body,
                 NotebookId = model.NotebookId,
                 Notebook = notebook,
+                ParentFolderId = model.ParentFolderId,
                 FolderId = model.FolderId,
                 TagId = model.SelectedTagId,
                 DateCreated = model.DateCreated,
@@ -89,7 +90,7 @@ namespace LunarApp.Services.Data
                     Id = n.Id,
                     Title = n.Title,
                     NotebookId = n.NotebookId,
-                    ParentFolderId = parentFolderId,
+                    ParentFolderId = n.ParentFolderId,
                     FolderId = n.FolderId
                 })
                 .FirstOrDefaultAsync();
