@@ -43,6 +43,7 @@ namespace LunarApp.Services.Data
                         Id = n.Id,
                         Title = n.Title,
                         NotebookId = n.NotebookId,
+                        ParentFolderId = parentFolderId,
                         FolderId = n.FolderId
                     })
                     .OrderBy(n => n.Title)
@@ -73,6 +74,7 @@ namespace LunarApp.Services.Data
                         Id = n.Id,
                         Title = n.Title,
                         NotebookId = n.NotebookId,
+                        ParentFolderId = parentFolderId,
                         FolderId = n.FolderId
                     })
                     .OrderBy(n => n.Title)
