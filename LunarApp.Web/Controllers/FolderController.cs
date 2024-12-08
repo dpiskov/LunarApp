@@ -1,5 +1,7 @@
 ﻿using LunarApp.Data.Models;
+using LunarApp.Services.Data;
 using LunarApp.Services.Data.Interfaces;
+using LunarApp.Web.ViewModels;
 using LunarApp.Web.ViewModels.Folder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,32 +10,61 @@ namespace LunarApp.Web.Controllers
 {
     // TODO: HANDLE EXCEPTIONS
     [Authorize]
-    public class FolderController(IFolderService folderService) : Controller
+    public class FolderController(IFolderService folderService, IBaseService baseService) : Controller
     {
-        public async Task<IActionResult> Index(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<IActionResult> Index(SearchFilterViewModel inputModel, Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            FolderNotesViewModel foldersAndNotes = await folderService.IndexGetAllFoldersAsync(notebookId, parentFolderId, folderId);
+            FolderNotesViewModel foldersAndNotes;
 
-            if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
+            if (string.IsNullOrWhiteSpace(inputModel.SearchQuery) == false || string.IsNullOrWhiteSpace(inputModel.TagFilter) == false)
             {
-                string? parentFolderTitle = await folderService.GetFolderTitleAsync(folderId.Value);
+                foldersAndNotes = await baseService.GetFilteredNotesAsyncByNotebookId(notebookId, parentFolderId, folderId, inputModel.SearchQuery, inputModel.TagFilter);
 
-                (Guid newParentFolderId, Guid newFolderId) =
-                    await folderService.GetFolderAndParentIdsAsync(parentFolderId, Guid.Empty, Guid.Empty);
-
-                ViewData["Title"] = parentFolderTitle;
-
+                ViewData["Title"] = "Filtered Notes";
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
                 ViewData["FolderId"] = folderId;
 
+                // Redirect with query parameters for filtered results
+                return View("FilteredIndex", new SearchFilterViewModel
+                {
+                    FolderNotes = foldersAndNotes,
+                    AllTags = await baseService.GetAllTagsAsync(),
+                    SearchQuery = inputModel.SearchQuery,
+                    TagFilter = inputModel.TagFilter
+                });
+            }
+            else
+            {
+                // Default behavior
+                foldersAndNotes = await folderService.IndexGetAllFoldersAsync(notebookId, parentFolderId, folderId);
+            }
+
+            SearchFilterViewModel viewModel = new SearchFilterViewModel
+            {
+                FolderNotes = foldersAndNotes,
+                AllTags = await baseService.GetAllTagsAsync(),
+                SearchQuery = inputModel.SearchQuery,
+                TagFilter = inputModel.TagFilter
+            };
+
+            // Check if you need to return folder or notebook data
+            if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
+            {
+                string? parentFolderTitle = await folderService.GetFolderTitleAsync(folderId.Value);
+                (Guid newParentFolderId, Guid newFolderId) =
+                    await folderService.GetFolderAndParentIdsAsync(parentFolderId, Guid.Empty, Guid.Empty);
+
+                ViewData["Title"] = parentFolderTitle;
+                ViewData["NotebookId"] = notebookId;
+                ViewData["ParentFolderId"] = parentFolderId;
+                ViewData["FolderId"] = folderId;
                 ViewData["NewParentFolderId"] = newParentFolderId;
                 ViewData["NewFolderId"] = newFolderId;
             }
             else if (notebookId != Guid.Empty && notebookId != null)
             {
                 string? notebookTitle = await folderService.GetNotebookTitleAsync(notebookId);
-
                 ViewData["NotebookId"] = notebookId;
                 ViewData["Title"] = notebookTitle;
             }
@@ -42,7 +73,8 @@ namespace LunarApp.Web.Controllers
                 return RedirectToAction(nameof(Index), "Notebook");
             }
 
-            return View(foldersAndNotes);
+            // Return the default view with updated view model
+            return View(viewModel);
         }
 
         [HttpGet]
