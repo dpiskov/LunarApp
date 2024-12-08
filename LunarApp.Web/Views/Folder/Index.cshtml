@@ -20,11 +20,11 @@
 
 <hr class="border-bottom" />
 
-<form method="get" asp-controller="Folder" asp-action="Index" class="mb-4 d-flex justify-content-center">
+<form asp-controller="Folder" asp-action="Index" method="get" class="mb-4 d-flex justify-content-center">
     <div class="row w-100 justify-content-center">
-        <input type="hidden" asp-for="@notebookId" />
-        <input type="hidden" asp-for="@parentFolderId" />
-        <input type="hidden" asp-for="@folderId" />
+        <input type="hidden" asp-for="@notebookId"/>
+        <input type="hidden" asp-for="@parentFolderId"/>
+        <input type="hidden" asp-for="@folderId"/>
 
         <!-- Slightly smaller column size for SearchQuery -->
         <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
