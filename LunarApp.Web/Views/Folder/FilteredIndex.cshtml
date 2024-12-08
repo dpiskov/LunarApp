@@ -1,0 +1,92 @@
+﻿@* @using LunarApp.Web.ViewModels.Folder
+@model FolderNotesViewModel *@
+@using LunarApp.Web.ViewModels
+@model SearchFilterViewModel
+
+@{
+    var title = ViewData["Title"];
+
+    var notebookId = (Guid)ViewData["NotebookId"]!;
+    var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var folderId = (Guid?)ViewData["FolderId"];
+
+    var newFolderId = (Guid?)ViewData["NewFolderId"]!;
+    var newParentFolderId = (Guid?)ViewData["NewParentFolderId"]!;
+}
+
+<div class="text-center mb-4 mt-2">
+    <h2>@title</h2>
+</div>
+
+<hr class="border-bottom" />
+
+<form method="get" asp-controller="Folder" asp-action="Index" class="mb-4 d-flex justify-content-center">
+    <div class="row w-100 justify-content-center">
+        <input type="hidden" asp-for="@notebookId" />
+        <input type="hidden" asp-for="@parentFolderId" />
+        <input type="hidden" asp-for="@folderId" />
+
+        <!-- Slightly smaller column size for SearchQuery -->
+        <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
+            <input asp-for="SearchQuery" class="form-control" placeholder="Search by title..." />
+        </div>
+        <!-- Slightly smaller column size for TagFilter -->
+        <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
+            <select asp-for="TagFilter" class="form-control">
+                @if (Model.AllTags != null)
+                {
+                    <option value="">Filter notes by tag...</option>
+                    foreach (string tag in Model.AllTags)
+                    {
+                        <option value="@tag">@tag</option>
+                    }
+                }
+            </select>
+        </div>
+        <!-- Adjusted button to align better -->
+        <div class="col-lg-1 col-md-1 col-sm-12 mb-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>
+
+<hr class="border-bottom" />
+
+<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
+    @if (Model.FolderNotes != null)
+    {
+        <!-- Render Notes -->
+        @foreach (var note in Model.FolderNotes.Notes)
+        {
+            <div class="note-item text-center mx-3 my-3">
+                <a asp-controller="Note" asp-action="Edit" asp-route-notebookId="@note.NotebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@note.FolderId" asp-route-noteId="@note.Id">
+                    <img src="/images/note.png" alt="Note" />
+                </a>
+                <div class="mt-2 mb-4 font-weight-bold">@note.Title</div>
+                <div class="d-flex flex-column align-items-center">
+                    <a asp-controller="Note" asp-action="Remove" asp-route-notebookId="@note.NotebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@note.FolderId" asp-route-noteId="@note.Id" class="btn btn-outline-danger">Remove</a>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="d-flex justify-content-center m-2">
+    @if (folderId != Guid.Empty && folderId != null &&
+    parentFolderId != Guid.Empty && parentFolderId != null)
+    {
+        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" class="btn btn-secondary mb-2">Previous Page</a>
+    }
+    else if (folderId != Guid.Empty && folderId != null)
+    {
+        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" asp-route-folderId="@folderId" class="btn btn-secondary mb-2">Previous Page</a>
+    }
+    else if (notebookId != Guid.Empty && notebookId != null)
+    {
+        <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebookId" class="btn btn-secondary mb-2">Previous Page</a>
+    }
+    @* else if (notebookId != Guid.Empty && notebookId != null)
+    {
+        <a asp-controller="Notebook" asp-action="Index" class="btn btn-secondary mb-2">Previous Page</a>
+    } *@
+</div>
