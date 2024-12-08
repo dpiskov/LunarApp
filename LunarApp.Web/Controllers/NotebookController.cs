@@ -1,4 +1,6 @@
 ﻿using LunarApp.Services.Data.Interfaces;
+using LunarApp.Web.ViewModels;
+using LunarApp.Web.ViewModels.Folder;
 using LunarApp.Web.ViewModels.Notebook;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,16 +8,38 @@ using Microsoft.AspNetCore.Mvc;
 namespace LunarApp.Web.Controllers
 {
     [Authorize]
-    public class NotebookController(INotebookService notebookService)
+    public class NotebookController(INotebookService notebookService, IBaseService baseService)
         : Controller
     {
         // GET method to display the list of notebooks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SearchFilterViewModel inputModel)
         {
+            if (string.IsNullOrWhiteSpace(inputModel.SearchQuery) == false || string.IsNullOrWhiteSpace(inputModel.TagFilter) == false)
+            {
+                FolderNotesViewModel foldersAndNotes = await baseService.GetFilteredNotesAsync(inputModel.SearchQuery, inputModel.TagFilter);
+
+                ViewData["Title"] = "Filtered Notes";
+                return View("FilteredIndex", new SearchFilterViewModel
+                {
+                    FolderNotes = foldersAndNotes,
+                    AllTags = await baseService.GetAllTagsAsync(),
+                    SearchQuery = inputModel.SearchQuery,
+                    TagFilter = inputModel.TagFilter
+                });
+            }
+
             IEnumerable<NotebookInfoViewModel> notebooks = await notebookService.IndexGetAllOrderedByTitleAsync();
 
+            SearchFilterViewModel viewModel = new SearchFilterViewModel
+            {
+                Notebooks = notebooks,
+                AllTags = await baseService.GetAllTagsAsync(),
+                SearchQuery = inputModel.SearchQuery,
+                TagFilter = inputModel.TagFilter
+            };
+
             // Returns the view with the model containing the notebooks data
-            return View(notebooks);
+            return View(viewModel);
         }
 
         // GET method to render the form for creating a new notebook
