@@ -1,5 +1,8 @@
-﻿@using LunarApp.Web.ViewModels.Notebook
-@model IEnumerable<NotebookInfoViewModel>
+﻿@* @using LunarApp.Web.ViewModels.Notebook
+@model IEnumerable<NotebookInfoViewModel> *@
+
+@using LunarApp.Web.ViewModels
+@model SearchFilterViewModel
 
 @{
     ViewData["Title"] = "All Notebooks";
@@ -11,21 +14,52 @@
 
 <hr class="border-bottom" />
 
-<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
-    @foreach (var notebook in Model)
-    {
-        <div class="notebook-item text-center mx-3 my-3">
-            <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebook.Id">
-                <img src="/images/notebook.png" alt="Notebook" />
-            </a>
-            <div class="mt-2 mb-4 font-weight-bold">@notebook.Title</div>
-            <div class="d-flex flex-column align-items-center">
-                <a asp-controller="Folder" asp-action="AddSubfolder" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Folder</a>
-                <a asp-controller="Notebook" asp-action="Details" asp-route-notebookId="@notebook.Id" class="btn btn-outline-info mb-2">Details</a>
-                <a asp-controller="Notebook" asp-action="Edit" asp-route-notebookId="@notebook.Id" class="btn btn-outline-warning mb-2">Edit</a>
-                <a asp-controller="Notebook" asp-action="Remove" asp-route-notebookId="@notebook.Id" class="btn btn-outline-danger">Remove</a>
-            </div>
+<form method="get" asp-controller="Notebook" asp-action="Index" class="mb-4 d-flex justify-content-center">
+    <div class="row w-100 justify-content-center">
+        <!-- Slightly smaller column size for SearchQuery -->
+        <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
+            <input asp-for="SearchQuery" class="form-control" placeholder="Search by title..." />
         </div>
+        <!-- Slightly smaller column size for TagFilter -->
+        <div class="col-lg-4 col-md-5 col-sm-12 mb-2">
+            <select asp-for="TagFilter" class="form-control">
+                @if (Model.AllTags != null)
+                {
+                    <option value="">Filter notes by tag...</option>
+                    foreach (string tag in Model.AllTags)
+                    {
+                        <option value="@tag">@tag</option>
+                    }
+                }
+            </select>
+        </div>
+        <!-- Adjusted button to align better -->
+        <div class="col-lg-1 col-md-1 col-sm-12 mb-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>
+
+<hr class="border-bottom" />
+
+<div class="container col-8 d-flex justify-content-start flex-wrap mt-4">
+    @if (Model.Notebooks != null)
+    {
+        @foreach (var notebook in Model.Notebooks)
+        {
+            <div class="notebook-item text-center mx-3 my-3">
+                <a asp-controller="Folder" asp-action="Index" asp-route-notebookId="@notebook.Id">
+                    <img src="/images/notebook.png" alt="Notebook" />
+                </a>
+                <div class="mt-2 mb-4 font-weight-bold">@notebook.Title</div>
+                <div class="d-flex flex-column align-items-center">
+                    <a asp-controller="Folder" asp-action="AddSubfolder" asp-route-notebookId="@notebook.Id" class="btn btn-outline-primary mb-2">Add Folder</a>
+                    <a asp-controller="Notebook" asp-action="Details" asp-route-notebookId="@notebook.Id" class="btn btn-outline-info mb-2">Details</a>
+                    <a asp-controller="Notebook" asp-action="Edit" asp-route-notebookId="@notebook.Id" class="btn btn-outline-warning mb-2">Edit</a>
+                    <a asp-controller="Notebook" asp-action="Remove" asp-route-notebookId="@notebook.Id" class="btn btn-outline-danger">Remove</a>
+                </div>
+            </div>
+        }
     }
 </div>
 
