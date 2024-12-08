@@ -120,49 +120,49 @@ namespace LunarApp.Data.Migrations
 
                     b.HasIndex("ParentFolderId");
 
-                    b.ToTable("Folders", (string)null);
+                    b.ToTable("Folders");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("bc909db1-0907-4241-a15e-85d8eb53cefc"),
+                            Id = new Guid("617fd59e-c7f6-4e90-a9ca-d9b6cfc61bce"),
                             Description = "Links to useful software engineering resources.",
-                            NotebookId = new Guid("68140580-97ec-4543-bda7-5c899609a098"),
+                            NotebookId = new Guid("e36ef31b-16d9-40d6-a336-0dadb73ee706"),
                             Title = "Resources"
                         },
                         new
                         {
-                            Id = new Guid("0fc58ea1-fb37-47bd-821c-36073702f684"),
+                            Id = new Guid("a4009323-ffde-4dde-898a-c63a1a31c000"),
                             Description = "Quick access to reusable code.",
-                            NotebookId = new Guid("68140580-97ec-4543-bda7-5c899609a098"),
+                            NotebookId = new Guid("e36ef31b-16d9-40d6-a336-0dadb73ee706"),
                             Title = "Code Snippets"
                         },
                         new
                         {
-                            Id = new Guid("faf44aa2-1e98-48ff-80d5-847b7b6e8b64"),
+                            Id = new Guid("d9c92c27-b608-48e2-bb8e-790e333020f2"),
                             Description = "A collection of music samples for production.",
-                            NotebookId = new Guid("a566461d-ebd6-4f09-9ba1-a979b2cbb6fd"),
+                            NotebookId = new Guid("e3e6aa3b-c280-4005-8fb2-14c4cdcf6425"),
                             Title = "Samples"
                         },
                         new
                         {
-                            Id = new Guid("c8b1a27b-df7b-48c0-95dc-cdc811f57e41"),
+                            Id = new Guid("9a2143ce-86da-4450-8c21-aca5ca0becfb"),
                             Description = "Tutorials on video editing techniques.",
-                            NotebookId = new Guid("4545e175-6a16-4c7d-8f1f-b87c2846e1aa"),
+                            NotebookId = new Guid("c1052546-dad1-4569-aa20-4d31db57af81"),
                             Title = "Techniques"
                         },
                         new
                         {
-                            Id = new Guid("56044a58-7c4d-4248-b3b7-84dc0d94ab3f"),
+                            Id = new Guid("1f5c5793-2e19-4f9d-adc8-b1c750666336"),
                             Description = "Track personal development goals.",
-                            NotebookId = new Guid("6f45feff-2f73-495d-9d09-0ec08a8b7ac8"),
+                            NotebookId = new Guid("a5b9e3e5-c41a-40c2-9068-b4ff72fc585b"),
                             Title = "Goals"
                         },
                         new
                         {
-                            Id = new Guid("e8f5eafd-ad47-4080-8ec4-81473206e201"),
+                            Id = new Guid("9005ce81-b076-4a8f-a56e-c9ef43e11021"),
                             Description = "Ideas for future stories or poems.",
-                            NotebookId = new Guid("17d0d13b-1c3e-4e29-a85e-ebd38cec944d"),
+                            NotebookId = new Guid("92bda610-1b12-4a0a-b12b-5e11aa47c008"),
                             Title = "Ideas"
                         });
                 });
@@ -195,6 +195,9 @@ namespace LunarApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Identifier of a notebook");
 
+                    b.Property<Guid?>("ParentFolderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TagId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Identifier of a tag");
@@ -211,59 +214,61 @@ namespace LunarApp.Data.Migrations
 
                     b.HasIndex("NotebookId");
 
+                    b.HasIndex("ParentFolderId");
+
                     b.HasIndex("TagId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b306fdc2-2943-41cb-b0fc-6b1f2842b6e9"),
+                            Id = new Guid("6416fd93-8446-4359-bf1b-06bbe9935a47"),
                             Body = "Notes on various software design patterns, including Singleton, Factory, and Observer.",
-                            DateCreated = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9085),
-                            FolderId = new Guid("0fc58ea1-fb37-47bd-821c-36073702f684"),
-                            LastSaved = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9129),
-                            NotebookId = new Guid("68140580-97ec-4543-bda7-5c899609a098"),
+                            DateCreated = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5025),
+                            FolderId = new Guid("a4009323-ffde-4dde-898a-c63a1a31c000"),
+                            LastSaved = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5080),
+                            NotebookId = new Guid("e36ef31b-16d9-40d6-a336-0dadb73ee706"),
                             Title = "Design Patterns"
                         },
                         new
                         {
-                            Id = new Guid("7f5a5c1b-1a48-47d3-8f55-c0bf0ca8f396"),
+                            Id = new Guid("92a20920-197f-4f8e-8e71-1679ef7317a0"),
                             Body = "Techniques for mixing tracks in a DAW, with focus on EQ and compression.",
-                            DateCreated = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9133),
-                            FolderId = new Guid("faf44aa2-1e98-48ff-80d5-847b7b6e8b64"),
-                            LastSaved = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9134),
-                            NotebookId = new Guid("a566461d-ebd6-4f09-9ba1-a979b2cbb6fd"),
+                            DateCreated = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5084),
+                            FolderId = new Guid("d9c92c27-b608-48e2-bb8e-790e333020f2"),
+                            LastSaved = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5085),
+                            NotebookId = new Guid("e3e6aa3b-c280-4005-8fb2-14c4cdcf6425"),
                             Title = "Mixing Tips"
                         },
                         new
                         {
-                            Id = new Guid("6f510028-6635-46bb-98e5-40533baaf488"),
+                            Id = new Guid("28702685-e6f8-4829-a937-a3b41d722c77"),
                             Body = "A guide to color grading for video editors using different software.",
-                            DateCreated = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9137),
-                            FolderId = new Guid("c8b1a27b-df7b-48c0-95dc-cdc811f57e41"),
-                            LastSaved = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9138),
-                            NotebookId = new Guid("4545e175-6a16-4c7d-8f1f-b87c2846e1aa"),
+                            DateCreated = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5088),
+                            FolderId = new Guid("9a2143ce-86da-4450-8c21-aca5ca0becfb"),
+                            LastSaved = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5089),
+                            NotebookId = new Guid("c1052546-dad1-4569-aa20-4d31db57af81"),
                             Title = "Color Grading Techniques"
                         },
                         new
                         {
-                            Id = new Guid("0cd87114-a7dd-4f7e-86c0-94186ddbddc5"),
+                            Id = new Guid("10966e78-2493-4ef6-96f0-0be25980bc15"),
                             Body = "A step-by-step guide to an effective morning routine to start the day right.",
-                            DateCreated = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9141),
-                            FolderId = new Guid("56044a58-7c4d-4248-b3b7-84dc0d94ab3f"),
-                            LastSaved = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9142),
-                            NotebookId = new Guid("6f45feff-2f73-495d-9d09-0ec08a8b7ac8"),
+                            DateCreated = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5093),
+                            FolderId = new Guid("1f5c5793-2e19-4f9d-adc8-b1c750666336"),
+                            LastSaved = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5094),
+                            NotebookId = new Guid("a5b9e3e5-c41a-40c2-9068-b4ff72fc585b"),
                             Title = "Morning Routine"
                         },
                         new
                         {
-                            Id = new Guid("94934d02-525a-47b5-8f0c-c1fc63bd738d"),
+                            Id = new Guid("508fe25d-73f5-41be-9bcf-6cf8777d57b5"),
                             Body = "Techniques for creating deep, multi-dimensional characters in fiction.",
-                            DateCreated = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9147),
-                            FolderId = new Guid("e8f5eafd-ad47-4080-8ec4-81473206e201"),
-                            LastSaved = new DateTime(2024, 12, 3, 13, 28, 41, 71, DateTimeKind.Local).AddTicks(9148),
-                            NotebookId = new Guid("17d0d13b-1c3e-4e29-a85e-ebd38cec944d"),
+                            DateCreated = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5097),
+                            FolderId = new Guid("9005ce81-b076-4a8f-a56e-c9ef43e11021"),
+                            LastSaved = new DateTime(2024, 12, 8, 11, 21, 31, 965, DateTimeKind.Local).AddTicks(5098),
+                            NotebookId = new Guid("92bda610-1b12-4a0a-b12b-5e11aa47c008"),
                             Title = "Character Development"
                         });
                 });
@@ -288,36 +293,36 @@ namespace LunarApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notebooks", (string)null);
+                    b.ToTable("Notebooks");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("68140580-97ec-4543-bda7-5c899609a098"),
+                            Id = new Guid("e36ef31b-16d9-40d6-a336-0dadb73ee706"),
                             Description = "A notebook for all things software development.",
                             Title = "Software Engineering"
                         },
                         new
                         {
-                            Id = new Guid("a566461d-ebd6-4f09-9ba1-a979b2cbb6fd"),
+                            Id = new Guid("e3e6aa3b-c280-4005-8fb2-14c4cdcf6425"),
                             Description = "For all music production-related notes.",
                             Title = "Music Production"
                         },
                         new
                         {
-                            Id = new Guid("4545e175-6a16-4c7d-8f1f-b87c2846e1aa"),
+                            Id = new Guid("c1052546-dad1-4569-aa20-4d31db57af81"),
                             Description = "Notes on video editing, techniques, and tutorials.",
                             Title = "Video Editing"
                         },
                         new
                         {
-                            Id = new Guid("6f45feff-2f73-495d-9d09-0ec08a8b7ac8"),
+                            Id = new Guid("a5b9e3e5-c41a-40c2-9068-b4ff72fc585b"),
                             Description = "A place for goals, self-improvement tips, and productivity hacks.",
                             Title = "Personal Development"
                         },
                         new
                         {
-                            Id = new Guid("17d0d13b-1c3e-4e29-a85e-ebd38cec944d"),
+                            Id = new Guid("92bda610-1b12-4a0a-b12b-5e11aa47c008"),
                             Description = "A notebook for stories, poetry, and creative writing ideas.",
                             Title = "Creative Writing"
                         });
@@ -338,22 +343,22 @@ namespace LunarApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("62f48b86-54b4-4c14-a81f-e6a734564921"),
+                            Id = new Guid("67d6c49b-f33f-4e50-87bd-fc76808f7bb9"),
                             Name = "Urgent"
                         },
                         new
                         {
-                            Id = new Guid("c21469f5-0620-4d87-9344-7779d15ada28"),
+                            Id = new Guid("d70e52df-9509-4651-89b2-3f5c83553399"),
                             Name = "Important"
                         },
                         new
                         {
-                            Id = new Guid("e6bd5210-227a-4646-9a3f-a8f79098bd7c"),
+                            Id = new Guid("2626d426-58ee-4a83-9b61-826c7bd12b37"),
                             Name = "Not Urgent"
                         });
                 });
@@ -520,6 +525,10 @@ namespace LunarApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LunarApp.Data.Models.Folder", "ParentFolder")
+                        .WithMany()
+                        .HasForeignKey("ParentFolderId");
+
                     b.HasOne("LunarApp.Data.Models.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId");
@@ -527,6 +536,8 @@ namespace LunarApp.Data.Migrations
                     b.Navigation("Folder");
 
                     b.Navigation("Notebook");
+
+                    b.Navigation("ParentFolder");
 
                     b.Navigation("Tag");
                 });
