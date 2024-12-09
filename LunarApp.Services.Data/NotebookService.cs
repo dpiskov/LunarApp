@@ -8,6 +8,11 @@ namespace LunarApp.Services.Data
 {
     public class NotebookService(IRepository<Notebook, Guid> notebookRepository) : INotebookService
     {
+        public async Task<Notebook?> GetByTitleAsync(string title)
+        {
+            return await notebookRepository.FirstOrDefaultAsync(n => n.Title == title);
+        }
+
         public async Task<IEnumerable<NotebookInfoViewModel>> IndexGetAllOrderedByTitleAsync()
         {
             IEnumerable<NotebookInfoViewModel> notebooks = await notebookRepository
