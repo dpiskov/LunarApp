@@ -1,9 +1,12 @@
-﻿using LunarApp.Web.ViewModels.Tag;
+﻿using LunarApp.Data.Models;
+using LunarApp.Web.ViewModels.Tag;
 
 namespace LunarApp.Services.Data.Interfaces
 {
     public interface ITagService
     {
+        Task<Tag?> GetByTitleAsync(string name);
+
         Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync();
         Task<TagCreateViewModel> GetCreateTagAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId,
             Guid? noteId);
