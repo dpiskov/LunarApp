@@ -82,6 +82,27 @@ thead, tbody {
     vertical-align: central;
 }
 
+/* Tag Index View */
+.custom-bg {
+    background-color: rgba(0, 123, 255, 0.5); /* 50% transparent blue background */
+}
+
+/* Note Create/Edit View */
+.custom-dropdown {
+    color: white; /* Text color */
+}
+
+    .custom-dropdown option {
+        background-color: rgba(0, 0, 0, 0.9) !important; /* 50% transparent */
+        /*background-color: black;*/ /* Light gray background */
+        color: white; /* Black text */
+    }
+
+        .custom-dropdown option:hover {
+            background-color: #007bff; /* Bootstrap primary color on hover */
+            color: white; /* White text on hover */
+        }
+
 footer {
     position: relative;
 }
