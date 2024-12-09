@@ -1,4 +1,5 @@
-﻿using LunarApp.Services.Data.Interfaces;
+﻿using LunarApp.Data.Models;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels;
 using LunarApp.Web.ViewModels.Folder;
 using LunarApp.Web.ViewModels.Notebook;
@@ -53,16 +54,26 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(NotebookCreateViewModel model)
         {
-            // Checks if the submitted form data is valid
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                return View(model);                                    // If not valid, returns the form view with validation errors
+                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title);
+
+                if (existingNotebook != null)
+                {
+                    // Add a model state error if the notebook already exists
+                    ModelState.AddModelError("Title", "A notebook with this title already exists.");
+                    return View(model);  // Return to the form with the error message
+                }
+
+                // Checks if the submitted form data is valid
+
+                await notebookService.AddNotebookAsync(model);
+
+                // Redirects to the Index action to show the updated list of notebooks
+                return RedirectToAction(nameof(Index));
             }
 
-            await notebookService.AddNotebookAsync(model);
-
-            // Redirects to the Index action to show the updated list of notebooks
-            return RedirectToAction(nameof(Index));
+            return View(model);                                    // If not valid, returns the form view with validation errors
         }
 
         // GET method to render the confirmation page for deleting a notebook
@@ -118,6 +129,15 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title);
+
+                if (existingNotebook != null)
+                {
+                    // Add a model state error if the notebook already exists
+                    ModelState.AddModelError("Title", "A notebook with this title already exists.");
+                    return View(model);  // Return to the form with the error message
+                }
+
                 bool isEdited = await notebookService.EditNotebookAsync(model);
 
                 if (isEdited == false)
@@ -150,19 +170,19 @@ namespace LunarApp.Web.Controllers
         public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {
             // Checks if the submitted form data is valid
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                return View(model);                             // If not valid, returns the form view with validation errors
-            }
+                bool isEdited = await notebookService.EditDetailsNotebookAsync(model);
 
-            bool isEdited = await notebookService.EditDetailsNotebookAsync(model);
+                if (isEdited == false)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
 
-            if (isEdited == false)
-            {
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            return View(model);                             // If not valid, returns the form view with validation errors
         }
     }
 }
