@@ -5,6 +5,11 @@ namespace LunarApp.Services.Data.Interfaces
 {
     public interface IFolderService
     {
+        Task<Folder?> GetByTitleForEditAsync(string title, Guid? parentFolderId, Guid folderId);
+
+        Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId);
+        Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId);
+
         Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId);
         Task<FolderCreateViewModel> GetAddFolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId);
         Task<(bool isSuccess, string? errorMessage)> AddFolderAsync(FolderCreateViewModel model);
