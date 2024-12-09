@@ -8,6 +8,7 @@
     var parentFolderId = (Guid?)ViewData["ParentFolderId"]!;
     var folderId = (Guid?)ViewData["FolderId"]!;
     var noteId = (Guid?)ViewData["NoteId"]!;
+    var tagId = (Guid)ViewData["TagId"]!;
 }
 
 
@@ -16,19 +17,19 @@
         <div class="card-header text-center">
             <h1 class="text-decoration-underline">@title</h1>
         </div>
-        <form asp-controller="Tag" asp-action="Edit" method="post" class="d-flex flex-column flex-grow-1">
+        <form asp-controller="Tag" asp-action="Edit" asp-action="Edit" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" asp-route-noteId="@noteId" asp-route-tagId="@tagId" method="post" class="d-flex flex-column flex-grow-1">
             @Html.AntiForgeryToken()
             <div class="card-body bg-transparent d-flex flex-grow-1 justify-content-center align-items-center">
                 <div class="w-100">
-                    <input type="hidden" asp-for="Id"/>
-                    <input type="hidden" asp-for="NotebookId"/>
-                    <input type="hidden" asp-for="ParentFolderId"/>
-                    <input type="hidden" asp-for="FolderId"/>
-                    <input type="hidden" asp-for="NoteId"/>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="NotebookId" />
+                    <input type="hidden" asp-for="ParentFolderId" />
+                    <input type="hidden" asp-for="FolderId" />
+                    <input type="hidden" asp-for="NoteId" />
 
                     <div class="form-group mb-3 w-100 text-center">
                         <label asp-for="Name"></label>
-                        <input asp-for="Name" class="form-control bg-transparent"/>
+                        <input asp-for="Name" class="form-control bg-transparent" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                 </div>
