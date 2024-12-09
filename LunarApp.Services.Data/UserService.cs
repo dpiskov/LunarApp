@@ -41,7 +41,8 @@ namespace LunarApp.Services.Data
         {
             ApplicationUser? user = await userManager
                 .FindByIdAsync(userId.ToString());
-            bool roleExists = await roleManager.RoleExistsAsync(roleName);
+            var normalizedRoleName = roleName.ToUpperInvariant();
+            bool roleExists = await roleManager.RoleExistsAsync(normalizedRoleName);
 
             if (user == null || roleExists == false)
             {
