@@ -14,6 +14,25 @@ namespace LunarApp.Services.Data
         IFolderHelperService folderHelperService)
         : IFolderService
     {
+        public async Task<Folder?> GetByTitleForEditAsync(string title, Guid? parentFolderId, Guid folderId)
+        {
+            // Check if a folder with the same title exists in the parent folder
+            return await folderRepository
+                .GetAllAttached()
+                .Where(f => f.ParentFolderId == parentFolderId && f.Id != folderId) // Same parent folder, exclude current folder
+                .FirstOrDefaultAsync(f => f.Title == title);
+        }
+
+        public Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId,
     Guid? folderId)
         {
