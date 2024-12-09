@@ -31,10 +31,22 @@ namespace LunarApp.Services.Data
                 .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null) // Check only top-level folders in the notebook
                 .FirstOrDefaultAsync(f => f.Title == title);
         }
-
-        public Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            throw new NotImplementedException();
+            // Get the deepest folder
+            var openedFolder = await folderRepository.GetAllAttached()
+                .FirstOrDefaultAsync(f => f.Id == folderId);
+
+            if (openedFolder == null)
+            {
+                return null; // Folder not found
+            }
+
+            // Check if a folder with the same title exists in the deepest folder
+            return await folderRepository
+                .GetAllAttached()
+                .Where(f => f.ParentFolderId == openedFolder.Id) // Only check within the deepest folder
+                .FirstOrDefaultAsync(f => f.Title == title);
         }
 
         public async Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId,
