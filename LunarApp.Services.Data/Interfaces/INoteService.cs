@@ -1,6 +1,4 @@
-﻿using LunarApp.Data.Models;
-using LunarApp.Web.ViewModels.Folder;
-using LunarApp.Web.ViewModels.Note;
+﻿using LunarApp.Web.ViewModels.Note;
 using LunarApp.Web.ViewModels.Tag;
 
 namespace LunarApp.Services.Data.Interfaces
