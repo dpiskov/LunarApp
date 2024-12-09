@@ -4,9 +4,9 @@
 @{
     ViewData["Title"] = "Edit folder";
 
-    var folderId = (Guid)ViewData["FolderId"]!;
     var notebookId = (Guid)ViewData["NotebookId"]!;
     var parentFolderId = (Guid?)ViewData["ParentFolderId"];
+    var folderId = (Guid)ViewData["FolderId"]!;
 
     var newParentFolderId = (Guid?)ViewData["NewParentFolderId"]!;
 }
@@ -20,7 +20,7 @@
 <div class="row d-flex justify-content-center align-items-center flex-column card-center">
     <div class="col-md-6">
         <div class="transparent-container card">
-            <form asp-controller="Folder" asp-action="Edit" method="post" class="text-center">
+            <form asp-controller="Folder" asp-action="Edit" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" method="post" class="text-center">
                 @Html.AntiForgeryToken()
                 <div class="card-body">
                     <input type="hidden" asp-for="NotebookId"/>
