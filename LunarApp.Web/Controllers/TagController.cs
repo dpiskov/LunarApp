@@ -78,7 +78,7 @@ namespace LunarApp.Web.Controllers
             ViewData["NoteId"] = noteId;
             ViewData["TagId"] = tagId;
 
-            ViewData["Title"] = model.Name;
+            ViewData["Title"] = "Edit Tag";
 
             return View(model);
         }
@@ -101,7 +101,7 @@ namespace LunarApp.Web.Controllers
                     ViewData["NoteId"] = model.NoteId;
                     ViewData["TagId"] = model.Id;
 
-                    ViewData["Title"] = name;
+                    ViewData["Title"] = "Edit Tag";
 
                     return View(model);  // Return to the form with the error message
                 }
