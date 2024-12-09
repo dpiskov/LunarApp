@@ -1,4 +1,5 @@
-﻿using LunarApp.Services.Data.Interfaces;
+﻿using LunarApp.Data.Models;
+using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Tag;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,21 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                Tag? existingNotebook = await tagService.GetByTitleAsync(model.Name);
+
+                if (existingNotebook != null)
+                {
+                    // Add a model state error if the notebook already exists
+                    ModelState.AddModelError("Name", "A tag with this name already exists.");
+
+                    ViewData["NotebookId"] = model.NotebookId;
+                    ViewData["ParentFolderId"] = model.ParentFolderId;
+                    ViewData["FolderId"] = model.FolderId;
+                    ViewData["NoteId"] = model.NoteId;
+
+                    return View(model);  // Return to the form with the error message
+                }
+
                 await tagService.CreateTagAsync(model);
 
                 return RedirectToTagIndexView(model.NotebookId, model.ParentFolderId, model.FolderId, model.NoteId);
@@ -68,10 +84,28 @@ namespace LunarApp.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(TagEditViewModel model)
+        public async Task<IActionResult> Edit(TagEditViewModel model, string name)
         {
             if (ModelState.IsValid)
             {
+                Tag? existingTag = await tagService.GetByTitleAsync(model.Name);
+
+                if (existingTag != null)
+                {
+                    // Add a model state error if the notebook already exists
+                    ModelState.AddModelError("Name", "A tag with this name already exists.");
+
+                    ViewData["NotebookId"] = model.NotebookId;
+                    ViewData["ParentFolderId"] = model.ParentFolderId;
+                    ViewData["FolderId"] = model.FolderId;
+                    ViewData["NoteId"] = model.NoteId;
+                    ViewData["TagId"] = model.Id;
+
+                    ViewData["Title"] = name;
+
+                    return View(model);  // Return to the form with the error message
+                }
+
                 await tagService.EditTagAsync(model);
 
                 return RedirectToTagIndexView(model.NotebookId, model.ParentFolderId, model.FolderId, model.NoteId);
