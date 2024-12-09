@@ -23,9 +23,13 @@ namespace LunarApp.Services.Data
                 .FirstOrDefaultAsync(f => f.Title == title);
         }
 
-        public Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId)
+        public async Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId)
         {
-            throw new NotImplementedException();
+            // Check if a folder with the same title exists directly in the notebook
+            return await folderRepository
+                .GetAllAttached()
+                .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null) // Check only top-level folders in the notebook
+                .FirstOrDefaultAsync(f => f.Title == title);
         }
 
         public Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId)
