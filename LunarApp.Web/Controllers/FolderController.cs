@@ -92,20 +92,36 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFolder(FolderCreateViewModel model)
         {
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                return View(model);
+                Folder? existingFolder = await folderService.GetByTitleAsync(model.Title, model.NotebookId, model.ParentFolderId, model.FolderId);
+
+                Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId);
+
+                if (existingFolder != null || existingFolderByNotebookId != null)
+                {
+                    // Add a model state error if the folder already exists
+                    ModelState.AddModelError("Title", "A folder with this title already exists.");
+
+                    ViewData["NotebookId"] = model.NotebookId;
+                    ViewData["ParentFolderId"] = model.ParentFolderId;
+                    ViewData["FolderId"] = model.FolderId;
+
+                    return View(model);  // Return to the form with the error message
+                }
+
+                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
+
+                if (isSuccess == false)
+                {
+                    ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
+                    return View(model);
+                }
+
+                return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
             }
 
-            (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
-
-            if (isSuccess == false)
-            {
-                ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
-                return View(model);
-            }
-
-            return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
+            return View(model);
         }
 
         [HttpGet]
@@ -126,20 +142,36 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddSubfolder(FolderCreateViewModel model)
         {
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                return View(model);
+                Folder? existingFolder = await folderService.GetByTitleAsync(model.Title, model.NotebookId, model.ParentFolderId, model.FolderId);
+
+                Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId);
+
+                if (existingFolder != null || existingFolderByNotebookId != null)
+                {
+                    // Add a model state error if the folder already exists
+                    ModelState.AddModelError("Title", "A folder with this title already exists.");
+
+                    ViewData["NotebookId"] = model.NotebookId;
+                    ViewData["ParentFolderId"] = model.ParentFolderId;
+                    ViewData["FolderId"] = model.FolderId;
+
+                    return View(model);  // Return to the form with the error message
+                }
+
+                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
+
+                if (isSuccess == false)
+                {
+                    ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
+                    return View(model);
+                }
+
+                return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
             }
 
-            (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
-
-            if (isSuccess == false)
-            {
-                ModelState.AddModelError(string.Empty, errorMessage ?? "An unknown error occurred.");
-                return View(model);
-            }
-
-            return RedirectToFolderOrNotebookIndex(model.NotebookId, model.ParentFolderId, model.FolderId);
+            return View(model);
         }
 
         [HttpGet]
@@ -162,21 +194,21 @@ namespace LunarApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                return View(model);
+                await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
+
+                Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
+
+                if (folder != null)
+                {
+                    return RedirectToFolderOrNotebookIndex(folder.NotebookId, folder.ParentFolderId, folder.Id);
+                }
+
+                return RedirectToFolderOrNotebookIndex(model.NotebookId, Guid.Empty, Guid.Empty);
             }
 
-            await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
-
-            Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
-
-            if (folder != null)
-            {
-                return RedirectToFolderOrNotebookIndex(folder.NotebookId, folder.ParentFolderId, folder.Id);
-            }
-
-            return RedirectToFolderOrNotebookIndex(model.NotebookId, Guid.Empty, Guid.Empty);
+            return View(model);
         }
 
         [HttpGet]
@@ -184,7 +216,6 @@ namespace LunarApp.Web.Controllers
         {
             (FolderEditViewModel? model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId);
 
-            //TODO: SIMPLIFY IF POSSIBLE
             if (model == null)
             {
                 return RedirectToFolderOrNotebookIndexForEdit(notebookId, parentFolderId, folderId, newParentFolderId);
@@ -206,6 +237,20 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                Folder? existingFolderForEdit = await folderService.GetByTitleForEditAsync(model.Title, model.ParentFolderId, model.FolderId);
+
+                if (existingFolderForEdit != null)
+                {
+                    // Add a model state error if the folder title already exists in the parent folder
+                    ModelState.AddModelError("Title", "A folder with this title already exists.");
+
+                    ViewData["NotebookId"] = model.NotebookId;
+                    ViewData["ParentFolderId"] = model.ParentFolderId;
+                    ViewData["FolderId"] = model.FolderId;
+
+                    return View(model);  // Return to the edit form with the error message
+                }
+
                 (bool isEdited, Folder? parentFolder) = await folderService.EditFolderAsync(model);
 
                 if (isEdited == false)
