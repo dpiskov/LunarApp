@@ -73,6 +73,8 @@ namespace LunarApp.Web
             //app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
             app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
+            app.ApplyMigrations();
+
             if (app.Environment.IsDevelopment())
             {
                 app.SeedAdministrator(adminEmail, adminUsername, adminPassword);
@@ -92,7 +94,6 @@ namespace LunarApp.Web
 
             app.MapRazorPages();
 
-            app.ApplyMigrations();
             app.Run();
         }
 
