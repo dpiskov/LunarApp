@@ -10,6 +10,11 @@ namespace LunarApp.Services.Data
         IRepository<Tag, Guid> tagRepository
         ) : ITagService
     {
+        public async Task<Tag?> GetByTitleAsync(string name)
+        {
+            return await tagRepository.FirstOrDefaultAsync(n => n.Name == name);
+        }
+
         public async Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync()
         {
             IEnumerable<TagViewModel> tags = await tagRepository
