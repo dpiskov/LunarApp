@@ -24,8 +24,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex align-items-center justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
+                            @if (User.Identity.IsAuthenticated && User.IsInRole(AdminRoleName))
+                            {
+                                <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house-door"></i> Admin Dashboard
+                                </a>
+                            }
+                        </li>
+                        <li class="nav-item">
                             <div class="center-content">
-                                <p class="m-0"><a asp-area="" asp-controller="Home" asp-action="Index"><img src="/images/moon-2-64.png" /></a></p>
+                                <p class="m-0"><a asp-area="" asp-controller="Home" asp-action="Index"><img src="/images/moon-2-64.png"/></a></p>
                             </div>
                         </li>
                     </ul>
