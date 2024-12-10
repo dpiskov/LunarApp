@@ -10,25 +10,24 @@ namespace LunarApp.Services.Data
     public class FolderService(
         IRepository<Notebook, Guid> notebookRepository,
         IRepository<Folder, Guid> folderRepository,
-        IRepository<Note, Guid> noteRepository,
-        IFolderHelperService folderHelperService)
+        IRepository<Note, Guid> noteRepository)
         : IFolderService
     {
-        public async Task<Folder?> GetByTitleForEditAsync(string title, Guid? parentFolderId, Guid folderId)
+        public async Task<Folder?> GetByTitleForEditAsync(string title, Guid? parentFolderId, Guid folderId, Guid userId)
         {
             // Check if a folder with the same title exists in the parent folder
             return await folderRepository
                 .GetAllAttached()
-                .Where(f => f.ParentFolderId == parentFolderId && f.Id != folderId) // Same parent folder, exclude current folder
+                .Where(f => f.UserId == userId && f.ParentFolderId == parentFolderId && f.Id != folderId) // Same parent folder, exclude current folder
                 .FirstOrDefaultAsync(f => f.Title == title);
         }
 
-        public async Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId)
+        public async Task<Folder?> GetByTitleInNotebookAsync(string title, Guid notebookId, Guid userId)
         {
             // Check if a folder with the same title exists directly in the notebook
             return await folderRepository
                 .GetAllAttached()
-                .Where(f => f.NotebookId == notebookId && f.ParentFolderId == null) // Check only top-level folders in the notebook
+                .Where(f => f.UserId == userId && f.NotebookId == notebookId && f.ParentFolderId == null) // Check only top-level folders in the notebook
                 .FirstOrDefaultAsync(f => f.Title == title);
         }
         public async Task<Folder?> GetByTitleAsync(string title, Guid notebookId, Guid? parentFolderId, Guid? folderId)
@@ -50,7 +49,7 @@ namespace LunarApp.Services.Data
         }
 
         public async Task<FolderNotesViewModel> IndexGetAllFoldersAsync(Guid notebookId, Guid? parentFolderId,
-    Guid? folderId)
+    Guid? folderId, Guid userId)
         {
             IEnumerable<FolderInfoViewModel> folders = new List<FolderInfoViewModel>();
             IEnumerable<NoteInfoViewModel> notes = new List<NoteInfoViewModel>();
@@ -59,6 +58,7 @@ namespace LunarApp.Services.Data
             {
                 folders = await folderRepository
                     .GetAllAttached()
+                    .Where(f => f.UserId == userId)
                     .Where(f => f.ParentFolderId == folderId)
                     .Select(f => new FolderInfoViewModel
                     {
@@ -72,6 +72,7 @@ namespace LunarApp.Services.Data
 
                 notes = await noteRepository
                     .GetAllAttached()
+                    .Where(f => f.UserId == userId)
                     .Where(n => n.FolderId == folderId)
                     .Select(n => new NoteInfoViewModel
                     {
@@ -88,6 +89,7 @@ namespace LunarApp.Services.Data
             {
                 folders = await folderRepository
                     .GetAllAttached()
+                    .Where(f => f.UserId == userId)
                     .Where(f => f.NotebookId == notebookId &&
                                 f.ParentFolderId == null)
                     .Select(f => new FolderInfoViewModel
@@ -102,6 +104,7 @@ namespace LunarApp.Services.Data
 
                 notes = await noteRepository
                     .GetAllAttached()
+                    .Where(f => f.UserId == userId)
                     .Where(n => n.FolderId == null)
                     .Where(nb => nb.NotebookId == notebookId)
                     .Select(n => new NoteInfoViewModel
@@ -125,8 +128,11 @@ namespace LunarApp.Services.Data
 
         public async Task<FolderCreateViewModel> GetAddFolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
-            bool isMadeDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
-                parentFolderId == Guid.Empty || parentFolderId == null;
+            //bool isMadeDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+            //    parentFolderId == Guid.Empty || parentFolderId == null;
+            bool isMadeDirectlyFromNotebook = (folderId == Guid.Empty || folderId == null) &&
+                                              (parentFolderId == Guid.Empty || parentFolderId == null);
+
 
             return new FolderCreateViewModel
             {
@@ -138,7 +144,7 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public async Task<(bool isSuccess, string? errorMessage)> AddFolderAsync(FolderCreateViewModel model)
+        public async Task<(bool isSuccess, string? errorMessage)> AddFolderAsync(FolderCreateViewModel model, Guid userId)
         {
             Notebook? notebook = await notebookRepository.GetByIdAsync(model.NotebookId);
 
@@ -152,7 +158,8 @@ namespace LunarApp.Services.Data
                 Title = model.Title,
                 NotebookId = model.NotebookId,
                 Notebook = notebook,
-                ParentFolderId = model.FolderId
+                ParentFolderId = model.FolderId,
+                UserId = userId
             };
 
             await folderRepository.AddAsync(folder);
@@ -160,7 +167,7 @@ namespace LunarApp.Services.Data
             return (true, null);
         }
 
-        public async Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId)
+        public async Task<(FolderCreateViewModel model, Guid newParentFolderId)> GetAddSubfolderModelAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid userId)
         {
             bool isMadeDirectlyFromNotebook = parentFolderId == Guid.Empty || parentFolderId == null && folderId != Guid.Empty && folderId != null;
 
@@ -177,13 +184,13 @@ namespace LunarApp.Services.Data
 
             if (parentFolderId != Guid.Empty && parentFolderId != null)
             {
-                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId, userId);
             }
 
             return (model, newParentFolderId);
         }
 
-        public async Task<(FolderDeleteViewModel? model, Guid newParentFolderId)> GetFolderForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
+        public async Task<(FolderDeleteViewModel? model, Guid newParentFolderId)> GetFolderForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId, Guid userId)
         {
             FolderDeleteViewModel? model = await folderRepository
                 .GetAllAttached()
@@ -202,19 +209,19 @@ namespace LunarApp.Services.Data
 
             if (parentFolderId != Guid.Empty && parentFolderId != null)
             {
-                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId, userId);
             }
 
             return (model, newParentFolderId);
         }
 
-        public async Task DeleteFolderWithChildrenAsync(Guid folderId)
+        public async Task DeleteFolderWithChildrenAsync(Guid folderId, Guid userId)
         {
             Folder? folder = await folderRepository
                 .GetAllAttached()
                 .Include(f => f.Notes)
                 .Include(f => f.ChildrenFolders)
-                .FirstOrDefaultAsync(f => f.Id == folderId);
+                .FirstOrDefaultAsync(f => f.Id == folderId && f.UserId == userId);
 
             if (folder == null)
             {
@@ -225,7 +232,7 @@ namespace LunarApp.Services.Data
 
             foreach (Folder? childFolder in childFolders)
             {
-                await DeleteFolderWithChildrenAsync(childFolder.Id);
+                await DeleteFolderWithChildrenAsync(childFolder.Id, userId);
             }
 
             await noteRepository.DeleteRangeAsync(folder.Notes);
@@ -234,14 +241,17 @@ namespace LunarApp.Services.Data
             await folderRepository.SaveChangesAsync();
         }
 
-        public async Task<(FolderEditViewModel? model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
+        public async Task<(FolderEditViewModel? model, Guid newParentFolderId)> GetFolderForEditByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId, Guid userId)
         {
-            bool isAccessedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
-                parentFolderId == Guid.Empty || parentFolderId == null;
+            //bool isAccessedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
+            //    parentFolderId == Guid.Empty || parentFolderId == null;
+
+            bool isAccessedDirectlyFromNotebook = (folderId == Guid.Empty || folderId == null) &&
+                                                  (parentFolderId == Guid.Empty || parentFolderId == null);
 
             Folder? folder = await folderRepository
                 .GetAllAttached()
-                .Where(f => f.Id == folderId)
+                .Where(f => f.UserId == userId && f.Id == folderId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -263,7 +273,7 @@ namespace LunarApp.Services.Data
 
             if (parentFolderId != Guid.Empty && parentFolderId != null)
             {
-                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId, userId);
             }
 
             return (model, newParentFolderId);
@@ -296,14 +306,14 @@ namespace LunarApp.Services.Data
             return (isEdited, parentFolder);
         }
 
-        public async Task<(FolderDetailsViewModel? model, Guid newParentFolderId)> GetFolderDetailsByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId)
+        public async Task<(FolderDetailsViewModel? model, Guid newParentFolderId)> GetFolderDetailsByIdAsync(Guid notebookId, Guid? parentFolderId, Guid folderId, Guid userId)
         {
             bool isAccessedDirectlyFromNotebook = folderId == Guid.Empty || folderId == null &&
                 parentFolderId == Guid.Empty || parentFolderId == null;
 
             Folder? folder = await folderRepository
                 .GetAllAttached()
-                .Where(f => f.Id == folderId)
+                .Where(f => f.UserId == userId && f.Id == folderId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -326,7 +336,7 @@ namespace LunarApp.Services.Data
 
             if (parentFolderId != Guid.Empty && parentFolderId != null)
             {
-                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+                newParentFolderId = await GetParentFolderIdAsync(parentFolderId, newParentFolderId, userId);
             }
 
             return (model, newParentFolderId);
@@ -369,23 +379,51 @@ namespace LunarApp.Services.Data
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<string?> GetNotebookTitleAsync(Guid notebookId)
+        public async Task<string?> GetNotebookTitleAsync(Guid notebookId, Guid userId)
         {
             return await notebookRepository
                 .GetAllAttached()
-                .Where(nb => nb.Id == notebookId)
+                .Where(nb => nb.Id == notebookId && nb.UserId == userId)
                 .Select(nb => nb.Title)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Guid> GetParentFolderIdAsync(Guid? parentFolderId, Guid newParentFolderId)
+        public async Task<Guid> GetParentFolderIdAsync(Guid? parentFolderId, Guid newParentFolderId, Guid userId)
         {
-            return await folderHelperService.GetParentFolderIdAsync(parentFolderId, newParentFolderId);
+            Folder? folder = await folderRepository
+                .GetAllAttached()
+                .Where(f => f.UserId == userId)
+                .SelectMany(f => f.ChildrenFolders)
+                .Where(f => f.Id == parentFolderId)
+                .FirstOrDefaultAsync();
+
+            if (folder != null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
+            {
+                newParentFolderId = folder.ParentFolderId.Value;
+            }
+
+            return newParentFolderId;
         }
 
-        public async Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId)
+        public async Task<(Guid newParentFolderId, Guid newFolderId)> GetFolderAndParentIdsAsync(Guid? parentFolderId, Guid newParentFolderId, Guid newFolderId, Guid userId)
         {
-            return await folderHelperService.GetFolderAndParentIdsAsync(parentFolderId, newParentFolderId, newFolderId);
+            Folder? folder = await folderRepository
+                .GetAllAttached()
+                .Where(f => f.UserId == userId)
+                .SelectMany(f => f.ChildrenFolders)
+                .Where(f => f.Id == parentFolderId)
+                .FirstOrDefaultAsync();
+
+            if (folder != null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
+            {
+                newParentFolderId = folder.ParentFolderId.Value;
+            }
+            else if (folder == null && parentFolderId != null)
+            {
+                newFolderId = parentFolderId.Value;
+            }
+
+            return (newParentFolderId, newFolderId);
         }
 
         public async Task<Folder?> GetFolderForRedirectionAsync(Guid folderId, Guid? parentFolderId)
