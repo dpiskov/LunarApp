@@ -8,17 +8,31 @@ namespace LunarApp.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Folder> builder)
         {
-            // Notebook to Folder relationship (cascade delete)
-            builder.HasOne(f => f.Notebook)  // A Folder belongs to one Notebook
-                .WithMany(nb => nb.Folders)  // A Notebook has many Folders
-                .HasForeignKey(f => f.NotebookId)  // Foreign key from Folder to Notebook
-                .OnDelete(DeleteBehavior.Cascade);  // Cascade delete when Notebook is deleted
+            builder.HasOne(f => f.Notebook)
+                .WithMany(nb => nb.Folders)
+                .HasForeignKey(f => f.NotebookId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Folder to Folder relationship (self-referencing) (cascade delete)
-            builder.HasOne(f => f.ParentFolder)  // A Folder has one ParentFolder
-                .WithMany(pf => pf.ChildrenFolders)  // A ParentFolder has many ChildrenFolders
-                .HasForeignKey(f => f.ParentFolderId)  // Foreign key for the self-referencing relation
-                .OnDelete(DeleteBehavior.Restrict);  // Use Restrict to prevent automatic cascade delete
+            builder.HasOne(f => f.ParentFolder)
+                .WithMany(pf => pf.ChildrenFolders)
+                .HasForeignKey(f => f.ParentFolderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(f => f.Notes)
+                .WithOne(n => n.Folder)
+                .HasForeignKey(n => n.FolderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasMany(f => f.ChildrenFolders)
+                .WithOne(cf => cf.ParentFolder)
+                .HasForeignKey(cf => cf.ParentFolderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
