@@ -53,5 +53,6 @@ The **Admin** role has elevated privileges for managing the app and overseeing i
 - **Bootstrap 5**: Responsive and modern UI components.
 - **HTML**: Markup language for structuring web pages.
 - **CSS**: Styling language for web pages.
+- **TinyMCE**: A rich text editor for creating detailed and formatted notes.
 ### Testing
 - **NUnit**: Comprehensive testing framework.
