@@ -1,59 +1,60 @@
 ﻿using LunarApp.Data.Models;
-using LunarApp.Services.Data;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels;
 using LunarApp.Web.ViewModels.Folder;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
-    // TODO: HANDLE EXCEPTIONS
     [Authorize]
-    public class FolderController(IFolderService folderService, IBaseService baseService) : Controller
+    public class FolderController(
+        IFolderService folderService,
+        IBaseService baseService,
+        UserManager<ApplicationUser> userManager) : BaseController(userManager)
     {
         public async Task<IActionResult> Index(SearchFilterViewModel inputModel, Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
             FolderNotesViewModel foldersAndNotes;
 
+            Guid currentUserId = GetCurrentUserId();
+
             if (string.IsNullOrWhiteSpace(inputModel.SearchQuery) == false || string.IsNullOrWhiteSpace(inputModel.TagFilter) == false)
             {
-                foldersAndNotes = await baseService.GetFilteredNotesAsyncByNotebookId(notebookId, parentFolderId, folderId, inputModel.SearchQuery, inputModel.TagFilter);
+                foldersAndNotes = await baseService.GetFilteredNotesAsyncByNotebookId(notebookId, parentFolderId, folderId, currentUserId, inputModel.SearchQuery, inputModel.TagFilter);
 
                 ViewData["Title"] = "Filtered Notes";
                 ViewData["NotebookId"] = notebookId;
                 ViewData["ParentFolderId"] = parentFolderId;
                 ViewData["FolderId"] = folderId;
 
-                // Redirect with query parameters for filtered results
                 return View("FilteredIndex", new SearchFilterViewModel
                 {
                     FolderNotes = foldersAndNotes,
-                    AllTags = await baseService.GetAllTagsAsync(),
+                    AllTags = await baseService.GetAllTagsAsync(currentUserId),
                     SearchQuery = inputModel.SearchQuery,
                     TagFilter = inputModel.TagFilter
                 });
             }
             else
             {
-                // Default behavior
-                foldersAndNotes = await folderService.IndexGetAllFoldersAsync(notebookId, parentFolderId, folderId);
+                foldersAndNotes = await folderService.IndexGetAllFoldersAsync(notebookId, parentFolderId, folderId, currentUserId);
             }
 
             SearchFilterViewModel viewModel = new SearchFilterViewModel
             {
                 FolderNotes = foldersAndNotes,
-                AllTags = await baseService.GetAllTagsAsync(),
+                AllTags = await baseService.GetAllTagsAsync(currentUserId),
                 SearchQuery = inputModel.SearchQuery,
                 TagFilter = inputModel.TagFilter
             };
 
-            // Check if you need to return folder or notebook data
             if (folderId != Guid.Empty && folderId != null && notebookId != Guid.Empty && notebookId != null)
             {
                 string? parentFolderTitle = await folderService.GetFolderTitleAsync(folderId.Value);
                 (Guid newParentFolderId, Guid newFolderId) =
-                    await folderService.GetFolderAndParentIdsAsync(parentFolderId, Guid.Empty, Guid.Empty);
+                    await folderService.GetFolderAndParentIdsAsync(parentFolderId, Guid.Empty, Guid.Empty, currentUserId);
 
                 ViewData["Title"] = parentFolderTitle;
                 ViewData["NotebookId"] = notebookId;
@@ -64,7 +65,13 @@ namespace LunarApp.Web.Controllers
             }
             else if (notebookId != Guid.Empty && notebookId != null)
             {
-                string? notebookTitle = await folderService.GetNotebookTitleAsync(notebookId);
+                string? notebookTitle = await folderService.GetNotebookTitleAsync(notebookId, currentUserId);
+
+                if (notebookTitle == null)
+                {
+                    return RedirectToAction(nameof(Index), "Home");
+                }
+
                 ViewData["NotebookId"] = notebookId;
                 ViewData["Title"] = notebookTitle;
             }
@@ -73,7 +80,6 @@ namespace LunarApp.Web.Controllers
                 return RedirectToAction(nameof(Index), "Notebook");
             }
 
-            // Return the default view with updated view model
             return View(viewModel);
         }
 
@@ -96,21 +102,27 @@ namespace LunarApp.Web.Controllers
             {
                 Folder? existingFolder = await folderService.GetByTitleAsync(model.Title, model.NotebookId, model.ParentFolderId, model.FolderId);
 
-                Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId);
+                Folder? existingFolderByNotebookId = null;
+
+                Guid currentUserId = GetCurrentUserId();
+
+                if (model.FolderId == null || model.FolderId == Guid.Empty)
+                {
+                    existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId, currentUserId);
+                }
 
                 if (existingFolder != null || existingFolderByNotebookId != null)
                 {
-                    // Add a model state error if the folder already exists
                     ModelState.AddModelError("Title", "A folder with this title already exists.");
 
                     ViewData["NotebookId"] = model.NotebookId;
                     ViewData["ParentFolderId"] = model.ParentFolderId;
                     ViewData["FolderId"] = model.FolderId;
 
-                    return View(model);  // Return to the form with the error message
+                    return View(model);
                 }
 
-                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
+                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model, currentUserId);
 
                 if (isSuccess == false)
                 {
@@ -127,8 +139,9 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> AddSubfolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
+            Guid currentUserId = GetCurrentUserId();
 
-            (FolderCreateViewModel model, Guid newParentFolderId) = await folderService.GetAddSubfolderModelAsync(notebookId, parentFolderId, folderId);
+            (FolderCreateViewModel model, Guid newParentFolderId) = await folderService.GetAddSubfolderModelAsync(notebookId, parentFolderId, folderId, currentUserId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
@@ -144,23 +157,24 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                Guid currentUserId = GetCurrentUserId();
+
                 Folder? existingFolder = await folderService.GetByTitleAsync(model.Title, model.NotebookId, model.ParentFolderId, model.FolderId);
 
-                Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId);
+                Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId, currentUserId);
 
                 if (existingFolder != null || existingFolderByNotebookId != null)
                 {
-                    // Add a model state error if the folder already exists
                     ModelState.AddModelError("Title", "A folder with this title already exists.");
 
                     ViewData["NotebookId"] = model.NotebookId;
                     ViewData["ParentFolderId"] = model.ParentFolderId;
                     ViewData["FolderId"] = model.FolderId;
 
-                    return View(model);  // Return to the form with the error message
+                    return View(model);
                 }
 
-                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model);
+                (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model, currentUserId);
 
                 if (isSuccess == false)
                 {
@@ -177,17 +191,17 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            (FolderDeleteViewModel? model, Guid newParentFolderId) =
-                await folderService.GetFolderForDeleteByIdAsync(notebookId, parentFolderId, folderId);
+            Guid currentUserId = GetCurrentUserId();
 
-            // Stores the data for the view to access
+            (FolderDeleteViewModel? model, Guid newParentFolderId) =
+                await folderService.GetFolderForDeleteByIdAsync(notebookId, parentFolderId, folderId, currentUserId);
+
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
             ViewData["FolderId"] = folderId;
 
             ViewData["NewParentFolderId"] = newParentFolderId;
 
-            // Return the view with the folder model
             return View(model);
         }
 
@@ -196,7 +210,9 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                await folderService.DeleteFolderWithChildrenAsync(model.FolderId);
+                Guid currentUserId = GetCurrentUserId();
+
+                await folderService.DeleteFolderWithChildrenAsync(model.FolderId, currentUserId);
 
                 Folder? folder = await folderService.GetFolderForRedirectionAsync(model.FolderId, model.ParentFolderId);
 
@@ -214,21 +230,21 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            (FolderEditViewModel? model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId);
+            Guid currentUserId = GetCurrentUserId();
+
+            (FolderEditViewModel? model, Guid newParentFolderId) = await folderService.GetFolderForEditByIdAsync(notebookId, parentFolderId, folderId, currentUserId);
 
             if (model == null)
             {
                 return RedirectToFolderOrNotebookIndexForEdit(notebookId, parentFolderId, folderId, newParentFolderId);
             }
 
-            // Stores the data for the view to access
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
             ViewData["FolderId"] = folderId;
 
             ViewData["NewParentFolderId"] = newParentFolderId;
 
-            // Returns the Edit view with the folder data
             return View(model);
         }
 
@@ -237,18 +253,19 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Folder? existingFolderForEdit = await folderService.GetByTitleForEditAsync(model.Title, model.ParentFolderId, model.FolderId);
+                Guid currentUserId = GetCurrentUserId();
+
+                Folder? existingFolderForEdit = await folderService.GetByTitleForEditAsync(model.Title, model.ParentFolderId, model.FolderId, currentUserId);
 
                 if (existingFolderForEdit != null)
                 {
-                    // Add a model state error if the folder title already exists in the parent folder
                     ModelState.AddModelError("Title", "A folder with this title already exists.");
 
                     ViewData["NotebookId"] = model.NotebookId;
                     ViewData["ParentFolderId"] = model.ParentFolderId;
                     ViewData["FolderId"] = model.FolderId;
 
-                    return View(model);  // Return to the edit form with the error message
+                    return View(model); 
                 }
 
                 (bool isEdited, Folder? parentFolder) = await folderService.EditFolderAsync(model);
@@ -267,7 +284,7 @@ namespace LunarApp.Web.Controllers
                     return RedirectToFolderForEditOrDetails(model.NotebookId, Guid.Empty, Guid.Empty, model.IsAccessedDirectlyFromNotebook);
                 }
 
-                return RedirectToAction("Index", "Notebook"); // Fallback
+                return RedirectToAction("Index", "Notebook");
             }
 
             return View(model);
@@ -276,7 +293,9 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
-            (FolderDetailsViewModel? model, Guid newParentFolderId) = await folderService.GetFolderDetailsByIdAsync(notebookId, parentFolderId, folderId);
+            Guid currentUserId = GetCurrentUserId();
+
+            (FolderDetailsViewModel? model, Guid newParentFolderId) = await folderService.GetFolderDetailsByIdAsync(notebookId, parentFolderId, folderId, currentUserId);
 
             ViewData["Title"] = model.Title;
 
@@ -310,7 +329,7 @@ namespace LunarApp.Web.Controllers
                     return RedirectToFolderForEditOrDetails(model.NotebookId, Guid.Empty, Guid.Empty, model.IsAccessedDirectlyFromNotebook);
                 }
 
-                return RedirectToAction("Index", "Notebook"); // Fallback
+                return RedirectToAction("Index", "Notebook");
             }
 
             return View(model);
@@ -333,7 +352,7 @@ namespace LunarApp.Web.Controllers
                 return Redirect($"~/Folder?notebookId={notebookId}");
             }
 
-            return RedirectToAction("Index", "Notebook"); // Fallback
+            return RedirectToAction("Index", "Notebook");
         }
 
         private IActionResult RedirectToFolderOrNotebookIndexForEdit(Guid notebookId, Guid? parentFolderId, Guid folderId,
@@ -355,7 +374,7 @@ namespace LunarApp.Web.Controllers
                 return Redirect($"~/Folder?notebookId={notebookId}");
             }
 
-            return RedirectToAction("Index", "Notebook"); // Fallback
+            return RedirectToAction("Index", "Notebook");
         }
 
         private IActionResult RedirectToFolderForEditOrDetails(Guid notebookId, Guid? parentFolderId, Guid? folderId, bool isAccessedDirectlyFromNotebook)
@@ -373,8 +392,7 @@ namespace LunarApp.Web.Controllers
                 return Redirect($"~/Folder?notebookId={notebookId}");
             }
 
-            return RedirectToAction("Index", "Notebook"); // Fallback
+            return RedirectToAction("Index", "Notebook");
         }
-
     }
 }
