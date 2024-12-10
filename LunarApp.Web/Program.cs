@@ -1,6 +1,5 @@
 using LunarApp.Data;
 using LunarApp.Data.Models;
-using LunarApp.Services.Data;
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +36,8 @@ namespace LunarApp.Web
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+                options.AccessDeniedPath = "/Home/AccessDenied";
             });
 
             builder.Services.RegisterRepositories(typeof(ApplicationUser).Assembly);
@@ -70,8 +71,7 @@ namespace LunarApp.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
-            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
 
             app.ApplyMigrations();
 
