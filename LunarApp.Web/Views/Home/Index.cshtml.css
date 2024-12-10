@@ -11,11 +11,11 @@
     flex: 1;
     max-width: 400px;
     position: relative;
-    border: 2px solid rgba(0, 255, 255, 0.4);
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    border: 2px solid rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
     background: transparent;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-in, border-color 0.3s ease-in, box-shadow 0.3s ease-in; /* Apply ease-in for transform and color transitions */
     cursor: pointer;
 }
 
@@ -49,6 +49,9 @@
 
     .card:hover {
         transform: scale(1.05);
+        border: 3px solid rgba(0, 255, 255, 0.4); /* Increase border thickness and brightness */
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Increase box-shadow intensity */
+        transition: transform 0.2s ease-in, border-color 0.3s ease-in, box-shadow 0.3s ease-in; /* Apply ease-in for transform and color transitions */
     }
 
 /*Responsive Design*/
