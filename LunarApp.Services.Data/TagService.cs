@@ -10,15 +10,16 @@ namespace LunarApp.Services.Data
         IRepository<Tag, Guid> tagRepository
         ) : ITagService
     {
-        public async Task<Tag?> GetByTitleAsync(string name)
+        public async Task<Tag?> GetByTitleAsync(string name, Guid userId)
         {
-            return await tagRepository.FirstOrDefaultAsync(n => n.Name == name);
+            return await tagRepository.FirstOrDefaultAsync(n => n.Name == name && n.UserId == userId);
         }
 
-        public async Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync()
+        public async Task<IEnumerable<TagViewModel>> IndexGetAllTagsOrderedByNameAsync(Guid userId)
         {
             IEnumerable<TagViewModel> tags = await tagRepository
                 .GetAllAttached()
+                .Where(t => t.UserId == userId)
                 .Select(t => new TagViewModel
                 {
                     Id = t.Id,
@@ -45,21 +46,22 @@ namespace LunarApp.Services.Data
             return model;
         }
 
-        public async Task CreateTagAsync(TagCreateViewModel model)
+        public async Task CreateTagAsync(TagCreateViewModel model, Guid userId)
         {
             Tag tag = new Tag
             {
-                Name = model.Name
+                Name = model.Name,
+                UserId = userId
             };
 
             await tagRepository.AddAsync(tag);
         }
 
-        public async Task<TagEditViewModel?> GetTagForEditByIdAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
+        public async Task<TagEditViewModel?> GetTagForEditByIdAsync(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId, Guid userId)
         {
             Tag? tag = await tagRepository
                 .GetAllAttached()
-                .Where(t => t.Id == tagId)
+                .Where(t => t.Id == tagId && t.UserId == userId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -102,7 +104,7 @@ namespace LunarApp.Services.Data
             return isEdited;
         }
 
-        public async Task<TagRemoveViewModel?> GetTagForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
+        public async Task<TagRemoveViewModel?> GetTagForDeleteByIdAsync(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
         {
             TagRemoveViewModel? model = await tagRepository
                 .GetAllAttached()
