@@ -31,6 +31,17 @@ The **Admin** role has elevated privileges for managing the app and overseeing i
 ![image](https://github.com/user-attachments/assets/fe23f24d-4046-4300-893d-08761505b9ab)
 ![image](https://github.com/user-attachments/assets/29e682fa-f3c4-48ec-8d2f-2504ff55cd18)
 
+## Test accounts:
+- **Admin**
+  - **Username**: admin@lunarapp.com
+  - **Password**: admin123
+- **User1**
+  - **Username**: user1@lunarapp.com
+  - **Password**: user123
+- **User2**
+  - **Username**: user2@lunarapp.com
+  - **Password**: user123
+
 ## 🛠️ Technologies Used
 
 ### Backend
