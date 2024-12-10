@@ -10,7 +10,7 @@ namespace LunarApp.Services.Data
     public class BaseService(IRepository<Tag, Guid> tagRepository, IRepository<Note, Guid> noteRepository)
         : IBaseService
     {
-        public async Task<FolderNotesViewModel> GetFilteredNotesAsyncByNotebookId(Guid notebookId, Guid? parentFolderId, Guid? folderId, string? searchQuery, string? tagFilter)
+        public async Task<FolderNotesViewModel> GetFilteredNotesAsyncByNotebookId(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid userId, string? searchQuery, string? tagFilter)
         {
             Guid? tagId = null;
 
@@ -18,7 +18,7 @@ namespace LunarApp.Services.Data
             if (!string.IsNullOrWhiteSpace(tagFilter))
             {
                 Guid tag = await tagRepository.GetAllAttached()
-                    .Where(t => t.Name == tagFilter)
+                    .Where(t => t.Name == tagFilter && t.UserId == userId)
                     .Select(t => t.Id)
                     .FirstOrDefaultAsync();
 
@@ -30,7 +30,7 @@ namespace LunarApp.Services.Data
 
             IQueryable<Note> query = noteRepository
                 .GetAllAttached()
-                .Where(n => n.NotebookId == notebookId);
+                .Where(n => n.NotebookId == notebookId && n.UserId == userId);
 
             // Fetch notes from the database
             List<Note> notesInMemory = await query.ToListAsync();
@@ -71,7 +71,7 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public async Task<FolderNotesViewModel> GetFilteredNotesAsync(string? searchQuery, string? tagFilter)
+        public async Task<FolderNotesViewModel> GetFilteredNotesAsync(Guid userId, string? searchQuery, string? tagFilter)
         {
             Guid? tagId = null;
 
@@ -79,7 +79,7 @@ namespace LunarApp.Services.Data
             if (!string.IsNullOrWhiteSpace(tagFilter))
             {
                 Guid tag = await tagRepository.GetAllAttached()
-                    .Where(t => t.Name == tagFilter)
+                    .Where(t => t.Name == tagFilter && t.UserId == userId)
                     .Select(t => t.Id)
                     .FirstOrDefaultAsync();
 
@@ -90,7 +90,8 @@ namespace LunarApp.Services.Data
             }
 
             IQueryable<Note> query = noteRepository
-                .GetAllAttached();
+                .GetAllAttached()
+                .Where(n => n.UserId == userId);
 
             // Fetch notes from the database
             List<Note> notesInMemory = await query.ToListAsync();
@@ -131,10 +132,11 @@ namespace LunarApp.Services.Data
             };
         }
 
-        public async Task<IEnumerable<string>> GetAllTagsAsync()
+        public async Task<IEnumerable<string>> GetAllTagsAsync(Guid userId)
         {
             IEnumerable<string> allTags = await tagRepository
                 .GetAllAttached()
+                .Where(t => t.UserId == userId)
                 .Select(t => t.Name)
                 .Distinct()
                 .ToArrayAsync();
