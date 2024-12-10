@@ -9,8 +9,6 @@ namespace LunarApp.Web.Areas.Admin.Controllers
     [Authorize(Roles = AdminRoleName)]
     public class HomeController : Controller
     {
-        [Area(AdminRoleName)]
-        [Authorize(Roles = AdminRoleName)]
         public IActionResult Index()
         {
             return View();
