@@ -16,5 +16,11 @@ namespace LunarApp.Data.Models
         [MaxLength(TagNameMaxLength)]
         [Comment("Tag name")]
         public required string Name { get; set; }
+        [Required]
+        [Comment("User Identifier")]
+        public Guid UserId { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

@@ -36,6 +36,12 @@ namespace LunarApp.Data.Models
         [ForeignKey(nameof(TagId))]
         public virtual Tag? Tag { get; set; }
         [Required]
+        [Comment("User Identifier")]
+        public Guid UserId { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser User { get; set; } = null!;
+        [Required]
         [Comment("The date the note was created on")]
         public DateTime DateCreated { get; set; }
         [Required]

@@ -26,6 +26,12 @@ namespace LunarApp.Data.Models
         public Guid? ParentFolderId { get; set; }
         [ForeignKey(nameof(ParentFolderId))]
         public virtual Folder? ParentFolder { get; set; }
+        [Required]
+        [Comment("User Identifier")]
+        public Guid UserId { get; set; }
+
+        [ForeignKey(nameof(UserId))] 
+        public virtual ApplicationUser User { get; set; } = null!;
 
         public virtual ICollection<Folder> ChildrenFolders { get; set; } = new List<Folder>();
         public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
