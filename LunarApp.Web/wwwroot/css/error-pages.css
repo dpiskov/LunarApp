@@ -1,0 +1,19 @@
+﻿/* error-pages.css */
+
+body {
+    background-color: #f0f8ff;
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #ff6f61;
+}
+
+.error-code {
+    color: #d9534f; /* Red color for all error codes */
+}
+
+.btn-hover-effect:hover {
+    background-color: #ff6f61;
+    color: white;
+}
