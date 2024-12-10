@@ -1,27 +1,22 @@
-using System.Diagnostics;
-
 using Microsoft.AspNetCore.Mvc;
-
-using LunarApp.Web.ViewModels;
 
 namespace LunarApp.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
 
         public IActionResult Index()
         {
             return View();
         }
 
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(int? statusCode = null)
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            return RedirectToAction("Error", "Home", new { statusCode = 403, returnUrl });
+        }
+
+        public IActionResult Error(int? statusCode)
         {
             if (statusCode.HasValue == false)
             {
@@ -38,8 +33,6 @@ namespace LunarApp.Web.Controllers
             }
 
             return View("Error500");
-
-            //return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
