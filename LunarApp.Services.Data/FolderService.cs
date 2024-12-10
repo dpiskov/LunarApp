@@ -225,7 +225,7 @@ namespace LunarApp.Services.Data
 
             if (folder == null)
             {
-                throw new InvalidOperationException("Folder not found.");
+                return;
             }
 
             List<Folder> childFolders = folder.ChildrenFolders.ToList();
