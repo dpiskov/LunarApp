@@ -163,15 +163,18 @@ namespace LunarApp.Web.Controllers
 
                 Folder? existingFolderByNotebookId = await folderService.GetByTitleInNotebookAsync(model.Title, model.NotebookId, currentUserId);
 
-                if (existingFolder != null || existingFolderByNotebookId != null)
+                if (model.FolderId == null || model.FolderId == Guid.Empty)
                 {
-                    ModelState.AddModelError("Title", "A folder with this title already exists.");
+                    if (existingFolder != null || existingFolderByNotebookId != null)
+                    {
+                        ModelState.AddModelError("Title", "A folder with this title already exists.");
 
-                    ViewData["NotebookId"] = model.NotebookId;
-                    ViewData["ParentFolderId"] = model.ParentFolderId;
-                    ViewData["FolderId"] = model.FolderId;
+                        ViewData["NotebookId"] = model.NotebookId;
+                        ViewData["ParentFolderId"] = model.ParentFolderId;
+                        ViewData["FolderId"] = model.FolderId;
 
-                    return View(model);
+                        return View(model);
+                    }
                 }
 
                 (bool isSuccess, string? errorMessage) = await folderService.AddFolderAsync(model, currentUserId);
@@ -265,7 +268,7 @@ namespace LunarApp.Web.Controllers
                     ViewData["ParentFolderId"] = model.ParentFolderId;
                     ViewData["FolderId"] = model.FolderId;
 
-                    return View(model); 
+                    return View(model);
                 }
 
                 (bool isEdited, Folder? parentFolder) = await folderService.EditFolderAsync(model);
