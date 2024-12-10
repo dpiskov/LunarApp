@@ -7,7 +7,7 @@
     var notebookId = (Guid)ViewData["NotebookId"]!;
     var parentFolderId = (Guid?)ViewData["ParentFolderId"]!;
     var folderId = (Guid?)ViewData["FolderId"]!;
-    var noteId = (Guid)ViewData["NoteId"]!;
+    var noteId = (Guid?)ViewData["NoteId"]!;
     var tagId = (Guid)ViewData["TagId"]!;
 }
 
@@ -25,7 +25,7 @@
                 <p class="text-danger mt-3 text-center">Are you sure you want to delete @(Model.Name)?</p>
             </div>
             <div class="card-footer d-flex align-content-center justify-content-center">
-                <form asp-controller="Tag" asp-action="Remove" method="post">
+                <form asp-controller="Tag" asp-action="Remove" asp-route-notebookId="@notebookId" asp-route-parentFolderId="@parentFolderId" asp-route-folderId="@folderId" asp-route-noteId="@noteId" method="post">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id"/>
                     <input type="hidden" asp-for="Name"/>
