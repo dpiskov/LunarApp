@@ -4,42 +4,46 @@ using LunarApp.Web.ViewModels;
 using LunarApp.Web.ViewModels.Folder;
 using LunarApp.Web.ViewModels.Notebook;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
     [Authorize]
-    public class NotebookController(INotebookService notebookService, IBaseService baseService)
-        : Controller
+    public class NotebookController(
+        INotebookService notebookService,
+        IBaseService baseService,
+        UserManager<ApplicationUser> userManager) : BaseController(userManager)
     {
-        // GET method to display the list of notebooks
+        // GET method to display the list of notebooks, with optional search and filter functionality
         public async Task<IActionResult> Index(SearchFilterViewModel inputModel)
         {
+            Guid currentUserId = GetCurrentUserId();
+
             if (string.IsNullOrWhiteSpace(inputModel.SearchQuery) == false || string.IsNullOrWhiteSpace(inputModel.TagFilter) == false)
             {
-                FolderNotesViewModel foldersAndNotes = await baseService.GetFilteredNotesAsync(inputModel.SearchQuery, inputModel.TagFilter);
+                FolderNotesViewModel foldersAndNotes = await baseService.GetFilteredNotesAsync(currentUserId, inputModel.SearchQuery, inputModel.TagFilter);
 
                 ViewData["Title"] = "Filtered Notes";
                 return View("FilteredIndex", new SearchFilterViewModel
                 {
                     FolderNotes = foldersAndNotes,
-                    AllTags = await baseService.GetAllTagsAsync(),
+                    AllTags = await baseService.GetAllTagsAsync(currentUserId),
                     SearchQuery = inputModel.SearchQuery,
                     TagFilter = inputModel.TagFilter
                 });
             }
 
-            IEnumerable<NotebookInfoViewModel> notebooks = await notebookService.IndexGetAllOrderedByTitleAsync();
+            IEnumerable<NotebookInfoViewModel> notebooks = await notebookService.IndexGetAllOrderedByTitleAsync(currentUserId);
 
             SearchFilterViewModel viewModel = new SearchFilterViewModel
             {
                 Notebooks = notebooks,
-                AllTags = await baseService.GetAllTagsAsync(),
+                AllTags = await baseService.GetAllTagsAsync(currentUserId),
                 SearchQuery = inputModel.SearchQuery,
                 TagFilter = inputModel.TagFilter
             };
 
-            // Returns the view with the model containing the notebooks data
             return View(viewModel);
         }
 
@@ -47,7 +51,7 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            return View();                                             // Returns the create notebook form view
+            return View();
         }
 
         // POST method to handle form submission for creating a new notebook
@@ -56,51 +60,51 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title);
+                Guid currentUserId = GetCurrentUserId();
+
+                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title, currentUserId);
 
                 if (existingNotebook != null)
                 {
-                    // Add a model state error if the notebook already exists
                     ModelState.AddModelError("Title", "A notebook with this title already exists.");
-                    return View(model);  // Return to the form with the error message
+                    return View(model);
                 }
 
-                // Checks if the submitted form data is valid
+                await notebookService.AddNotebookAsync(model, currentUserId);
 
-                await notebookService.AddNotebookAsync(model);
-
-                // Redirects to the Index action to show the updated list of notebooks
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(model);                                    // If not valid, returns the form view with validation errors
+            return View(model);
         }
 
         // GET method to render the confirmation page for deleting a notebook
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId)
         {
-            NotebookDeleteViewModel? model =
-                await notebookService.GetNotebookForDeleteByIdAsync(notebookId);
+            Guid currentUserId = GetCurrentUserId();
 
-            // If the notebook doesn't exist, redirects to the Index view
+            NotebookDeleteViewModel? model =
+                await notebookService.GetNotebookForDeleteByIdAsync(notebookId, currentUserId);
+
             if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            // Returns the confirmation view with the notebook data
             return View(model);
         }
 
-        // POST method to actually remove a notebook from the database
+        // POST method to remove a notebook from the database
         [HttpPost]
         public async Task<IActionResult> Remove(NotebookDeleteViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Guid currentUserId = GetCurrentUserId();
+
                 await notebookService
-                    .DeleteNotebookAsync(model.Id);
+                    .DeleteNotebookAsync(model.Id, currentUserId);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -112,14 +116,15 @@ namespace LunarApp.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId)
         {
-            NotebookEditViewModel? model = await notebookService.GetNotebookForEditByIdAsync(notebookId);
+            Guid currentUserId = GetCurrentUserId();
+
+            NotebookEditViewModel? model = await notebookService.GetNotebookForEditByIdAsync(notebookId, currentUserId);
 
             if (model == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            // Returns the edit view with the notebook data in the view model
             return View(model);
         }
 
@@ -129,16 +134,17 @@ namespace LunarApp.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title);
+                Guid currentUserId = GetCurrentUserId();
+
+                Notebook? existingNotebook = await notebookService.GetByTitleAsync(model.Title, currentUserId);
 
                 if (existingNotebook != null)
                 {
-                    // Add a model state error if the notebook already exists
                     ModelState.AddModelError("Title", "A notebook with this title already exists.");
-                    return View(model);  // Return to the form with the error message
+                    return View(model);
                 }
 
-                bool isEdited = await notebookService.EditNotebookAsync(model);
+                bool isEdited = await notebookService.EditNotebookAsync(model, currentUserId);
 
                 if (isEdited == false)
                 {
@@ -151,10 +157,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // GET method to display the details of a specific notebook
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId)
         {
-            NotebookDetailsViewModel? model = await notebookService.GetNotebookDetailsByIdAsync(notebookId);
+            Guid currentUserId = GetCurrentUserId();
+
+            NotebookDetailsViewModel? model = await notebookService.GetNotebookDetailsByIdAsync(notebookId, currentUserId);
 
             if (model == null)
             {
@@ -166,13 +175,15 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // POST method to handle updating notebook details
         [HttpPost]
         public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {
-            // Checks if the submitted form data is valid
             if (ModelState.IsValid)
             {
-                bool isEdited = await notebookService.EditDetailsNotebookAsync(model);
+                Guid currentUserId = GetCurrentUserId();
+
+                bool isEdited = await notebookService.EditDetailsNotebookAsync(model, currentUserId);
 
                 if (isEdited == false)
                 {
@@ -182,7 +193,7 @@ namespace LunarApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(model);                             // If not valid, returns the form view with validation errors
+            return View(model);
         }
     }
 }
