@@ -9,6 +9,6 @@ namespace LunarApp.Web.ViewModels.Tag
         public Guid NotebookId { get; set; }
         public Guid? ParentFolderId { get; set; }
         public Guid? FolderId { get; set; }
-        public Guid NoteId { get; set; }
+        public Guid? NoteId { get; set; }
     }
 }
