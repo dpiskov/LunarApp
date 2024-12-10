@@ -417,6 +417,8 @@ namespace LunarApp.Services.Data
             if (folder != null && folder.ParentFolderId.HasValue && folder.ParentFolderId != Guid.Empty)
             {
                 newParentFolderId = folder.ParentFolderId.Value;
+                newFolderId = folder.Id; // Ensure newFolderId is assigned
+
             }
             else if (folder == null && parentFolderId != null)
             {
