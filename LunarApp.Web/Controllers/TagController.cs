@@ -2,16 +2,19 @@
 using LunarApp.Services.Data.Interfaces;
 using LunarApp.Web.ViewModels.Tag;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
     [Authorize]
-    public class TagController(ITagService tagService) : Controller
+    public class TagController(ITagService tagService, UserManager<ApplicationUser> userManager) : BaseController(userManager)
     {
+        // GET method to fetch and display all tags
         public async Task<IActionResult> Index(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
-            IEnumerable<TagViewModel> tags = await tagService.IndexGetAllTagsOrderedByNameAsync();
+            Guid currentUserId = GetCurrentUserId();
+            IEnumerable<TagViewModel> tags = await tagService.IndexGetAllTagsOrderedByNameAsync(currentUserId);
 
             ViewData["NotebookId"] = notebookId;
             ViewData["ParentFolderId"] = parentFolderId;
@@ -21,6 +24,7 @@ namespace LunarApp.Web.Controllers
             return View(tags);
         }
 
+        // GET method to render the form for creating a new tag
         [HttpGet]
         public async Task<IActionResult> Create(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
@@ -34,16 +38,17 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // POST method to handle the form submission for creating a new tag
         [HttpPost]
         public async Task<IActionResult> Create(TagCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                Tag? existingNotebook = await tagService.GetByTitleAsync(model.Name);
+                Guid currentUserId = GetCurrentUserId();
+                Tag? existingNotebook = await tagService.GetByTitleAsync(model.Name, currentUserId);
 
                 if (existingNotebook != null)
                 {
-                    // Add a model state error if the notebook already exists
                     ModelState.AddModelError("Name", "A tag with this name already exists.");
 
                     ViewData["NotebookId"] = model.NotebookId;
@@ -51,10 +56,10 @@ namespace LunarApp.Web.Controllers
                     ViewData["FolderId"] = model.FolderId;
                     ViewData["NoteId"] = model.NoteId;
 
-                    return View(model);  // Return to the form with the error message
+                    return View(model); 
                 }
 
-                await tagService.CreateTagAsync(model);
+                await tagService.CreateTagAsync(model, currentUserId);
 
                 return RedirectToTagIndexView(model.NotebookId, model.ParentFolderId, model.FolderId, model.NoteId);
             }
@@ -62,10 +67,12 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // GET method to render the form for editing an existing tag
         [HttpGet]
         public async Task<IActionResult> Edit(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
         {
-            TagEditViewModel? model = await tagService.GetTagForEditByIdAsync(notebookId, parentFolderId, folderId, noteId, tagId);
+            Guid currentUserId = GetCurrentUserId();
+            TagEditViewModel? model = await tagService.GetTagForEditByIdAsync(notebookId, parentFolderId, folderId, noteId, tagId, currentUserId);
 
             if (model == null)
             {
@@ -83,16 +90,17 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // POST method to handle form submission for updating an existing tag's details
         [HttpPost]
         public async Task<IActionResult> Edit(TagEditViewModel model, string name)
         {
             if (ModelState.IsValid)
             {
-                Tag? existingTag = await tagService.GetByTitleAsync(model.Name);
+                Guid currentUserId = GetCurrentUserId();
+                Tag? existingTag = await tagService.GetByTitleAsync(model.Name, currentUserId);
 
                 if (existingTag != null)
                 {
-                    // Add a model state error if the notebook already exists
                     ModelState.AddModelError("Name", "A tag with this name already exists.");
 
                     ViewData["NotebookId"] = model.NotebookId;
@@ -103,7 +111,7 @@ namespace LunarApp.Web.Controllers
 
                     ViewData["Title"] = "Edit Tag";
 
-                    return View(model);  // Return to the form with the error message
+                    return View(model); 
                 }
 
                 await tagService.EditTagAsync(model);
@@ -114,8 +122,9 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // GET method to confirm the deletion of a tag
         [HttpGet]
-        public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId, Guid tagId)
+        public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId, Guid tagId)
         {
             TagRemoveViewModel? model = await tagService.GetTagForDeleteByIdAsync(notebookId, parentFolderId, folderId, noteId, tagId);
 
@@ -128,6 +137,7 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // POST method to delete a tag
         [HttpPost]
         public async Task<IActionResult> Remove(TagRemoveViewModel model)
         {
@@ -141,6 +151,7 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        // Helper method to redirect to the appropriate tag index view based on the parameters
         private IActionResult RedirectToTagIndexView(Guid? notebookId, Guid? parentFolderId, Guid? folderId, Guid? noteId)
         {
             string redirectUrl = string.Empty;
