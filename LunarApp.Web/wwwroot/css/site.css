@@ -63,6 +63,31 @@ main {
     transform: translate(-50%, -50%);
 }
 
+.card {
+    max-width: 100%; /* Ensure the card doesn't exceed its container */
+    margin: 0 auto; /* Center the card */
+    text-align: center; /* Center the content */
+    /*padding: 1rem;*/
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Image styles */
+.card .image {
+    width: 100%; /* Fill the container width */
+    max-width: 350px; /* Limit the image width */
+    height: auto; /* Maintain aspect ratio */
+    opacity: 0.8; /* Default opacity */
+    transition: opacity 0.3s ease; /* Smooth opacity transition */
+}
+
+/* Hover effect for the image */
+.card .image:hover {
+    opacity: 1; /* Decrease opacity on hover */
+}
+
+
+
+
 .text {
     text-align: center;
 }
@@ -105,6 +130,24 @@ thead, tbody {
 
 footer {
     position: relative;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .card {
+        /*padding: 0.5rem;*/ /* Reduce padding for smaller screens */
+    }
+
+    .card .image {
+        max-width: 300px; /* Further limit image size for this resolution */
+    }
+}
+
+/* Breakpoint for smaller screens (e.g., phones) */
+@media (max-width: 480px) {
+    .card .image {
+        max-width: 200px; /* Scale down further for smaller devices */
+    }
 }
 
 @media (max-width: 768px) {
