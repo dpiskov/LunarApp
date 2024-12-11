@@ -1,5 +1,29 @@
 # LunarApp: A Note-Taking Web Application
 
+## 📑 Table of Contents
+- [✨ Overview](#overview)
+- [🔧 Roles and Permissions](#roles-and-permissions)
+  - [🧑‍💻 User Role](#user-role)
+  - [🛡️ Admin Role](#admin-role)
+- [💾 Database Diagram](#database-diagram)
+- [🧾 User Permissions](#user-permissions)
+  - [🟢 Authenticated Users](#authenticated-users)
+  - [🔴 Unauthenticated Users](#unauthenticated-users)
+- [🗂 Pages](#pages)
+  - [Home Page](#home-page)
+  - [Index Notebook Page](#index-notebook-page)
+  - [Index Folder Page](#index-folder-page)
+  - [Note Create Page](#note-create-page)
+  - [Index Tag Page](#index-tag-page)
+  - [Admin Pages](#admin-pages)
+- [🔑 Test Accounts](#test-accounts)
+- [🌱 Database Seeding](#database-seeding)
+- [🛠️ Technologies Used](#technologies-used)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Testing](#testing)
+- [🚀 How to Run the Project](#how-to-run-the-project)
+
 ## ✨ Overview
 ### LunarApp is a feature-rich note-taking application developed for my Project Defense at Software University (SoftUni) in Sofia, Bulgaria. It showcases the knowledge and skills I acquired at the university, as well as new concepts I learned during development.
 This app helps users organize their thoughts and information with ease. Users can create, edit, and manage notebooks, folders, notes, and tags, with support for infinitely nested folders to handle complex organizational structures. Key features include searching notes by name, filtering by tags, and using a rich text editor for detailed notes. Additionally, each notebook and folder includes an overview page where users can write clear and simple summaries of their contents, providing context and making navigation through their work easier.
