@@ -17,7 +17,7 @@
   - [Frontend](#frontend)
   - [Testing](#testing)
 - [🚀 How to Run the App](#-how-to-run-the-app)
-- [🌟 Additional Notes](#-additional-notes)
+  - [🌟 Additional Notes](#-additional-notes)
 
 ## ✨ Overview
 ### LunarApp is a feature-rich note-taking application developed for my Project Defense at Software University (SoftUni) in Sofia, Bulgaria. It showcases the knowledge and skills I acquired at the university, as well as new concepts I learned during development.
