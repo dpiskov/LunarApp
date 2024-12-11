@@ -31,6 +31,53 @@ The **Admin** role has elevated privileges for managing the app and overseeing i
 ![image](https://github.com/user-attachments/assets/fe23f24d-4046-4300-893d-08761505b9ab)
 ![image](https://github.com/user-attachments/assets/29e682fa-f3c4-48ec-8d2f-2504ff55cd18)
 
+
+
+## Functionality
+## User Permissions
+
+### 🟢 Authenticated Users
+Authenticated users can access the following:
+- 🏠 **Home Page**
+- 📔 **Notebook**: Index, Create, Edit, Remove, Details
+- 📂 **Folder**: Index, Create, Edit, Remove, Details
+- 📝 **Note**: Create, Edit, Remove
+- 🏷️ **Tag**: Index, Create, Edit, Remove
+
+### 🔴 Unauthenticated Users
+Unauthenticated users can access:
+- 🏠 **Home Page**
+- 🔑 **Register Page**
+- 🔒 **Login Page**
+
+
+
+This is the Home page:
+![image](https://github.com/user-attachments/assets/1c7eb8c7-30fc-4745-ba54-b0eca21c90b8)
+
+This is the Index Notebook page:
+![image](https://github.com/user-attachments/assets/87c17550-5cde-412f-84e0-2d44aec51dd1)
+
+This is the Index Folder page:
+![image](https://github.com/user-attachments/assets/1e61ced0-a15b-436d-a23d-067d38649897)
+
+This is the Note Create page, take note that you can go to the Index Tag page from the "View All Tags" button in the bottom right, where you can see all tags:
+![image](https://github.com/user-attachments/assets/475c77ba-7dc9-47af-a873-99a302d62e76)
+
+This is the Index Tag page:
+![image](https://github.com/user-attachments/assets/38d654ee-e323-4acf-865d-79da2785735d)
+
+Pages for users authorized with the **Admin** role:
+
+This is the Home page:
+![image](https://github.com/user-attachments/assets/40779645-f17b-4ccf-a200-33263de0d963)
+
+This is the Index Admin page:
+![image](https://github.com/user-attachments/assets/732e0235-7057-410d-8e04-cd151c161e71)
+
+This is the User Management page:
+![image](https://github.com/user-attachments/assets/20dee58b-65f0-4a47-9307-de85e641ff0b)
+
 ## Test accounts:
 - **Admin**
   - **Username**: admin@lunarapp.com
