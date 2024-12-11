@@ -1,13 +1,13 @@
-# Note Taking App Web Project
+# LunarApp: A Note-Taking Web Application
 
-## About
-### This note-taking application was developed as my personal project for the Project Defense at Software University (SoftUni) in Sofia, Bulgaria, where I applied the software development knowledge I gained at the university while also learning a great deal during the development process.
+## ✨ Overview
+### LunarApp is a feature-rich note-taking application developed for my Project Defense at Software University (SoftUni) in Sofia, Bulgaria. It showcases the knowledge and skills I acquired at the university, as well as new concepts I learned during development.
 This app helps users organize their thoughts and information with ease. Users can create, edit, and manage notebooks, folders, notes, and tags, with support for infinitely nested folders to handle complex organizational structures. Key features include searching notes by name, filtering by tags, and using a rich text editor for detailed notes. Additionally, each notebook and folder includes an overview page where users can write clear and simple summaries of their contents, providing context and making navigation through their work easier.
 
-## The application has 2 roles:
-### User Role
+## 🔧 Roles and Permissions
+### 🧑‍💻 User Role
 
-The **User** role is designed for regular users of the app who have basic functionality to interact with their notebooks, folders, and notes. A **User** can:
+The **User** role is designed for regular users of the app who have basic functionality to interact with their notebooks, folders, notes and tags. A **User** can:
 
 - Create, edit, and delete notebooks, folders, notes, and tags.
 - Tag and filter notes by tags.
@@ -15,9 +15,9 @@ The **User** role is designed for regular users of the app who have basic functi
 - Use a rich text editor for detailed notes.
 - Access overview pages to summarize notebooks and folders.
 
-A **User's** access is restricted to their personal data, meaning they can only interact with the content they have created and do not have any access to other users' notebooks or administrative settings.
+| ⚠️ Data Privacy: Users can only interact with their own content and have no access to other users’ data or administrative settings.
 
-### Admin Role
+### 🛡️ Admin Role
 
 The **Admin** role has elevated privileges for managing the app and overseeing its content. An **Admin** can:
 
@@ -26,15 +26,12 @@ The **Admin** role has elevated privileges for managing the app and overseeing i
 - Remove the Admin role to restrict users' administrative privileges.
 - Delete users and all their associated data from the system.
 
-## Database diagram
+## 💾 Database diagram
 
 ![image](https://github.com/user-attachments/assets/fe23f24d-4046-4300-893d-08761505b9ab)
 ![image](https://github.com/user-attachments/assets/29e682fa-f3c4-48ec-8d2f-2504ff55cd18)
 
-
-
-## Functionality
-## User Permissions
+## 🧾 User Permissions
 
 ### 🟢 Authenticated Users
 Authenticated users can access the following:
@@ -47,10 +44,11 @@ Authenticated users can access the following:
 ### 🔴 Unauthenticated Users
 Unauthenticated users can access:
 - 🏠 **Home Page**
-- 🔑 **Register Page**
+- 🔐 **Register Page**
 - 🔒 **Login Page**
 
 
+## 🗂 Pages
 
 This is the Home page:
 ![image](https://github.com/user-attachments/assets/1c7eb8c7-30fc-4745-ba54-b0eca21c90b8)
@@ -73,12 +71,12 @@ This is the Home page:
 ![image](https://github.com/user-attachments/assets/40779645-f17b-4ccf-a200-33263de0d963)
 
 This is the Index Admin page:
-![image](https://github.com/user-attachments/assets/732e0235-7057-410d-8e04-cd151c161e71)
+![image](https://github.com/user-attachments/assets/f74c621c-87a5-4fa0-a4a8-ec344bb7b0d8)
 
 This is the User Management page:
-![image](https://github.com/user-attachments/assets/20dee58b-65f0-4a47-9307-de85e641ff0b)
+![image](https://github.com/user-attachments/assets/64f2dee6-16d9-40d2-aa6c-8e471317c6af)
 
-## Test accounts:
+## 🔑 Test accounts:
 - **Admin**
   - **Username**: admin@lunarapp.com
   - **Password**: admin123
@@ -88,6 +86,9 @@ This is the User Management page:
 - **User2**
   - **Username**: user2@lunarapp.com
   - **Password**: user123
+
+## 🌱 Database Seeding:
+Both users, **User1** and **User2**, are seeded with test data, notebooks, folders and nested folders, notes and tags, unique to each own.
 
 ## 🛠️ Technologies Used
 
@@ -103,3 +104,20 @@ This is the User Management page:
 - **TinyMCE**: A rich text editor for creating detailed and formatted notes.
 ### Testing
 - **NUnit**: Comprehensive testing framework.
+
+## 🚀 How to Run the Project
+1. Download the project
+2. Extract
+3. Open **LunarApp.sln**
+4. Add your connection string to **appsettings.json**
+5. Make sure the start up project is **LunarApp.Web**
+6. Run the project
+
+### 🌟 Migrations should automatically apply themselves on run. In case they don't you can:
+1. Open the Package Manager Console in Visual Studio
+2. Enter the command ```Update-Database``` to apply the migrations manually
+3. Run the app
+
+---
+
+Enjoy using LunarApp! 🌌
