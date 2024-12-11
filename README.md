@@ -16,7 +16,8 @@
   - [Backend](#backend)
   - [Frontend](#frontend)
   - [Testing](#testing)
-- [🚀 How to Run the Project](#-how-to-run-the-project)
+- [🚀 How to Run the App](#-how-to-run-the-app)
+- [🌟 Additional Notes](#-additional-notes)
 
 ## ✨ Overview
 ### LunarApp is a feature-rich note-taking application developed for my Project Defense at Software University (SoftUni) in Sofia, Bulgaria. It showcases the knowledge and skills I acquired at the university, as well as new concepts I learned during development.
@@ -37,7 +38,7 @@ The **User** role is designed for regular users of the app who have basic functi
 
 ### 🛡️ Admin Role
 
-The **Admin** role has elevated privileges for managing the app and overseeing its content. An **Admin** can:
+The **Admin** role has elevated privileges for managing the app. An **Admin** can:
 
 - Perform all the actions available to **Users**, such as creating, editing, and deleting notebooks, folders, notes, and tags.
 - Assign the Admin role to grant users administrative privileges.
@@ -106,35 +107,40 @@ This is the User Management page:
   - **Password**: user123
 
 ## 🌱 Database Seeding:
-Both users, **User1** and **User2**, are seeded with test data, notebooks, folders and nested folders, notes and tags, unique to each own.
+Test users (**User1** and **User2**) are pre-seeded with unique test data, including:
+- Notebooks
+- Folders (with nested folders)
+- Notes
+- Tags
 
 ## 🛠️ Technologies Used
 
 ### Backend
-- **ASP.NET Core**: A cross-platform, high-performance web framework for building modern applications.
-- **Entity Framework Core**: A lightweight ORM for .NET that helps with database management and queries.
-- **Microsoft SQL Server**: Relational database management system.
-- **Git**: Version control system.
+- **ASP.NET Core**: High-performance web framework.
+- **Entity Framework Core**: ORM for database management.
+- **Microsoft SQL Server**: Relational database.
+- **Git**: Version control.
 ### Frontend
 - **Bootstrap 5**: Responsive and modern UI components.
-- **HTML**: Markup language for structuring web pages.
+- **HTML**: Web page structure and styling.
 - **CSS**: Styling language for web pages.
-- **TinyMCE**: A rich text editor for creating detailed and formatted notes.
+- **TinyMCE**: Rich text editor for detailed and formatted notes.
 ### Testing
 - **NUnit**: Comprehensive testing framework.
 
-## 🚀 How to Run the Project
-1. Download the project
-2. Extract
-3. Open **LunarApp.sln**
-4. Add your connection string to **appsettings.json**
-5. Make sure the start up project is **LunarApp.Web**
-6. Run the project
+## 🚀 How to Run the App
+1. Download the project.
+2. Extract the files.
+3. Open **LunarApp.sln** in Visual Studio.
+4. Add your connection string to **appsettings.json**.
+5. Ensure the startup project is set to **LunarApp.Web**.
+6. Run the project.
 
-### 🌟 Migrations should automatically apply themselves on run. In case they don't you can:
-1. Open the Package Manager Console in Visual Studio
-2. Enter the command ```Update-Database``` to apply the migrations manually
-3. Run the app
+### 🌟 Additional Notes
+If migrations do not apply automatically:
+1. Open the Package Manager Console in Visual Studio.
+2. Run the command ```Update-Database``` to apply migrations manually.
+3. Start the application.
 
 ---
 
