@@ -1,0 +1,51 @@
+﻿/* Media Queries for Small Screens */
+@media (max-width: 767px) {
+    /* Ensure forms fill available space */
+    .d-inline-flex {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+    /* Make select fields slightly larger */
+    .form-select {
+        min-width: 100% !important;
+    }
+
+    /* Adjust buttons to be full width */
+    .btn {
+        width: 100% !important;
+    }
+}
+
+/* Media Queries for Medium Screens (Tablets) */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Ensure forms stay in a row on medium screens */
+    .d-inline-flex {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .form-select {
+        min-width: 150px;
+    }
+
+    .btn {
+        width: auto;
+    }
+}
+
+/* Media Queries for Larger Screens */
+@media (min-width: 992px) {
+    /* Ensure forms take up auto width and stay in row */
+    .d-inline-flex {
+        flex-direction: row;
+    }
+
+    .form-select {
+        min-width: 150px;
+    }
+
+    .btn {
+        width: auto;
+    }
+}
