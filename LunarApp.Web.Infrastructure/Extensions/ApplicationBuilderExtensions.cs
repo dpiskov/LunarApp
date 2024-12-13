@@ -9,8 +9,17 @@ using static LunarApp.Common.ApplicationConstants;
 
 namespace LunarApp.Web.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for the <see cref="IApplicationBuilder"/> to handle database migrations and seeding operations.
+    /// </summary>
     public static class ApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Applies any pending migrations to the database at the start of the application.
+        /// This ensures the database schema is up-to-date with the application's models.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/> instance to apply the migration on.</param>
+        /// <returns>The updated <see cref="IApplicationBuilder"/> instance.</returns>
         public static IApplicationBuilder ApplyMigrations(this IApplicationBuilder app)
         {
             using var serviceScope = app.ApplicationServices.CreateScope();
@@ -20,6 +29,18 @@ namespace LunarApp.Web.Infrastructure.Extensions
             return app;
         }
 
+        /// <summary>
+        /// Seeds the administrator user and role into the system if they do not already exist.
+        /// Creates the <see cref="AdminRoleName"/> role and a user with the specified credentials, 
+        /// then assigns the user to the role.
+        /// </summary>
+        /// <param name="app">The <see cref="IApplicationBuilder"/> instance to run the seeding operation.</param>
+        /// <param name="email">The email address of the administrator.</param>
+        /// <param name="username">The username of the administrator.</param>
+        /// <param name="password">The password for the administrator user.</param>
+        /// <returns>The updated <see cref="IApplicationBuilder"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if any required service (RoleManager, IUserStore, UserManager) is missing.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if there are errors creating roles or adding the user to a role.</exception>
         public static IApplicationBuilder SeedAdministrator(this IApplicationBuilder app, string email, string username, string password)
         {
             using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
@@ -98,6 +119,16 @@ namespace LunarApp.Web.Infrastructure.Extensions
             return app;
         }
 
+        /// <summary>
+        /// Creates a new administrator user with the specified credentials and assigns them to the <see cref="AdminRoleName"/> role.
+        /// </summary>
+        /// <param name="email">The email address of the administrator.</param>
+        /// <param name="username">The username for the administrator.</param>
+        /// <param name="password">The password for the administrator user.</param>
+        /// <param name="userStore">The <see cref="IUserStore{ApplicationUser}"/> used to manage user data.</param>
+        /// <param name="userManager">The <see cref="UserManager{ApplicationUser}"/> used for creating and managing users.</param>
+        /// <returns>The newly created <see cref="ApplicationUser"/> instance representing the administrator.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if user creation fails.</exception>
         private static async Task<ApplicationUser> CreateAdminUserAsync(string email, string username, string password,
             IUserStore<ApplicationUser> userStore, UserManager<ApplicationUser> userManager)
         {

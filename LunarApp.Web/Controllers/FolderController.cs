@@ -8,12 +8,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing folders, subfolders, and folder-related operations in the application.
+    /// Supports operations like creating, editing, deleting, and retrieving folders.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="FolderController"/> handles folder-related actions within the application. 
+    /// It supports creating, editing, deleting, and retrieving folders, along with managing subfolders. 
+    /// The controller interacts with the <see cref="IFolderService"/> for business logic and performs user-specific 
+    /// operations by utilizing the <see cref="IBaseService"/> and <see cref="UserManager{ApplicationUser}"/>.
+    /// </remarks>
+    /// <param name="folderService">An instance of <see cref="IFolderService"/> to manage folder operations such as create, edit, and delete.</param>
+    /// <param name="baseService">An instance of <see cref="IBaseService"/> that provides common services for the controller.</param>
+    /// <param name="userManager">An instance of <see cref="UserManager{ApplicationUser}"/> for managing user-related operations.</param>
     [Authorize]
     public class FolderController(
         IFolderService folderService,
         IBaseService baseService,
         UserManager<ApplicationUser> userManager) : BaseController(userManager)
     {
+        /// <summary>
+        /// Retrieves and displays all folders and notes within a specific notebook or folder,
+        /// with optional search and tag filtering.
+        /// </summary>
+        /// <param name="inputModel">The filter model containing search query and tag filter.</param>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder to display.</param>
+        /// <returns>The view displaying folders and notes.</returns>
         public async Task<IActionResult> Index(SearchFilterViewModel inputModel, Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
             FolderNotesViewModel foldersAndNotes;
@@ -83,6 +105,13 @@ namespace LunarApp.Web.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Displays the form to add a new folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder.</param>
+        /// <returns>The view displaying the folder creation form.</returns>
         [HttpGet]
         public async Task<IActionResult> AddFolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
@@ -95,6 +124,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Handles the POST request to add a new folder.
+        /// </summary>
+        /// <param name="model">The folder creation model containing folder details.</param>
+        /// <returns>A redirect to the appropriate folder or notebook view.</returns>
         [HttpPost]
         public async Task<IActionResult> AddFolder(FolderCreateViewModel model)
         {
@@ -136,6 +170,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Displays the form to add a new subfolder within an existing folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder.</param>
+        /// <returns>The view displaying the subfolder creation form.</returns>
         [HttpGet]
         public async Task<IActionResult> AddSubfolder(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
@@ -152,6 +193,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Handles the POST request to add a new subfolder.
+        /// </summary>
+        /// <param name="model">The subfolder creation model containing subfolder details.</param>
+        /// <returns>A redirect to the appropriate folder or notebook view.</returns>
         [HttpPost]
         public async Task<IActionResult> AddSubfolder(FolderCreateViewModel model)
         {
@@ -191,6 +237,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Displays the form to remove a folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder to delete.</param>
+        /// <returns>The view displaying the folder removal confirmation form.</returns>
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
@@ -208,6 +261,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Handles the POST request to remove a folder and its children.
+        /// </summary>
+        /// <param name="model">The folder deletion model containing folder details.</param>
+        /// <returns>A redirect to the appropriate folder or notebook view.</returns>
         [HttpPost]
         public async Task<IActionResult> Remove(FolderDeleteViewModel model)
         {
@@ -230,6 +288,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Displays the form to edit an existing folder's details.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder to edit.</param>
+        /// <returns>The view displaying the folder edit form.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
@@ -251,6 +316,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Handles the POST request to edit an existing folder.
+        /// </summary>
+        /// <param name="model">The folder edit model containing updated folder details.</param>
+        /// <returns>A redirect to the updated folder or notebook view.</returns>
         [HttpPost]
         public async Task<IActionResult> Edit(FolderEditViewModel model)
         {
@@ -293,6 +363,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Displays the details of a specific folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder to view.</param>
+        /// <returns>The view displaying the folder's details.</returns>
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId, Guid? parentFolderId, Guid folderId)
         {
@@ -311,6 +388,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Handles the POST request to edit folder details.
+        /// </summary>
+        /// <param name="model">The folder details model containing updated information.</param>
+        /// <returns>A redirect to the updated folder or notebook view.</returns>
         [HttpPost]
         public async Task<IActionResult> Details(FolderDetailsViewModel model)
         {
@@ -338,6 +420,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Helper method for redirecting to the correct folder or notebook index view after adding/editing/removing folders.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook.</param>
+        /// <param name="parentFolderId">The ID of the parent folder.</param>
+        /// <param name="folderId">The ID of the folder.</param>
+        /// <returns>A redirect to the appropriate folder or notebook index view.</returns>
         private IActionResult RedirectToFolderOrNotebookIndex(Guid? notebookId, Guid? parentFolderId, Guid? folderId)
         {
             if (parentFolderId.HasValue && parentFolderId != Guid.Empty &&
@@ -358,6 +447,15 @@ namespace LunarApp.Web.Controllers
             return RedirectToAction("Index", "Notebook");
         }
 
+        /// <summary>
+        /// Redirects to the appropriate folder or notebook index view after editing a folder,
+        /// based on the parent folder and new parent folder IDs provided.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook that the folder belongs to.</param>
+        /// <param name="parentFolderId">The ID of the folder's current parent folder.</param>
+        /// <param name="folderId">The ID of the folder being edited.</param>
+        /// <param name="newParentFolderId">The ID of the folder's new parent folder, if the parent folder changes.</param>
+        /// <returns>A redirect to the updated folder or notebook index view.</returns>
         private IActionResult RedirectToFolderOrNotebookIndexForEdit(Guid notebookId, Guid? parentFolderId, Guid folderId,
             Guid newParentFolderId)
         {
@@ -380,6 +478,15 @@ namespace LunarApp.Web.Controllers
             return RedirectToAction("Index", "Notebook");
         }
 
+        /// <summary>
+        /// Redirects to the appropriate folder view after editing or accessing the details of a folder.
+        /// The redirection depends on whether the folder was accessed directly from the notebook or through another folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook to which the folder belongs.</param>
+        /// <param name="parentFolderId">The ID of the folder's parent folder, if applicable.</param>
+        /// <param name="folderId">The ID of the folder being edited or viewed.</param>
+        /// <param name="isAccessedDirectlyFromNotebook">Indicates whether the folder was accessed directly from the notebook (true) or through another folder (false).</param>
+        /// <returns>A redirect to the appropriate folder or notebook view after edit or details changes.</returns>
         private IActionResult RedirectToFolderForEditOrDetails(Guid notebookId, Guid? parentFolderId, Guid? folderId, bool isAccessedDirectlyFromNotebook)
         {
             if (parentFolderId.HasValue && parentFolderId != Guid.Empty && folderId.HasValue && folderId != Guid.Empty)

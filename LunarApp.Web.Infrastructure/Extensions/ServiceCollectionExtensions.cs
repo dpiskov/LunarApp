@@ -6,11 +6,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LunarApp.Web.Infrastructure.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for registering repositories and user-defined services into the <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Registers repositories for all model types in the specified assembly into the <see cref="IServiceCollection"/>.
+        /// Automatically generates repository interfaces and their corresponding implementations.
+        /// </summary>
+        /// <remarks>
+        /// This method dynamically generates repository services for all non-abstract and non-interface types in the specified assembly.
+        /// It excludes types like <see cref="ApplicationUser"/> from being registered.
+        /// </remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> where the repositories will be registered.</param>
+        /// <param name="modelsAssembly">The assembly containing the model types that will have repositories generated.</param>
         public static void RegisterRepositories(this IServiceCollection services, Assembly modelsAssembly)
         {
-            // TODO: Rewrite the implementation in such way that the user must create a single class for every repository
             Type[] typesToExclude = new Type[] { typeof(ApplicationUser) };
             Type[] modelTypes = modelsAssembly
                 .GetTypes()
@@ -52,6 +64,19 @@ namespace LunarApp.Web.Infrastructure.Extensions
             }
         }
 
+        /// <summary>
+        /// Registers user-defined services from the specified assembly into the <see cref="IServiceCollection"/>.
+        /// Automatically maps interfaces to their corresponding implementations.
+        /// </summary>
+        /// <remarks>
+        /// This method dynamically maps services by matching the interface names (prefixed with "I") to the corresponding service implementations
+        /// (with names ending in "Service").
+        /// </remarks>
+        /// <param name="services">The <see cref="IServiceCollection"/> where the services will be registered.</param>
+        /// <param name="serviceAssembly">The assembly containing the service interfaces and implementations.</param>
+        /// <exception cref="NullReferenceException">
+        /// Thrown if a matching service implementation cannot be found for a service interface.
+        /// </exception>
         public static void RegisterUserDefinedServices(this IServiceCollection services, Assembly serviceAssembly)
         {
             Type[] serviceInterfaceTypes = serviceAssembly

@@ -8,8 +8,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Web
 {
+    /// <summary>
+    /// Represents the entry point of the application, where services are configured and the application is built and run.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Main method to configure and run the web application.
+        /// </summary>
+        /// <param name="args">The command-line arguments passed to the application.</param>
+        /// <remarks>
+        /// This method sets up essential services, such as database context, identity configuration, custom repositories,
+        /// and user-defined services. It also configures the middleware pipeline and maps routes for controllers and Razor pages.
+        /// </remarks>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -97,6 +108,14 @@ namespace LunarApp.Web
             app.Run();
         }
 
+        /// <summary>
+        /// Configures identity options based on the application's settings.
+        /// </summary>
+        /// <param name="builder">The <see cref="WebApplicationBuilder"/> used to access the configuration.</param>
+        /// <param name="options">The <see cref="IdentityOptions"/> to configure.</param>
+        /// <remarks>
+        /// This method sets various password, sign-in, and user options based on the application's configuration settings.
+        /// </remarks>
         private static void ConfigureIdentity(WebApplicationBuilder builder, IdentityOptions options)
         {
             options.Password.RequireDigit =

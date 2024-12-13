@@ -9,6 +9,19 @@ using static LunarApp.Common.ApplicationConstants;
 
 namespace LunarApp.Web.Areas.Admin.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing user roles and actions in the admin panel.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="UserManagementController"/> handles the administrative functionalities related to user management.
+    /// It allows for managing user roles, retrieving user details, and performing actions such as user creation, 
+    /// deletion, and updating within the admin panel. The controller is protected by role-based authorization, 
+    /// allowing only users with the role specified by <see cref="AdminRoleName"/> to access its actions.
+    /// </remarks>
+    /// <seealso cref="AdminRoleName"/>
+    /// <param name="userService">An instance of <see cref="IUserService"/> to handle user-related operations such as retrieving details, creating, deleting, and updating users.</param>
+    /// <param name="userManager">An instance of <see cref="UserManager{ApplicationUser}"/> to manage user-specific operations like creating, deleting, and updating users in the identity system.</param>
+    /// <param name="signInManager">An instance of <see cref="SignInManager{ApplicationUser}"/> to handle user sign-in and authentication-related operations.</param>
     [Area(AdminRoleName)]
     [Authorize(Roles = AdminRoleName)]
     public class UserManagementController(
@@ -17,6 +30,10 @@ namespace LunarApp.Web.Areas.Admin.Controllers
         SignInManager<ApplicationUser> signInManager)
         : BaseController
     {
+        /// <summary>
+        /// Displays a list of all users in the system.
+        /// </summary>
+        /// <returns>A view with the list of all users.</returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -24,6 +41,12 @@ namespace LunarApp.Web.Areas.Admin.Controllers
             return View(allUsers);
         }
 
+        /// <summary>
+        /// Assigns a role to a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to assign the role to.</param>
+        /// <param name="role">The role to assign to the user.</param>
+        /// <returns>Redirects to the Index action.</returns>
         [HttpPost]
         public async Task<IActionResult> AssignRole(string userId, string role)
         {
@@ -49,6 +72,12 @@ namespace LunarApp.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Removes a role from a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to remove the role from.</param>
+        /// <param name="role">The role to remove from the user.</param>
+        /// <returns>Redirects to the Index action.</returns>
         [HttpPost]
         public async Task<IActionResult> RemoveRole(string userId, string role)
         {
@@ -91,6 +120,11 @@ namespace LunarApp.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Deletes a user from the system.
+        /// </summary>
+        /// <param name="userId">The ID of the user to delete.</param>
+        /// <returns>Redirects to the Index action after deletion.</returns>
         public async Task<IActionResult> DeleteUser(Guid userId)
         {
             await userService.DeleteUserAsync(userId);

@@ -9,13 +9,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
+    /// <summary>
+    /// Controller responsible for managing notebooks, including creating, editing, deleting, and retrieving notebooks.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="NotebookController"/> uses the <see cref="INotebookService"/> to perform notebook-related operations. 
+    /// It also leverages the <see cref="IBaseService"/> for common tasks like filtering notes and managing tags, 
+    /// and utilizes <see cref="UserManager{ApplicationUser}"/> to access user-specific information and manage user-related actions.
+    /// </remarks>
+    /// <param name="notebookService">An instance of <see cref="INotebookService"/> to handle notebook-related operations.</param>
+    /// <param name="baseService">An instance of <see cref="IBaseService"/> for common services such as note filtering and tag retrieval.</param>
+    /// <param name="userManager">An instance of <see cref="UserManager{ApplicationUser}"/> to manage user-related tasks and access current user information.</param>
     [Authorize]
     public class NotebookController(
         INotebookService notebookService,
         IBaseService baseService,
         UserManager<ApplicationUser> userManager) : BaseController(userManager)
     {
-        // GET method to display the list of notebooks, with optional search and filter functionality
+        /// <summary>
+        /// Displays the list of notebooks with optional search and filter functionality.
+        /// </summary>
+        /// <param name="inputModel">The model containing search and filter criteria.</param>
+        /// <returns>A view with the list of notebooks, optionally filtered by search query and tag filter.</returns>
         public async Task<IActionResult> Index(SearchFilterViewModel inputModel)
         {
             Guid currentUserId = GetCurrentUserId();
@@ -47,14 +62,21 @@ namespace LunarApp.Web.Controllers
             return View(viewModel);
         }
 
-        // GET method to render the form for creating a new notebook
+        /// <summary>
+        /// Renders the form for creating a new notebook.
+        /// </summary>
+        /// <returns>The view for creating a new notebook.</returns>
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
-        // POST method to handle form submission for creating a new notebook
+        /// <summary>
+        /// Handles the form submission for creating a new notebook.
+        /// </summary>
+        /// <param name="model">The model containing data for the new notebook.</param>
+        /// <returns>A redirect to the notebook index page or a re-rendering of the create form if there are validation errors.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(NotebookCreateViewModel model)
         {
@@ -78,7 +100,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to render the confirmation page for deleting a notebook
+        /// <summary>
+        /// Renders the confirmation page for deleting a notebook.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook to be deleted.</param>
+        /// <returns>A view to confirm the deletion of the notebook.</returns>
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId)
         {
@@ -95,7 +121,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to remove a notebook from the database
+        /// <summary>
+        /// Handles the POST request to delete a notebook from the database.
+        /// </summary>
+        /// <param name="model">The model containing the notebook data to be deleted.</param>
+        /// <returns>A redirect to the notebook index page after successful deletion.</returns>
         [HttpPost]
         public async Task<IActionResult> Remove(NotebookDeleteViewModel model)
         {
@@ -112,7 +142,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to render the form for editing an existing notebook
+        /// <summary>
+        /// Renders the form for editing an existing notebook.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook to be edited.</param>
+        /// <returns>A view to edit the notebook.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId)
         {
@@ -128,7 +162,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for updating a notebook's information
+        /// <summary>
+        /// Handles the form submission for updating an existing notebook's information.
+        /// </summary>
+        /// <param name="model">The model containing updated notebook data.</param>
+        /// <returns>A redirect to the notebook index page if successful or a re-rendering of the edit form if there are validation errors.</returns>
         [HttpPost]
         public async Task<IActionResult> Edit(NotebookEditViewModel model)
         {
@@ -157,7 +195,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to display the details of a specific notebook
+        /// <summary>
+        /// Displays the details of a specific notebook.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook whose details are to be displayed.</param>
+        /// <returns>A view displaying the details of the specified notebook.</returns>
         [HttpGet]
         public async Task<IActionResult> Details(Guid notebookId)
         {
@@ -175,7 +217,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle updating notebook details
+        /// <summary>
+        /// Handles updating the details of a specific notebook.
+        /// </summary>
+        /// <param name="model">The model containing the updated details for the notebook.</param>
+        /// <returns>A redirect to the notebook index page if successful, or a re-rendering of the details form if there are validation errors.</returns>
         [HttpPost]
         public async Task<IActionResult> Details(NotebookDetailsViewModel model)
         {

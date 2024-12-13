@@ -7,13 +7,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LunarApp.Web.Controllers
 {
+    /// <summary>
+    /// Controller for managing notes within a notebook and folder. Provides actions to create, edit, delete, and view notes.
+    /// </summary>
+    /// <remarks>
+    /// The controller ensures that only authorized users can perform actions, and all actions are tied to specific notebooks and folders.
+    /// It interacts with the <see cref="INoteService"/> for note-related operations such as creating, updating, and deleting notes.
+    /// </remarks>
+    /// <param name="noteService">The service responsible for handling note operations such as creation, editing, and deletion.</param>
+    /// <param name="userManager">The user manager used to manage user-related operations and authentication.</param>
     [Authorize]
     public class NoteController(
         INoteService noteService,
         UserManager<ApplicationUser> userManager
         ) : BaseController(userManager)
     {
-        // GET method to render the form for creating a new note within a specific notebook and folder
+
+        /// <summary>
+        /// Renders the form for creating a new note within a specific notebook and folder.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook the note belongs to.</param>
+        /// <param name="parentFolderId">The ID of the parent folder containing the note.</param>
+        /// <param name="folderId">The ID of the folder containing the note.</param>
+        /// <returns>A view for creating a new note.</returns>
         [HttpGet]
         public async Task<IActionResult> Create(Guid notebookId, Guid? parentFolderId, Guid? folderId)
         {
@@ -27,7 +43,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for creating a new note
+        /// <summary>
+        /// Handles form submission for creating a new note.
+        /// </summary>
+        /// <param name="model">The model containing the note's data.</param>
+        /// <returns>A redirect to the folder index view after the note is created.</returns>
         [HttpPost]
         public async Task<IActionResult> Create(NoteCreateViewModel model)
         {
@@ -53,7 +73,14 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to render the confirmation page for deleting a note
+        /// <summary>
+        /// Renders the confirmation page for deleting a note.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook containing the note to delete.</param>
+        /// <param name="parentFolderId">The ID of the parent folder containing the note to delete.</param>
+        /// <param name="folderId">The ID of the folder containing the note to delete.</param>
+        /// <param name="noteId">The ID of the note to delete.</param>
+        /// <returns>A confirmation view for deleting a note.</returns>
         [HttpGet]
         public async Task<IActionResult> Remove(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
         {
@@ -73,7 +100,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to delete a note from the database
+        /// <summary>
+        /// Handles form submission for deleting a note from the database.
+        /// </summary>
+        /// <param name="model">The model containing the note's data.</param>
+        /// <returns>A redirect to the folder index view after the note is deleted.</returns>
         [HttpPost]
         public async Task<IActionResult> Remove(NoteDeleteViewModel model)
         {
@@ -89,7 +120,14 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // GET method to render the form for editing an existing note
+        /// <summary>
+        /// Renders the form for editing an existing note.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook containing the note to edit.</param>
+        /// <param name="parentFolderId">The ID of the parent folder containing the note to edit.</param>
+        /// <param name="folderId">The ID of the folder containing the note to edit.</param>
+        /// <param name="noteId">The ID of the note to edit.</param>
+        /// <returns>A view for editing the specified note.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid noteId)
         {
@@ -115,7 +153,11 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // POST method to handle form submission for updating a note's information
+        /// <summary>
+        /// Handles form submission for updating a note's information.
+        /// </summary>
+        /// <param name="model">The model containing the updated note's data.</param>
+        /// <returns>A redirect to the folder index view after the note is updated.</returns>
         [HttpPost]
         public async Task<IActionResult> Edit(NoteEditViewModel model)
         {
@@ -133,7 +175,13 @@ namespace LunarApp.Web.Controllers
             return View(model);
         }
 
-        // Helper method to redirect to the appropriate folder index view based on the notebook and folder IDs
+        /// <summary>
+        /// Helper method to redirect to the appropriate folder index view based on the notebook and folder IDs.
+        /// </summary>
+        /// <param name="notebookId">The ID of the notebook to redirect to.</param>
+        /// <param name="parentFolderId">The ID of the parent folder to redirect to (optional).</param>
+        /// <param name="folderId">The ID of the folder to redirect to (optional).</param>
+        /// <returns>A redirect to the folder index view.</returns>
         private IActionResult RedirectToFolderIndexView(Guid notebookId, Guid? parentFolderId = null, Guid? folderId = null)
         {
             if (folderId.HasValue && folderId != Guid.Empty &&

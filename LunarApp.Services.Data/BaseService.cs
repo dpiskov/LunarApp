@@ -7,9 +7,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Services.Data
 {
+    /// <summary>
+    /// Represents the base service for handling common operations across the application.
+    /// This class provides shared logic for services that manage tags and notes.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="BaseService"/> class utilizes repositories for interacting with the data models for <see cref="Tag"/> and <see cref="Note"/> entities.
+    /// It implements <see cref="IBaseService"/> for general service-related functionalities.
+    /// </remarks>
+    /// <param name="tagRepository">The repository for interacting with <see cref="Tag"/> entities in the data source.</param>
+    /// <param name="noteRepository">The repository for interacting with <see cref="Note"/> entities in the data source.</param>
     public class BaseService(IRepository<Tag, Guid> tagRepository, IRepository<Note, Guid> noteRepository)
         : IBaseService
     {
+        /// <summary>
+        /// Retrieves filtered notes for a specific notebook and folder, optionally filtered by a search query or tag.
+        /// </summary>
+        /// <param name="notebookId">ID of the notebook to filter notes.</param>
+        /// <param name="parentFolderId">Optional ID of the parent folder.</param>
+        /// <param name="folderId">Optional ID of the folder to filter notes.</param>
+        /// <param name="userId">ID of the user requesting the notes.</param>
+        /// <param name="searchQuery">Optional search query to filter notes by title.</param>
+        /// <param name="tagFilter">Optional tag name to filter notes by tag.</param>
+        /// <returns>A FolderNotesViewModel containing the filtered notes.</returns>
         public async Task<FolderNotesViewModel> GetFilteredNotesAsyncByNotebookId(Guid notebookId, Guid? parentFolderId, Guid? folderId, Guid userId, string? searchQuery, string? tagFilter)
         {
             Guid? tagId = null;
@@ -71,6 +91,13 @@ namespace LunarApp.Services.Data
             };
         }
 
+        /// <summary>
+        /// Retrieves filtered notes for a user, optionally filtered by a search query or tag.
+        /// </summary>
+        /// <param name="userId">ID of the user requesting the notes.</param>
+        /// <param name="searchQuery">Optional search query to filter notes by title.</param>
+        /// <param name="tagFilter">Optional tag name to filter notes by tag.</param>
+        /// <returns>A FolderNotesViewModel containing the filtered notes.</returns>
         public async Task<FolderNotesViewModel> GetFilteredNotesAsync(Guid userId, string? searchQuery, string? tagFilter)
         {
             Guid? tagId = null;
@@ -132,6 +159,11 @@ namespace LunarApp.Services.Data
             };
         }
 
+        /// <summary>
+        /// Retrieves all distinct tag names associated with a specific user.
+        /// </summary>
+        /// <param name="userId">ID of the user whose tags should be retrieved.</param>
+        /// <returns>An IEnumerable of tag names.</returns>
         public async Task<IEnumerable<string>> GetAllTagsAsync(Guid userId)
         {
             IEnumerable<string> allTags = await tagRepository

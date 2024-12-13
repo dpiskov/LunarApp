@@ -7,6 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LunarApp.Services.Data
 {
+    /// <summary>
+    /// Service for managing users, including retrieving user details, assigning roles, and deleting users.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="UserService"/> class provides operations for managing user-related activities such as retrieving 
+    /// user information, assigning roles, and managing users' associated entities like notebooks, folders, notes, and tags.
+    /// It interacts with the <see cref="UserManager{ApplicationUser}"/>, <see cref="RoleManager{IdentityRole{Guid}}"/>, 
+    /// and various repositories for CRUD operations on <see cref="Notebook"/>, <see cref="Folder"/>, <see cref="Note"/>, and 
+    /// <see cref="Tag"/> entities.
+    /// </remarks>
+    /// <param name="userManager">The <see cref="UserManager{ApplicationUser}"/> for managing users.</param>
+    /// <param name="roleManager">The <see cref="RoleManager{IdentityRole{Guid}}"/> for managing user roles.</param>
+    /// <param name="notebookRepository">The repository for interacting with <see cref="Notebook"/> entities.</param>
+    /// <param name="folderRepository">The repository for interacting with <see cref="Folder"/> entities.</param>
+    /// <param name="noteRepository">The repository for interacting with <see cref="Note"/> entities.</param>
+    /// <param name="tagRepository">The repository for interacting with <see cref="Tag"/> entities.</param>
     public class UserService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole<Guid>> roleManager,
@@ -16,6 +32,10 @@ namespace LunarApp.Services.Data
         IRepository<Tag, Guid> tagRepository
         ) : IUserService
     {
+        /// <summary>
+        /// Retrieves all users, including their email addresses and assigned roles.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation, with a collection of all users.</returns>
         public async Task<IEnumerable<AllUsersViewModel>> GetAllUsersAsync()
         {
             IEnumerable<ApplicationUser> allUsers = await userManager.Users.ToArrayAsync();
@@ -36,6 +56,11 @@ namespace LunarApp.Services.Data
             return allUsersViewModel;
         }
 
+        /// <summary>
+        /// Checks if a user exists by their ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user to check.</param>
+        /// <returns>A task representing the asynchronous operation, with a result indicating whether the user exists.</returns>
         public async Task<bool> UserExistsByIdAsync(Guid userId)
         {
             ApplicationUser? user = await userManager
@@ -44,6 +69,12 @@ namespace LunarApp.Services.Data
             return user != null;
         }
 
+        /// <summary>
+        /// Assigns a role to a user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to assign the role to.</param>
+        /// <param name="roleName">The name of the role to assign.</param>
+        /// <returns>A task representing the asynchronous operation, with a result indicating whether the assignment was successful.</returns>
         public async Task<bool> AssignUserToRoleAsync(Guid userId, string roleName)
         {
             ApplicationUser? user = await userManager
@@ -71,6 +102,12 @@ namespace LunarApp.Services.Data
             return true;
         }
 
+        /// <summary>
+        /// Removes a role from a user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to remove the role from.</param>
+        /// <param name="roleName">The name of the role to remove.</param>
+        /// <returns>A task representing the asynchronous operation, with a result indicating whether the removal was successful.</returns>
         public async Task<bool> RemoveUserRoleAsync(Guid userId, string roleName)
         {
             ApplicationUser? user = await userManager
@@ -97,6 +134,11 @@ namespace LunarApp.Services.Data
             return true;
         }
 
+        /// <summary>
+        /// Deletes a user and all related data (notes, folders, notebooks, and tags).
+        /// </summary>
+        /// <param name="userId">The ID of the user to delete.</param>
+        /// <returns>A task representing the asynchronous operation, with a result indicating whether the deletion was successful.</returns>
         public async Task<bool> DeleteUserAsync(Guid userId)
         {
             ApplicationUser? user = await userManager.FindByIdAsync(userId.ToString());
