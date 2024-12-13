@@ -78,7 +78,7 @@ This is the Index Notebook page:
 This is the Index Folder page:
 ![image](https://github.com/user-attachments/assets/1e61ced0-a15b-436d-a23d-067d38649897)
 
-This is the Note Create page, take note that you can go to the Index Tag page from the "View All Tags" button in the bottom right, where you can see all tags:
+This is the Note Create page. Take note that you can go to the Index Tag page from the "View All Tags" button in the bottom right, where you can see all tags:
 ![image](https://github.com/user-attachments/assets/475c77ba-7dc9-47af-a873-99a302d62e76)
 
 This is the Index Tag page:
